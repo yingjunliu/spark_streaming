@@ -1,0 +1,201 @@
+format version: 5
+output mode:
+1 items
+0 -> single
+output directories:
+1 items
+output dir -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes
+compile options:
+0 items
+javac options:
+0 items
+compiler version:
+1 items
+0 -> 2.10.4
+compile order:
+1 items
+0 -> Mixed
+name hashing:
+1 items
+0 -> true
+products:
+18 items
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$1.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$2.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$3.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$4.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$5.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$6.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$1.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$2.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$3.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$4.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$1.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$2.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$3.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$4.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$5.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$Dependencies$.class
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef.class
+binary dependencies:
+9 items
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.ivy2/cache/org.scala-sbt/apply-macro/jars/apply-macro-0.13.7.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.ivy2/cache/org.scala-sbt/collections/jars/collections-0.13.7.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.ivy2/cache/org.scala-sbt/ivy/jars/ivy-0.13.7.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.ivy2/cache/org.scala-sbt/main-settings/jars/main-settings-0.13.7.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.ivy2/cache/org.scala-sbt/main/jars/main-0.13.7.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.ivy2/cache/org.scala-sbt/sbt/jars/sbt-0.13.7.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.ivy2/cache/org.scala-sbt/task-system/jars/task-system-0.13.7.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /home/yingjun/.sbt/boot/scala-2.10.4/lib/scala-library.jar
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> /usr/lib/jdk1.8.0_25/jre/lib/rt.jar
+direct source dependencies:
+0 items
+direct external dependencies:
+0 items
+public inherited source dependencies:
+0 items
+public inherited external dependencies:
+0 items
+member reference internal dependencies:
+0 items
+member reference external dependencies:
+0 items
+inheritance internal dependencies:
+0 items
+inheritance external dependencies:
+0 items
+class names:
+18 items
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$root$1
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$root$2
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$root$3
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$root$4
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$root$5
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$root$6
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$sparkStyle$1
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$sparkStyle$2
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$sparkStyle$3
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$sparkStyle$4
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$styleSettings$1
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$styleSettings$2
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$styleSettings$3
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$styleSettings$4
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$$anonfun$styleSettings$5
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef$Dependencies$
+used names:
+54 items
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> %
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> %%
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> ++
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> ++=
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> :=
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> <init>
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> AnyRef
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Append
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Build
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Defaults
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Dependencies
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> FullInstance
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> InitializeInstance
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Keys
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Project
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Reference
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> Seq
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> SparkPluginDef
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> appendN
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> appendSeq
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> apply
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> canBuildFrom
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> classpathDependency
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> collection
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> defaultSettings
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> dependsOn
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> file
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> libraryDependencies
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> name
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> organization
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> package
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> projectToRef
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> pure
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> root
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> sbt
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> sbtPomReader
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> scala
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> scalaStyle
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> scalaVersion
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> scalacOptions
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> set
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> sparkStyle
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> styleSettings
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> toGroupID
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> uri
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> uriToRef
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$1
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$2
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$3
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$4
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$5
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$6
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$7
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> x$8
+product stamps:
+18 items
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$1.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$2.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$3.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$4.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$5.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$root$6.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$1.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$2.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$3.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$sparkStyle$4.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$1.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$2.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$3.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$4.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$$anonfun$styleSettings$5.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef$Dependencies$.class -> lastModified(1428114079000)
+/home/yingjun/spark-1.3.0/project/project/target/scala-2.10/sbt-0.13/classes/SparkPluginDef.class -> lastModified(1428114079000)
+source stamps:
+1 items
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> hash(95e53a0101595faf20a7bde697717685f38567a0)
+binary stamps:
+9 items
+/home/yingjun/.ivy2/cache/org.scala-sbt/apply-macro/jars/apply-macro-0.13.7.jar -> lastModified(1416378822000)
+/home/yingjun/.ivy2/cache/org.scala-sbt/collections/jars/collections-0.13.7.jar -> lastModified(1416378820000)
+/home/yingjun/.ivy2/cache/org.scala-sbt/ivy/jars/ivy-0.13.7.jar -> lastModified(1416378891000)
+/home/yingjun/.ivy2/cache/org.scala-sbt/main-settings/jars/main-settings-0.13.7.jar -> lastModified(1416378944000)
+/home/yingjun/.ivy2/cache/org.scala-sbt/main/jars/main-0.13.7.jar -> lastModified(1416378959000)
+/home/yingjun/.ivy2/cache/org.scala-sbt/sbt/jars/sbt-0.13.7.jar -> lastModified(1416378955000)
+/home/yingjun/.ivy2/cache/org.scala-sbt/task-system/jars/task-system-0.13.7.jar -> lastModified(1416378938000)
+/home/yingjun/.sbt/boot/scala-2.10.4/lib/scala-library.jar -> lastModified(1395179187000)
+/usr/lib/jdk1.8.0_25/jre/lib/rt.jar -> lastModified(1411000934000)
+class names:
+9 items
+/home/yingjun/.ivy2/cache/org.scala-sbt/apply-macro/jars/apply-macro-0.13.7.jar -> sbt.appmacro.Instance$
+/home/yingjun/.ivy2/cache/org.scala-sbt/collections/jars/collections-0.13.7.jar -> sbt.Init
+/home/yingjun/.ivy2/cache/org.scala-sbt/ivy/jars/ivy-0.13.7.jar -> sbt.ModuleID
+/home/yingjun/.ivy2/cache/org.scala-sbt/main-settings/jars/main-settings-0.13.7.jar -> sbt.Reference$
+/home/yingjun/.ivy2/cache/org.scala-sbt/main/jars/main-0.13.7.jar -> sbt.Build
+/home/yingjun/.ivy2/cache/org.scala-sbt/sbt/jars/sbt-0.13.7.jar -> sbt.package$
+/home/yingjun/.ivy2/cache/org.scala-sbt/task-system/jars/task-system-0.13.7.jar -> sbt.Task
+/home/yingjun/.sbt/boot/scala-2.10.4/lib/scala-library.jar -> scala.collection.generic.GenericCompanion
+/usr/lib/jdk1.8.0_25/jre/lib/rt.jar -> java.lang.Object
+internal apis:
+1 items
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlFlpwRASfbtoCAAZJAAdhcGlIYXNoWgAIaGFzTWFjcm9MABhfaW50ZXJuYWxPbmx5X25hbWVIYXNoZXN0ACRMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2hlcztMAANhcGl0ABVMeHNidGkvYXBpL1NvdXJjZUFQSTtMAAtjb21waWxhdGlvbnQAF0x4c2J0aS9hcGkvQ29tcGlsYXRpb247WwAEaGFzaHQAAltCeHBMjnNSAHNyACJ4c2J0aS5hcGkuX2ludGVybmFsT25seV9OYW1lSGFzaGVzVNq+mfrU7EwCAAJbAA9pbXBsaWNpdE1lbWJlcnN0ACNbTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoO1sADnJlZ3VsYXJNZW1iZXJzcQB+AAd4cHVyACNbTHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoO0lagLbdlov0AgAAeHAAAAAAdXEAfgAJAAAAH3NyACB4c2J0aS5hcGkuX2ludGVybmFsT25seV9OYW1lSGFzaFsO9SJ2OFfPAgACSQAEaGFzaEwABG5hbWV0ABJMamF2YS9sYW5nL1N0cmluZzt4cJtu09Z0AAZub3RpZnlzcQB+AAz08/4pdAAEd2FpdHNxAH4ADJ8ZYoh0AA0kYXNJbnN0YW5jZU9mc3EAfgAMGlHsZ3QADGJ1aWxkTG9hZGVyc3NxAH4ADGuFquZ0AARyb290c3EAfgAMWMh4enQABmVxdWFsc3NxAH4ADN0XI910AAxhc0luc3RhbmNlT2ZzcQB+AAx50bq3dAAScHJvamVjdERlZmluaXRpb25zc3EAfgAMREm8DnQACnNwYXJrU3R5bGVzcQB+AAyRJjl2dAAMc3luY2hyb25pemVkc3EAfgAMKKuTtnQADERlcGVuZGVuY2llc3NxAH4ADBjE59x0AA0kaXNJbnN0YW5jZU9mc3EAfgAMcpJybnQACnNjYWxhU3R5bGVzcQB+AAzYuzpndAAOU3BhcmtQbHVnaW5EZWZzcQB+AAxhNX10dAAJbm90aWZ5QWxsc3EAfgAMTlbt6HQAC3Jvb3RQcm9qZWN0c3EAfgAMN35KjXQADGlzSW5zdGFuY2VPZnNxAH4ADP0epkh0AAI9PXNxAH4ADITiCg10AAVjbG9uZXNxAH4ADC2TAdB0AAh0b1N0cmluZ3NxAH4ADDKxZ6h0AAIhPXNxAH4ADK0nn290AAhwcm9qZWN0c3NxAH4ADC50WtN0AAhnZXRDbGFzc3NxAH4ADNjrgOB0AAJuZXNxAH4ADCFr1nd0AAJlcXNxAH4ADBbGeFp0AAxzYnRQb21SZWFkZXJzcQB+AAy7lglKdAAIc2V0dGluZ3NzcQB+AAybzCfadAACIyNzcQB+AAylXa+IdAAIZmluYWxpemVzcQB+AAwNJf3YdAAIaGFzaENvZGVzcQB+AAy4IUhydAANc3R5bGVTZXR0aW5nc3NyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAFzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+AFV4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXEAfgANeHBzcgAQeHNidGkuYXBpLlB1YmxpY7pYPa5sLWBCAgAAeHIAEHhzYnRpLmFwaS5BY2Nlc3PdYpr4HWMxSAIAAHhwdXIAF1tMeHNidGkuYXBpLkFubm90YXRpb24765frGRD2jUgCAAB4cAAAAABzcgATeHNidGkuYXBpLk1vZGlmaWVyc8cREyFpnNwkAgABQgAFZmxhZ3N4cABxAH4AKXVyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQABk1vZHVsZXVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAABzcgATeHNidGkuU2FmZUxhenkkSW1wbFACLpOXl0A/AgADWgAIYml0bWFwJDBMAAJfdHQAEkxqYXZhL2xhbmcvT2JqZWN0O0wABGV2YWx0ABFMc2NhbGEvRnVuY3Rpb24wO3hyABZ4c2J0aS5hcGkuQWJzdHJhY3RMYXp503e1AV+756ACAAB4cABwc3IAIHhzYnRpLlNhZmVMYXp5JCRhbm9uZnVuJHN0cmljdCQxAAAAAAAAAAACAAFMAAd2YWx1ZSQxcQB+AG14cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AGwAcHNxAH4AcXNyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgBVTAAJaW5oZXJpdGVkcQB+AFVMAAdwYXJlbnRzcQB+AFV4cQB+AHVzcQB+AGwAcHNxAH4AcXVxAH4AUAAAAABzcQB+AGwAcHNxAH4AcXVxAH4AUAAAAABzcQB+AGwAcHNxAH4AcXVyABFbTHhzYnRpLmFwaS5UeXBlO3T/pVp7+elBAgAAeHAAAAADc3IAFHhzYnRpLmFwaS5Qcm9qZWN0aW9u89KNVOlFpC0CAAJMAAJpZHEAfgANTAAGcHJlZml4dAAWTHhzYnRpL2FwaS9TaW1wbGVUeXBlO3hxAH4AdHQABUJ1aWxkc3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgB0c3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAACc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AANzYnRzcgAOeHNidGkuYXBpLlRoaXPbCe2mzFpAXAIAAHhxAH4AknNxAH4AhXQABk9iamVjdHNxAH4AiXNxAH4AjHVxAH4AjwAAAANzcQB+AJF0AARqYXZhc3EAfgCRdAAEbGFuZ3EAfgCWc3EAfgCFdAADQW55c3EAfgCJc3EAfgCMdXEAfgCPAAAAAnNxAH4AkXQABXNjYWxhcQB+AJZ1cgAUW0x4c2J0aS5hcGkuUGFja2FnZTtbExk3cKcnoQIAAHhwAAAAAHNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABTII7X+V1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5cQB+AA1MAA9zb3VyY2VEaXJlY3RvcnlxAH4ADXhwdABML2hvbWUveWluZ2p1bi9zcGFyay0xLjMuMC9wcm9qZWN0L3Byb2plY3QvdGFyZ2V0L3NjYWxhLTIuMTAvc2J0LTAuMTMvY2xhc3Nlc3QAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFJXlOgEBWV+vIKe95pdxdoXzhWeg
+external apis:
+0 items
+source infos:
+1 items
+/home/yingjun/spark-1.3.0/project/project/SparkPluginBuild.scala -> 
+AAAAAAAAAAIAAAEAAAAbAFMgIGxhenkgdmFsIHJvb3QgPSBQcm9qZWN0KCJwbHVnaW5zIiwgZmlsZSgiLiIpKSBkZXBlbmRzT24oc3BhcmtTdHlsZSwgc2J0UG9tUmVhZGVyKQEAAASOAQAAAEYBAEYgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgAQBAL2hvbWUveWluZ2p1bi9zcGFyay0xLjMuMC9wcm9qZWN0L3Byb2plY3QvU3BhcmtQbHVnaW5CdWlsZC5zY2FsYQEAQC9ob21lL3lpbmdqdW4vc3BhcmstMS4zLjAvcHJvamVjdC9wcm9qZWN0L1NwYXJrUGx1Z2luQnVpbGQuc2NhbGEAZG1ldGhvZCB1cmlUb1JlZiBpbiBvYmplY3QgUmVmZXJlbmNlIGlzIGRlcHJlY2F0ZWQ6IEV4cGxpY2l0bHkgd3JhcCB0aGUgVVJJIGluIGEgY2FsbCB0byBSb290UHJvamVjdC4BAAABAAAAIAA3ICBkZWYgc3R5bGVTZXR0aW5ncyA9IERlZmF1bHRzLmRlZmF1bHRTZXR0aW5ncyArKyBTZXEgKAEAAAW4AQAAAB8BAB8gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgAQBAL2hvbWUveWluZ2p1bi9zcGFyay0xLjMuMC9wcm9qZWN0L3Byb2plY3QvU3BhcmtQbHVnaW5CdWlsZC5zY2FsYQEAQC9ob21lL3lpbmdqdW4vc3BhcmstMS4zLjAvcHJvamVjdC9wcm9qZWN0L1NwYXJrUGx1Z2luQnVpbGQuc2NhbGEAiHZhbHVlIGRlZmF1bHRTZXR0aW5ncyBpbiBvYmplY3QgRGVmYXVsdHMgaXMgZGVwcmVjYXRlZDogRGVmYXVsdCBzZXR0aW5ncyBzcGxpdCBpbnRvIGNvcmVEZWZhdWx0U2V0dGluZ3MgYW5kIEl2eU1vZHVsZS9Kdm1Nb2R1bGUgcGx1Z2lucy4B
+compilations:
+1 items
+0 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABTII7X+V1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQATC9ob21lL3lpbmdqdW4vc3BhcmstMS4zLjAvcHJvamVjdC9wcm9qZWN0L3RhcmdldC9zY2FsYS0yLjEwL3NidC0wLjEzL2NsYXNzZXN0AAEv

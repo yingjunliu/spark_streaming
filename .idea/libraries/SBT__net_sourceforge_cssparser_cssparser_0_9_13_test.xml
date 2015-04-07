@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: net.sourceforge.cssparser:cssparser:0.9.13:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/cssparser-0.9.13.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/cssparser-0.9.13-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/cssparser-0.9.13-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

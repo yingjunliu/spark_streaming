@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: com.h2database:h2:1.4.183:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/h2-1.4.183.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/h2-1.4.183-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/h2-1.4.183-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

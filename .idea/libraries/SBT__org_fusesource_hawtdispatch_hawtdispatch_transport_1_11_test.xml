@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="SBT: org.fusesource.hawtdispatch:hawtdispatch-transport:1.11:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/hawtdispatch-transport-1.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib_managed/bundles/hawtdispatch-transport-1.11.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/hawtdispatch-transport-1.11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/hawtdispatch-transport-1.11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

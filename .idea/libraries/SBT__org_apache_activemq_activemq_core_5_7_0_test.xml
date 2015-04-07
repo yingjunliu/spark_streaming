@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.activemq:activemq-core:5.7.0:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/activemq-core-5.7.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib_managed/bundles/activemq-core-5.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/activemq-core-5.7.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/activemq-core-5.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

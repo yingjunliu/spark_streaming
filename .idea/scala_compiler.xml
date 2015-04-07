@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <option name="deprecationWarnings" value="true" />
+    <option name="uncheckedWarnings" value="true" />
+    <parameters>
+      <parameter value="-feature" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/assembly/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/bagel/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/sql/catalyst/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/core/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/examples/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/graphx/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/sql/hive/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/mllib/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/network/common/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/network/shuffle/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/repl/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/sql/core/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/streaming/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/external/flume/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/external/flume-sink/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/external/kafka/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/external/kafka-assembly/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/external/mqtt/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/external/twitter/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/external/zeromq/target/java" />
+      <parameter value="-P:genjavadoc:out=/home/yingjun/spark-1.3.0/tools/target/java" />
+    </parameters>
+  </component>
+</project>

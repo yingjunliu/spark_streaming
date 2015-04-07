@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="SBT: org.eclipse.jetty.orbit:javax.transaction:1.1.1.v201105210645">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/javax.transaction-1.1.1.v201105210645.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib_managed/orbits/javax.transaction-1.1.1.v201105210645.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/javax.transaction-1.1.1.v201105210645-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/javax.transaction-1.1.1.v201105210645-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

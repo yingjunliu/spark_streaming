@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="SBT: org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/javax.activation-1.1.0.v201105071233.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib_managed/orbits/javax.activation-1.1.0.v201105071233.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/javax.activation-1.1.0.v201105071233-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/javax.activation-1.1.0.v201105071233-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

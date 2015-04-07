@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: net.sourceforge.nekohtml:nekohtml:1.9.20:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/nekohtml-1.9.20.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/nekohtml-1.9.20-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/nekohtml-1.9.20-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/geronimo-j2ee-management_1.1_spec-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/geronimo-j2ee-management_1.1_spec-1.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/geronimo-j2ee-management_1.1_spec-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

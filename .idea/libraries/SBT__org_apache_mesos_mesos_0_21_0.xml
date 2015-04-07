@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.mesos:mesos:0.21.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/mesos-0.21.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/mesos-0.21.0-shaded-protobuf.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/mesos-0.21.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/mesos-0.21.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

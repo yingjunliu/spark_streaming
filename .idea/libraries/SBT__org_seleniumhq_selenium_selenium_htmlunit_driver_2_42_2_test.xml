@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.seleniumhq.selenium:selenium-htmlunit-driver:2.42.2:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/selenium-htmlunit-driver-2.42.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/selenium-htmlunit-driver-2.42.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/selenium-htmlunit-driver-2.42.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

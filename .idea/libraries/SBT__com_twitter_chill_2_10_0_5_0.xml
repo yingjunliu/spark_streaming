@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: com.twitter:chill_2.10:0.5.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/chill_2.10-0.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/chill_2.10-0.5.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/chill_2.10-0.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

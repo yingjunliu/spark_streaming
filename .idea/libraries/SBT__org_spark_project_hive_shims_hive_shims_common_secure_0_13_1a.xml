@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.spark-project.hive.shims:hive-shims-common-secure:0.13.1a">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/hive-shims-common-secure-0.13.1a.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/hive-shims-common-secure-0.13.1a-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/hive-shims-common-secure-0.13.1a-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

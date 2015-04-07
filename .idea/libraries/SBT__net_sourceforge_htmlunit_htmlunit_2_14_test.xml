@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: net.sourceforge.htmlunit:htmlunit:2.14:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/htmlunit-2.14.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/htmlunit-2.14-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/htmlunit-2.14-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

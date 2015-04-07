@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.httpcomponents:httpcore:4.3.1:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/httpcore-4.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/httpcore-4.3.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/httpcore-4.3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

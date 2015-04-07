@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.hbase:hbase-protocol:0.98.7-hadoop1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/hbase-protocol-0.98.7-hadoop1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/hbase-protocol-0.98.7-hadoop1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/hbase-protocol-0.98.7-hadoop1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

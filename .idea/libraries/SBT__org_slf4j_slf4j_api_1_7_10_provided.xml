@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.slf4j:slf4j-api:1.7.10:provided">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/slf4j-api-1.7.10.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/slf4j-api-1.7.10-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/slf4j-api-1.7.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

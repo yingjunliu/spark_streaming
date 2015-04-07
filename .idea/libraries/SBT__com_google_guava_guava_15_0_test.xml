@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="SBT: com.google.guava:guava:15.0:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/guava-15.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib_managed/bundles/guava-15.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/guava-15.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/guava-15.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: net.java.dev.jna:platform:3.4.0:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/platform-3.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/platform-3.4.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/platform-3.4.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

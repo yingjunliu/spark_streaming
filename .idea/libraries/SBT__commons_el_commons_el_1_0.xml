@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: commons-el:commons-el:1.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/commons-el-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/commons-el-1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/commons-el-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

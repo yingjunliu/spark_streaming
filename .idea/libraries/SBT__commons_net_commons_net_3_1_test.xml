@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: commons-net:commons-net:3.1:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/commons-net-3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/commons-net-3.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/commons-net-3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.postgresql:postgresql:9.3-1102-jdbc41:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/postgresql-9.3-1102-jdbc41.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/postgresql-9.3-1102-jdbc41-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/postgresql-9.3-1102-jdbc41-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

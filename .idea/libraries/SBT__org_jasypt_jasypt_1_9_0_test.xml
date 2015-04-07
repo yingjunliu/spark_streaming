@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.jasypt:jasypt:1.9.0:test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/jasypt-1.9.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/jasypt-1.9.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/jasypt-1.9.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
