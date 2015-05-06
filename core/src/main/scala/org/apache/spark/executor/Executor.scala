@@ -116,6 +116,8 @@ private[spark] class Executor(
   // Maintains the list of running tasks.
   private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
 
+  private var handledDataSpeed = new ConcurrentHashMap[Long, Double]
+
   startDriverHeartbeater()
 
   def launchTask(
@@ -128,6 +130,20 @@ private[spark] class Executor(
       serializedTask)
     runningTasks.put(taskId, tr)
     threadPool.execute(tr)
+
+    handledDataSpeed.put(taskId, handledDataSpeed.get(taskId) + tr.handledDataSpeed)
+    tr.handledDataSpeed = 0.0
+  }
+
+  def requireHandledDataSpeed = {
+    var totalHandledDataSpeed: Double = 0.0
+
+    for(i <- handledDataSpeed)
+    {
+      totalHandledDataSpeed += i._2
+    }
+
+    totalHandledDataSpeed
   }
 
   def killTask(taskId: Long, interruptThread: Boolean) {
@@ -135,6 +151,8 @@ private[spark] class Executor(
     if (tr != null) {
       tr.kill(interruptThread)
     }
+
+    handledDataSpeed.remove(taskId)
   }
 
   def stop() {
@@ -146,6 +164,8 @@ private[spark] class Executor(
       env.stop()
     }
   }
+
+  def excutorIsStoped: Boolean = isStopped
 
   private def gcTime = ManagementFactory.getGarbageCollectorMXBeans.map(_.getCollectionTime).sum
 
@@ -161,6 +181,8 @@ private[spark] class Executor(
     @volatile var task: Task[Any] = _
     @volatile var attemptedTask: Option[Task[Any]] = None
     @volatile var startGCTime: Long = _
+
+    @volatile var handledDataSpeed = 0.0
 
     def kill(interruptThread: Boolean) {
       logInfo(s"Executor is trying to kill $taskName (TID $taskId)")
@@ -200,8 +222,10 @@ private[spark] class Executor(
 
         // Run the actual task and measure its runtime.
         taskStart = System.currentTimeMillis()
-        val value = task.run(taskAttemptId = taskId, attemptNumber = attemptNumber)
+        val (handledDataSize, value) = task.run(taskAttemptId = taskId, attemptNumber = attemptNumber)
         val taskFinish = System.currentTimeMillis()
+
+        handledDataSpeed = handledDataSize / (taskFinish - taskStart)
 
         // If the task has been killed, let's fail it.
         if (task.killed) {

@@ -246,6 +246,15 @@ abstract class RDD[T: ClassTag](
   }
 
   /**
+   * Get the block size in rdd, so the monitor can know the data size which has been handled by the
+   * executor
+   * Added by Liuzhiyi
+   */
+  final def getRddBlockSize(split: Partition): Long = {
+    SparkEnv.get.cacheManager.getBlockSize(this, split)
+  }
+
+  /**
    * Return the ancestors of the given RDD that are related to it only through a sequence of
    * narrow dependencies. This traverses the given RDD's dependency tree using DFS, but maintains
    * no ordering on the RDDs returned.
