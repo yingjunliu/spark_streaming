@@ -22,6 +22,8 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.{UUID, Date}
 
+import org.apache.spark.monitor.MonitorMessages.{RegistedWorkerMonitor, RegisterWorkerMonitor}
+
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{HashMap, HashSet}
 import scala.concurrent.duration._
@@ -38,6 +40,7 @@ import org.apache.spark.deploy.master.{DriverState, Master}
 import org.apache.spark.deploy.worker.ui.WorkerWebUI
 import org.apache.spark.metrics.MetricsSystem
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
+import org.apache.spark.monitor.{WorkerMonitor, MonitorMessage}
 
 /**
   * @param masterAkkaUrls Each url should be a valid akka url.
@@ -134,6 +137,9 @@ private[spark] class Worker(
   val workerSource = new WorkerSource(this)
 
   var registrationRetryTimer: Option[Cancellable] = None
+
+  // Used to records the monitor akka urls and pass it to the executor.
+  var monitorAkkaUrl: String = ""
 
   def coresFree: Int = cores - coresUsed
   def memoryFree: Int = memory - memoryUsed
@@ -367,6 +373,7 @@ private[spark] class Worker(
             sparkHome,
             executorDir,
             akkaUrl,
+            monitorAkkaUrl,
             conf,
             appLocalDirs, ExecutorState.LOADING)
           executors(appId + "/" + execId) = manager
@@ -485,6 +492,13 @@ private[spark] class Worker(
     case ApplicationFinished(id) =>
       finishedApps += id
       maybeCleanupApplication(id)
+
+    //connetion with the worker monitor
+    //Added by Liuzhiyi
+    case RegisterWorkerMonitor(monitorAkkaUrls) =>
+      logInfo("Registerd worker monitor " + monitorAkkaUrls)
+      monitorAkkaUrl = monitorAkkaUrls
+      sender ! RegistedWorkerMonitor
   }
 
   private def masterDisconnected() {
@@ -549,8 +563,21 @@ private[spark] object Worker extends Logging {
     val (actorSystem, boundPort) = AkkaUtils.createActorSystem(systemName, host, port,
       conf = conf, securityManager = securityMgr)
     val masterAkkaUrls = masterUrls.map(Master.toAkkaUrl(_, AkkaUtils.protocol(actorSystem)))
-    actorSystem.actorOf(Props(classOf[Worker], host, boundPort, webUiPort, cores, memory,
+    val workerActor = actorSystem.actorOf(Props(classOf[Worker], host, boundPort, webUiPort, cores, memory,
       masterAkkaUrls, systemName, actorName,  workDir, conf, securityMgr), name = actorName)
+
+    val monitorSystemName = "sparkWorkerMonitor" +workerNumber.map(_.toString).getOrElse("")
+    val monitorActorName = "WorkerMonitor"
+    val monitorSecurityMgr = new SecurityManager(conf)
+    val (monitorActorSystem, monitorBoundPort) = AkkaUtils.createActorSystem(monitorSystemName, host,
+      port + 1, conf = conf, securityManager = monitorSecurityMgr)
+
+//    val workerAkkaUrl = AkkaUtils.address(AkkaUtils.protocol(context.system), monitorSystemName, host,
+//      monitorBoundPort, monitorActorName)
+
+    monitorActorSystem.actorOf(Props(classOf[WorkerMonitor], workerActor, monitorSystemName, host,
+      monitorBoundPort, monitorActorName), name = monitorActorName)
+
     (actorSystem, boundPort)
   }
 

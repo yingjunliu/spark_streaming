@@ -21,4 +21,12 @@ private[spark] object MonitorMessages {
 
   case class StoppedExecutor(executorId: String) extends MonitorMessage
 
+
+  // Worker to WorkerMonitor
+  //Added by Liuzhiyi
+  case object RegistedWorkerMonitor
+
+  //WorkerMonitor to Worker
+  //Added by Liuzhiyi
+  case class RegisterWorkerMonitor(MonitorAkkaUrls: String) extends MonitorMessage
 }
