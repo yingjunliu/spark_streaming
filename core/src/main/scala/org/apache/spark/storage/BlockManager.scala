@@ -881,6 +881,32 @@ private[spark] class BlockManager(
   }
 
   /**
+   * Reallocation the block to support spark streaming.
+   * When this node has high load, then it will reallocation some blocks to other node
+   * so that the task can be finished in other node.
+   *
+   * Added by Liuzhiyi
+   */
+  def reallocateBlock(blockId: BlockId, blockManger: BlockManagerId): Boolean = {
+    doGetLocal(blockId, asBlockResult = false).asInstanceOf[Option[ByteBuffer]] match {
+      case Some(data) =>
+        val onePeerStartTime = System.currentTimeMillis
+        data.rewind()
+        logInfo(s"Trying to replicate $blockId of ${data.limit()} bytes to $blockManger")
+        blockTransferService.uploadBlockSync(
+          blockManger.host, blockManger.port, blockManger.executorId, blockId, new NioManagedBuffer(data), tLevel)
+        logInfo(s"Replicated $blockId of ${data.limit()} bytes to $blockManger in %s ms"
+          .format(System.currentTimeMillis - onePeerStartTime))
+
+        true
+
+      case _ =>
+        logInfo(s"Can't find block $blockId locally, refuse to reallocate it -- reallocateBlock")
+        false
+    }
+  }
+
+  /**
    * Replicate block to another node. Not that this is a blocking call that returns after
    * the block has been replicated.
    */

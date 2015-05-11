@@ -111,4 +111,9 @@ private[spark] object BlockManagerMessages {
   case class BlockManagerHeartbeat(blockManagerId: BlockManagerId) extends ToBlockManagerMaster
 
   case object ExpireDeadHosts extends ToBlockManagerMaster
+
+  // Added by Liuzhiyi
+  case class RelocateBlockId(blockId: BlockId,
+                             oldBlockManager: BlockManagerId,
+                             newBlockManager: BlockManagerId) extends ToBlockManagerMaster
 }

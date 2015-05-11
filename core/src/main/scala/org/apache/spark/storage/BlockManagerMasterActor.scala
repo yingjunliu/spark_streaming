@@ -129,6 +129,10 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     case BlockManagerHeartbeat(blockManagerId) =>
       sender ! heartbeatReceived(blockManagerId)
 
+    case RelocateBlockId(blockId, oldBlockManager, newBlockManager) =>
+      relocateBlockId(blockId, oldBlockManager, newBlockManager)
+      sender ! true
+
     case other =>
       logWarning("Got unknown message: " + other)
   }
@@ -400,6 +404,14 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
 
   private def getLocationsMultipleBlockIds(blockIds: Array[BlockId]): Seq[Seq[BlockManagerId]] = {
     blockIds.map(blockId => getLocations(blockId))
+  }
+
+  private def relocateBlockId(blockId: BlockId,
+                              oldBlockManager: BlockManagerId,
+                              newBlockManager: BlockManagerId): Unit ={
+    val oldBlockLocations = blockLocations(blockId)
+    oldBlockLocations.remove(oldBlockManager)
+    oldBlockLocations.add(newBlockManager)
   }
 
   /** Get the list of the peers of the given block manager */

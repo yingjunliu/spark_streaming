@@ -206,6 +206,19 @@ class BlockManagerMaster(
     }
   }
 
+  /**
+   * Relocate the block to support the spark streaming.
+   * When the block has been reallocated to another node, the map of blockid should be refresh
+   *
+   * Added by Liuzhiyi
+   */
+  def relocateBlockId(blockId: BlockId,
+                      oldBlockManager: BlockManagerId,
+                      newBlockManager: BlockManagerId): Unit ={
+    tell(RelocateBlockId(blockId, oldBlockManager, newBlockManager))
+    logInfo(s"The block ${blockId} has been remove to ${newBlockManager} from ${oldBlockManager}")
+  }
+
   /** Send a one-way message to the master actor, to which we expect it to reply with true. */
   private def tell(message: Any) {
     if (!askDriverWithReply[Boolean](message)) {
