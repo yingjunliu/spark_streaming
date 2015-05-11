@@ -17,7 +17,7 @@ private[spark] object MonitorMessages {
   // Added by Liuzhiyi
   case class ExecutorHandledDataSpeed(size: Double, executorId: String) extends MonitorMessage
 
-  case class RegisterExecutor(executorId: String) extends MonitorMessage
+  case class RegisterExecutorWithMonitor(executorId: String) extends MonitorMessage
 
   case class StoppedExecutor(executorId: String) extends MonitorMessage
 

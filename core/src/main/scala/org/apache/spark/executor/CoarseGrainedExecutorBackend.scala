@@ -62,9 +62,9 @@ private[spark] class CoarseGrainedExecutorBackend(
     workerMonitorUrl match {
       case Some(url) =>
         workerMonitor = context.actorSelection(url)
-        workerMonitor ! RegisterExecutor(executorId)
+        workerMonitor ! RegisterExecutorWithMonitor(executorId)
 
-      case None => _
+      case None =>
     }
 
   }
@@ -81,7 +81,7 @@ private[spark] class CoarseGrainedExecutorBackend(
 
     case HandledDataSpeed =>
       logInfo("Get data size which has been handled by executor")
-      workerMonitor ! ExecutorHandledDataSpeed(executor.requireHandledDataSpeed)
+      workerMonitor ! ExecutorHandledDataSpeed(executor.requireHandledDataSpeed, executorId)
 
     case RegisteredExecutor =>
       logInfo("Successfully registered with driver")

@@ -12,7 +12,7 @@ import scala.collection.mutable._
 /**
  * Created by junjun on 2015/5/5.
  */
-private[Spark] class WorkerMonitor(
+private[spark] class WorkerMonitor(
        worker: ActorRef,
        actorSystemName: String,
        host: String,
