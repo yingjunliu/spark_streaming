@@ -43,7 +43,7 @@ private[spark] class WorkerMonitor(
     case ExecutorHandledDataSpeed(size, executorId) =>
       totalHandleSpeed(executorId) += size
 
-    case RegisterExecutor(executorId) =>
+    case RegisterExecutorWithMonitor(executorId) =>
       executors(executorId) = sender
       logInfo(s"Registor executor ${executorId}")
       sender ! RegisteredExecutorInWorkerMonitor
