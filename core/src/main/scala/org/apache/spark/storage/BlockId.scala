@@ -81,8 +81,8 @@ case class TaskResultBlockId(taskId: Long) extends BlockId {
 }
 
 @DeveloperApi
-case class StreamBlockId(streamId: Int, uniqueId: Long) extends BlockId {
-  def name = "input-" + streamId + "-" + uniqueId
+case class StreamBlockId(streamId: Int, uniqueId: Long, sliceId: Int = 0) extends BlockId {
+  def name = "input-" + streamId + "-" + uniqueId + "-" + sliceId
 }
 
 /** Id associated with temporary local data managed as blocks. Not serializable. */

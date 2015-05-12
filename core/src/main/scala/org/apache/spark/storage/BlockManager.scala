@@ -887,16 +887,19 @@ private[spark] class BlockManager(
    *
    * Added by Liuzhiyi
    */
-  def reallocateBlock(blockId: BlockId, blockManger: BlockManagerId): Boolean = {
+  def reallocateBlock(blockId: BlockId, blockManager: BlockManagerId, level: StorageLevel): Boolean = {
+    val tLevel = StorageLevel(
+      level.useDisk, level.useMemory, level.useOffHeap, level.deserialized, 1)
     doGetLocal(blockId, asBlockResult = false).asInstanceOf[Option[ByteBuffer]] match {
       case Some(data) =>
         val onePeerStartTime = System.currentTimeMillis
         data.rewind()
-        logInfo(s"Trying to replicate $blockId of ${data.limit()} bytes to $blockManger")
+        logInfo(s"Trying to replicate $blockId of ${data.limit()} bytes to $blockManager")
         blockTransferService.uploadBlockSync(
-          blockManger.host, blockManger.port, blockManger.executorId, blockId, new NioManagedBuffer(data), tLevel)
-        logInfo(s"Replicated $blockId of ${data.limit()} bytes to $blockManger in %s ms"
+          blockManager.host, blockManager.port, blockManager.executorId, blockId, new NioManagedBuffer(data), tLevel)
+        logInfo(s"Replicated $blockId of ${data.limit()} bytes to $blockManager in %s ms"
           .format(System.currentTimeMillis - onePeerStartTime))
+        master.relocateBlockId(blockId, this.blockManagerId, blockManager)
 
         true
 

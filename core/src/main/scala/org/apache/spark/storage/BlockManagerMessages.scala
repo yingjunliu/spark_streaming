@@ -43,6 +43,10 @@ private[spark] object BlockManagerMessages {
   case class RemoveBroadcast(broadcastId: Long, removeFromDriver: Boolean = true)
     extends ToBlockManagerSlave
 
+  // Reallocate blocks to other node
+  case class ReallocateBlock(blockId: BlockId, blockManger: BlockManagerId, level: StorageLevel)
+    extends ToBlockManagerSlave
+
 
   //////////////////////////////////////////////////////////////////////////////////
   // Messages from slaves to the master.
@@ -113,7 +117,7 @@ private[spark] object BlockManagerMessages {
   case object ExpireDeadHosts extends ToBlockManagerMaster
 
   // Added by Liuzhiyi
-  case class RelocateBlockId(blockId: BlockId,
+  case class RelocateBlock(blockId: BlockId,
                              oldBlockManager: BlockManagerId,
                              newBlockManager: BlockManagerId) extends ToBlockManagerMaster
 }

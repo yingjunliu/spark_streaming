@@ -215,7 +215,7 @@ class BlockManagerMaster(
   def relocateBlockId(blockId: BlockId,
                       oldBlockManager: BlockManagerId,
                       newBlockManager: BlockManagerId): Unit ={
-    tell(RelocateBlockId(blockId, oldBlockManager, newBlockManager))
+    tell(RelocateBlock(blockId, oldBlockManager, newBlockManager))
     logInfo(s"The block ${blockId} has been remove to ${newBlockManager} from ${oldBlockManager}")
   }
 
