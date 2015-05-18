@@ -58,7 +58,8 @@ private[spark] class SparkDeploySchedulerBackend(
       "--hostname", "{{HOSTNAME}}",
       "--cores", "{{CORES}}",
       "--app-id", "{{APP_ID}}",
-      "--worker-url", "{{WORKER_URL}}")
+      "--worker-url", "{{WORKER_URL}}",
+      "--worker-monitor-url", "{{WORKER_MONITOR_URL}}")
     val extraJavaOpts = sc.conf.getOption("spark.executor.extraJavaOptions")
       .map(Utils.splitCommandString).getOrElse(Seq.empty)
     val classPathEntries = sc.conf.getOption("spark.executor.extraClassPath")
