@@ -569,9 +569,8 @@ private[spark] object Worker extends Logging {
     val monitorSystemName = "sparkWorkerMonitor" +workerNumber.map(_.toString).getOrElse("")
     val monitorActorName = "WorkerMonitor"
     val monitorSecurityMgr = new SecurityManager(conf)
-    logInfo("prot is " + port)
     val (monitorActorSystem, monitorBoundPort) = AkkaUtils.createActorSystem(monitorSystemName, host,
-      port, conf = conf, securityManager = monitorSecurityMgr)
+      boundPort + 1, conf = conf, securityManager = monitorSecurityMgr)
 
 //    val workerAkkaUrl = AkkaUtils.address(AkkaUtils.protocol(context.system), monitorSystemName, host,
 //      monitorBoundPort, monitorActorName)
