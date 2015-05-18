@@ -108,7 +108,7 @@ object BlockId {
   val SHUFFLE_INDEX = "shuffle_([0-9]+)_([0-9]+)_([0-9]+).index".r
   val BROADCAST = "broadcast_([0-9]+)([_A-Za-z0-9]*)".r
   val TASKRESULT = "taskresult_([0-9]+)".r
-  val STREAM = "input-([0-9]+)-([0-9]+)".r
+  val STREAM = "input-([0-9]+)-([0-9]+)-([0-9]+)".r
   val TEST = "test_(.*)".r
 
   /** Converts a BlockId "name" String back into a BlockId. */
@@ -125,8 +125,8 @@ object BlockId {
       BroadcastBlockId(broadcastId.toLong, field.stripPrefix("_"))
     case TASKRESULT(taskId) =>
       TaskResultBlockId(taskId.toLong)
-    case STREAM(streamId, uniqueId) =>
-      StreamBlockId(streamId.toInt, uniqueId.toLong)
+    case STREAM(streamId, uniqueId, sliceId) =>
+      StreamBlockId(streamId.toInt, uniqueId.toLong, sliceId.toInt)
     case TEST(value) =>
       TestBlockId(value)
     case _ =>
