@@ -59,9 +59,11 @@ private[spark] class CoarseGrainedExecutorBackend(
     driver ! RegisterExecutor(executorId, hostPort, cores, extractLogUrls)
     context.system.eventStream.subscribe(self, classOf[RemotingLifecycleEvent])
 
+    logInfo(s"workermonitor url = $workerMonitorUrl")
     workerMonitorUrl match {
       case Some(url) =>
         workerMonitor = context.actorSelection(url)
+        logInfo("Connecting to worker monitor: " + workerMonitorUrl)
         workerMonitor ! RegisterExecutorWithMonitor(executorId)
 
       case None =>
