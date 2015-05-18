@@ -48,6 +48,7 @@ private[spark] class ExecutorRunner(
     val sparkHome: File,
     val executorDir: File,
     val workerUrl: String,
+    val workerMonitorUrl: String,
     val conf: SparkConf,
     val appLocalDirs: Seq[String],
     var state: ExecutorState.Value)
@@ -121,6 +122,7 @@ private[spark] class ExecutorRunner(
     case "{{HOSTNAME}}" => host
     case "{{CORES}}" => cores.toString
     case "{{APP_ID}}" => appId
+    case "{{WORKER_MONITOR_URL}}" => workerMonitorUrl
     case other => other
   }
 

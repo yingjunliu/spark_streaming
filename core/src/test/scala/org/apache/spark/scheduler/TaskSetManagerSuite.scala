@@ -143,7 +143,7 @@ class LargeTask(stageId: Int) extends Task[Array[Byte]](stageId, 0) {
   val random = new Random(0)
   random.nextBytes(randomBuffer)
 
-  override def runTask(context: TaskContext): Array[Byte] = randomBuffer
+  override def runTask(context: TaskContext): (Long, Array[Byte]) = (randomBuffer.length, randomBuffer)
   override def preferredLocations: Seq[TaskLocation] = Seq[TaskLocation]()
 }
 
