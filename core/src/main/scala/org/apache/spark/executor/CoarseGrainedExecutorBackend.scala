@@ -118,7 +118,8 @@ private[spark] class CoarseGrainedExecutorBackend(
       if (x.remoteAddress == driver.anchorPath.address) {
         logError(s"Driver $x disassociated! Shutting down.")
 
-        if ((workerMonitor != null) && (!executor.excutorIsStoped)) workerMonitor ! StoppedExecutor(executorId)
+        if ((workerMonitor != null) && (!executor.excutorIsStoped))
+          workerMonitor ! StoppedExecutor(executorId)
 
         System.exit(1)
       } else {
