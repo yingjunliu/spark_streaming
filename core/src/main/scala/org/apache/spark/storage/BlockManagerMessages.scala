@@ -120,4 +120,7 @@ private[spark] object BlockManagerMessages {
   case class RelocateBlock(blockId: BlockId,
                              oldBlockManager: BlockManagerId,
                              newBlockManager: BlockManagerId) extends ToBlockManagerMaster
+
+  // Added by Liuzhiyi
+  case object GetAllBlockManagerId extends ToBlockManagerMaster
 }

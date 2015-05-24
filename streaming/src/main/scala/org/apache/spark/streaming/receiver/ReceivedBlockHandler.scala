@@ -43,6 +43,13 @@ private[streaming] trait ReceivedBlockHandler {
 
   /** Cleanup old blocks older than the given threshold time */
   def cleanupOldBlocks(threshTime: Long)
+
+  /** Reallocate the block
+    * Just for test
+    *
+    * Added by Liuzhiyi
+    */
+  def reallocateBlock(blockId: StreamBlockId)
 }
 
 
@@ -85,6 +92,16 @@ private[streaming] class BlockManagerBasedBlockHandler(
   def cleanupOldBlocks(threshTime: Long) {
     // this is not used as blocks inserted into the BlockManager are cleared by DStream's clearing
     // of BlockRDDs.
+  }
+
+  def reallocateBlock(blockId: StreamBlockId) = {
+    val newBlockManagerId = blockManager.randomChooseBlockManagerForReallocate()
+    val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
+
+    if (result)
+      logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+    else
+      logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
   }
 }
 
@@ -194,6 +211,16 @@ private[streaming] class WriteAheadLogBasedBlockHandler(
 
   def cleanupOldBlocks(threshTime: Long) {
     logManager.cleanupOldLogs(threshTime, waitForCompletion = false)
+  }
+
+  def reallocateBlock(blockId: StreamBlockId) = {
+    val newBlockManagerId = blockManager.randomChooseBlockManagerForReallocate()
+    val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
+
+    if (result)
+      logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+    else
+      logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
   }
 
   def stop() {

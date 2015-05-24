@@ -165,6 +165,22 @@ private[streaming] class ReceiverSupervisorImpl(
     val future = trackerActor.ask(AddBlock(blockInfo))(askTimeout)
     Await.result(future, askTimeout)
     logDebug(s"Reported block $blockId")
+
+    /**
+     * Relocate the streaming block when slice number is not 0
+     * Just for a test
+     *
+     * Added by Liuzhiyi
+     */
+    val STREAM = "input-([0-9]+)-([0-9]+)-([0-9]+)".r
+    blockId match {
+      case STREAM(streamId, uniqueId, sliceId) =>
+        if (sliceId != 0) receivedBlockHandler.reallocateBlock(blockId)
+        logInfo(s"Relocated block ${blockId}")
+
+      case _ =>
+        logInfo(s"None streaming block to reallocate")
+    }
   }
 
   /** Report error to the receiver tracker */

@@ -132,6 +132,9 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     case RelocateBlock(blockId, oldBlockManager, newBlockManager) =>
       sender ! relocateBlockId(blockId, oldBlockManager, newBlockManager)
 
+    case GetAllBlockManagerId =>
+      sender ! getAllBlockManagerId()
+
     case other =>
       logWarning("Got unknown message: " + other)
   }
@@ -417,6 +420,10 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     } else {
       false
     }
+  }
+
+  private def getAllBlockManagerId(): Seq[BlockManagerId] = {
+    blockManagerInfo.keySet.toSeq
   }
 
   /** Get the list of the peers of the given block manager */
