@@ -173,7 +173,8 @@ private[streaming] class ReceiverSupervisorImpl(
      * Added by Liuzhiyi
      */
     val STREAM = "input-([0-9]+)-([0-9]+)-([0-9]+)".r
-    blockId match {
+    logInfo(s"Before reallocate, block name is ${blockId.name}")
+    blockId.name match {
       case STREAM(streamId, uniqueId, sliceId) =>
         if (sliceId != 0) receivedBlockHandler.reallocateBlock(blockId)
         logInfo(s"Relocated block ${blockId}")
