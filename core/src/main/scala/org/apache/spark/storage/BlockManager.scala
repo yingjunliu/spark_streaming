@@ -918,10 +918,11 @@ private[spark] class BlockManager(
   def randomChooseBlockManagerForReallocate(): BlockManagerId = {
     val blockManagerIds = master.getAllBlockManagerId()
     val randomNum = new Random()
-    var newBlockManagerId: BlockManagerId = blockManagerId
-
-    while(newBlockManagerId == blockManagerId)
-      newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
+//    var newBlockManagerId: BlockManagerId = blockManagerId
+//
+//    while(newBlockManagerId == blockManagerId)
+//      newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
+    val newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
 
     newBlockManagerId
   }

@@ -96,12 +96,14 @@ private[streaming] class BlockManagerBasedBlockHandler(
 
   def reallocateBlock(blockId: StreamBlockId) = {
     val newBlockManagerId = blockManager.randomChooseBlockManagerForReallocate()
-    val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
+    if (newBlockManagerId != blockManager.blockManagerId) {
+      val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
 
-    if (result)
-      logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
-    else
-      logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+      if (result)
+        logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+      else
+        logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+    }
   }
 }
 
@@ -215,12 +217,14 @@ private[streaming] class WriteAheadLogBasedBlockHandler(
 
   def reallocateBlock(blockId: StreamBlockId) = {
     val newBlockManagerId = blockManager.randomChooseBlockManagerForReallocate()
-    val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
+    if (newBlockManagerId != blockManager.blockManagerId) {
+      val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
 
-    if (result)
-      logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
-    else
-      logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+      if (result)
+        logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+      else
+        logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+    }
   }
 
   def stop() {
