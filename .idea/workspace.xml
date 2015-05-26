@@ -68,7 +68,7 @@
       <file leaf-file-name="BlockId.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/storage/BlockId.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1689" max-vertical-offset="2356">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2413" max-vertical-offset="2679">
               <caret line="127" column="34" selection-start-line="127" selection-start-column="26" selection-end-line="127" selection-end-column="34" />
               <folding />
             </state>
@@ -78,7 +78,7 @@
       <file leaf-file-name="ReceiverSupervisorImpl.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisorImpl.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2544" max-vertical-offset="3838">
+            <state vertical-scroll-proportion="0.0" vertical-offset="3268" max-vertical-offset="4408">
               <caret line="172" column="24" selection-start-line="172" selection-start-column="24" selection-end-line="172" selection-end-column="24" />
               <folding />
             </state>
@@ -88,7 +88,7 @@
       <file leaf-file-name="BlockManager.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/storage/BlockManager.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="16422" max-vertical-offset="24624">
+            <state vertical-scroll-proportion="0.0" vertical-offset="17594" max-vertical-offset="25346">
               <caret line="926" column="21" selection-start-line="926" selection-start-column="21" selection-end-line="926" selection-end-column="21" />
               <folding />
             </state>
@@ -98,8 +98,8 @@
       <file leaf-file-name="ReceivedBlockHandler.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceivedBlockHandler.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7819672" vertical-offset="3342" max-vertical-offset="4161">
-              <caret line="227" column="3" selection-start-line="227" selection-start-column="3" selection-end-line="227" selection-end-column="3" />
+            <state vertical-scroll-proportion="0.40491804" vertical-offset="1121" max-vertical-offset="4180">
+              <caret line="98" column="46" selection-start-line="98" selection-start-column="46" selection-end-line="98" selection-end-column="46" />
               <folding />
             </state>
           </provider>
@@ -204,6 +204,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -214,7 +215,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -450,7 +450,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1320" height="784" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -887,8 +887,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceivedBlockHandler.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7819672" vertical-offset="3342" max-vertical-offset="4161">
-          <caret line="227" column="3" selection-start-line="227" selection-start-column="3" selection-end-line="227" selection-end-column="3" />
+        <state vertical-scroll-proportion="0.40491804" vertical-offset="1615" max-vertical-offset="4674">
+          <caret line="98" column="46" selection-start-line="98" selection-start-column="46" selection-end-line="98" selection-end-column="46" />
           <folding />
         </state>
       </provider>
