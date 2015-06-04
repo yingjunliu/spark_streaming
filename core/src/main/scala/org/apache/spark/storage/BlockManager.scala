@@ -898,6 +898,53 @@ private[spark] class BlockManager(
   }
 
   /**
+   * Reallocation the block to support spark streaming.
+   * When this node has high load, then it will reallocation some blocks to other node
+   * so that the task can be finished in other node.
+   *
+   * Added by Liuzhiyi
+   */
+  def reallocateBlock(blockId: BlockId, blockManager: BlockManagerId, level: StorageLevel): Boolean = {
+    val tLevel = StorageLevel(
+      level.useDisk, level.useMemory, level.useOffHeap, level.deserialized, 1)
+    doGetLocal(blockId, asBlockResult = false).asInstanceOf[Option[ByteBuffer]] match {
+      case Some(data) =>
+        val onePeerStartTime = System.currentTimeMillis
+        data.rewind()
+        logInfo(s"Trying to reallocate $blockId of ${data.limit()} bytes to $blockManager")
+        blockTransferService.uploadBlockSync(
+          blockManager.host, blockManager.port, blockManager.executorId, blockId, new NioManagedBuffer(data), tLevel)
+        logInfo(s"Reallocated $blockId of ${data.limit()} bytes to $blockManager in %s ms"
+          .format(System.currentTimeMillis - onePeerStartTime))
+        master.relocateBlockId(blockId, this.blockManagerId, blockManager)
+
+        true
+
+      case _ =>
+        logInfo(s"Can't find block $blockId locally, refuse to reallocate it -- reallocateBlock")
+        false
+    }
+  }
+
+  /**
+   * Get all blockManagerId from block master, and random choose a block manager for reallocate
+   * Just for a test now
+   *
+   * Added by Liuzhiyi
+   */
+  def randomChooseBlockManagerForReallocate(): BlockManagerId = {
+    val blockManagerIds = master.getAllBlockManagerId()
+    val randomNum = new Random()
+//    var newBlockManagerId: BlockManagerId = blockManagerId
+//
+//    while(newBlockManagerId == blockManagerId)
+//      newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
+    val newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
+
+    newBlockManagerId
+  }
+
+  /**
    * Replicate block to another node. Not that this is a blocking call that returns after
    * the block has been replicated.
    */

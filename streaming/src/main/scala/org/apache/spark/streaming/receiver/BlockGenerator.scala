@@ -89,6 +89,9 @@ private[streaming] class BlockGenerator(
   @volatile private var currentBuffer = new ArrayBuffer[Any]
   @volatile private var stopped = false
 
+  /** The bufferSlice is used to control the Slice in generate block. */
+  private var bufferSlice = 3
+
   /** Start block generating and pushing threads. */
   def start() {
     blockIntervalTimer.start()
@@ -126,23 +129,86 @@ private[streaming] class BlockGenerator(
     listener.onAddData(data, metadata)
   }
 
-  /** Change the buffer to which single records are added to. */
+//  /** Change the buffer to which single records are added to. */
+//  private def updateCurrentBuffer(time: Long): Unit = synchronized {
+//    try {
+//      val newBlockBuffer = currentBuffer
+//      currentBuffer = new ArrayBuffer[Any]
+//      if (newBlockBuffer.size > 0) {
+//        val blockId = StreamBlockId(receiverId, time - blockInterval)
+//        val newBlock = new Block(blockId, newBlockBuffer)
+//        listener.onGenerateBlock(blockId)
+//        blocksForPushing.put(newBlock)  // put is blocking when queue is full
+//        logDebug("Last element in " + blockId + " is " + newBlockBuffer.last)
+//      }
+//    } catch {
+//      case ie: InterruptedException =>
+//        logInfo("Block updating timer thread was interrupted")
+//      case e: Exception =>
+//        reportError("Error in block updating thread", e)
+//    }
+//  }
+  /**
+   * Change the buffer to which single records are added to
+   *
+   * At this time, the single buffer will be divided into 3(the parameter can be set) parts.
+   * And each part links to a block.
+   * So the partition in RDD will be three times than before.
+   *
+   * Added by Liuzhiyi
+   */
   private def updateCurrentBuffer(time: Long): Unit = synchronized {
     try {
       val newBlockBuffer = currentBuffer
       currentBuffer = new ArrayBuffer[Any]
       if (newBlockBuffer.size > 0) {
-        val blockId = StreamBlockId(receiverId, time - blockInterval)
-        val newBlock = new Block(blockId, newBlockBuffer)
-        listener.onGenerateBlock(blockId)
-        blocksForPushing.put(newBlock)  // put is blocking when queue is full
-        logDebug("Last element in " + blockId + " is " + newBlockBuffer.last)
+        val newBlockBuffers = splitBlockBuffer(newBlockBuffer, bufferSlice)
+        (0 until newBlockBuffers.size).map { i =>
+          val blockId = StreamBlockId(receiverId, time - blockInterval, i)
+          val newBlock = new Block(blockId, newBlockBuffers(i))
+          logInfo("Generate block " + blockId.name)
+          listener.onGenerateBlock(blockId)
+          blocksForPushing.put(newBlock)  // put is blocking when queue is full
+          logDebug("Last element in " + blockId + " is " + newBlockBuffers(i).last)
+        }
       }
     } catch {
       case ie: InterruptedException =>
         logInfo("Block updating timer thread was interrupted")
       case e: Exception =>
         reportError("Error in block updating thread", e)
+    }
+  }
+
+  def newBlockBufferSlice(slice: Int): Unit = {
+    bufferSlice = slice
+  }
+
+  /**
+   * Divide the array buffer into some parts.
+   *
+   * Added by Liuzhiyi
+   */
+  private def splitBlockBuffer(blockBuffer: ArrayBuffer[Any],
+                               splitNum: Int = 1): Seq[ArrayBuffer[Any]] = {
+    if (splitNum == 1) {
+      Seq(blockBuffer)
+    } else {
+      val oldBlockBuffer = blockBuffer
+      val everyNewBlockBufferLength: Int = blockBuffer.size / splitNum
+      var newBlockBuffers = Seq[ArrayBuffer[Any]]()
+      (0 until splitNum).map { i =>
+        if (i != splitNum) {
+          val newBlockBuffer = oldBlockBuffer.take(everyNewBlockBufferLength)
+          oldBlockBuffer --= newBlockBuffer
+          newBlockBuffers = newBlockBuffers :+ newBlockBuffer
+        } else {
+          val newBlockBuffer = oldBlockBuffer
+          newBlockBuffers = newBlockBuffers :+ newBlockBuffer
+        }
+      }
+
+      newBlockBuffers
     }
   }
 
