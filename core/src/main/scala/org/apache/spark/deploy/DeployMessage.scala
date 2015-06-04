@@ -184,5 +184,4 @@ private[deploy] object DeployMessages {
   // Liveness checks in various places
 
   case object SendHeartbeat
-
 }

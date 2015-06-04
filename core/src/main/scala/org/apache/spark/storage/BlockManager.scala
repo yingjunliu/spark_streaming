@@ -335,6 +335,23 @@ private[spark] class BlockManager(
   }
 
   /**
+   * Get the Blocke Size for the block identified by the given ID, If it exists.
+   * Note: It is added by Liuzhiyi
+   */
+  def getBlockSize(blockId: BlockId): Long = {
+    var totalSize = 0L
+
+    blockInfo.get(blockId).map { info =>
+      val memSize = if (memoryStore.contains(blockId)) memoryStore.getSize(blockId) else 0L
+      val diskSize = if (diskStore.contains(blockId)) diskStore.getSize(blockId) else 0L
+      totalSize += memSize + diskSize
+    }
+
+    totalSize
+  }
+
+
+  /**
    * Get the ids of existing blocks that match the given filter. Note that this will
    * query the blocks stored in the disk block manager (that the block manager
    * may not know of).

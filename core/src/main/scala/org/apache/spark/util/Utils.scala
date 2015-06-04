@@ -1829,6 +1829,7 @@ private[spark] object Utils extends Logging {
         ((startPort + offset - 1024) % (65536 - 1024)) + 1024
       }
       try {
+        logInfo(s"try port $tryPort.")
         val (service, port) = startService(tryPort)
         logInfo(s"Successfully started service$serviceString on port $port.")
         return (service, port)

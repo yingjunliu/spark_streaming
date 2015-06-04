@@ -51,7 +51,7 @@ private[spark] abstract class Task[T](val stageId: Int, var partitionId: Int) ex
    * @param attemptNumber how many times this task has been attempted (0 for the first attempt)
    * @return the result of the task
    */
-  final def run(taskAttemptId: Long, attemptNumber: Int): T = {
+  final def run(taskAttemptId: Long, attemptNumber: Int): (Long, T) = {
     context = new TaskContextImpl(stageId = stageId, partitionId = partitionId,
       taskAttemptId = taskAttemptId, attemptNumber = attemptNumber, runningLocally = false)
     TaskContextHelper.setTaskContext(context)
@@ -61,6 +61,7 @@ private[spark] abstract class Task[T](val stageId: Int, var partitionId: Int) ex
       kill(interruptThread = false)
     }
     try {
+      //(getTaskBlockSize(context), runTask(context))
       runTask(context)
     } finally {
       context.markTaskCompleted()
@@ -68,7 +69,9 @@ private[spark] abstract class Task[T](val stageId: Int, var partitionId: Int) ex
     }
   }
 
-  def runTask(context: TaskContext): T
+  //def getTaskBlockSize(context: TaskContext): Long
+
+  def runTask(context: TaskContext): (Long, T)
 
   def preferredLocations: Seq[TaskLocation] = Nil
 

@@ -35,25 +35,40 @@ import org.apache.spark.scheduler.TaskDescription
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
 
+import org.apache.spark.monitor.MonitorMessages._
+
 private[spark] class CoarseGrainedExecutorBackend(
     driverUrl: String,
     executorId: String,
     hostPort: String,
     cores: Int,
     userClassPath: Seq[URL],
-    env: SparkEnv)
+    env: SparkEnv,
+    workerMonitorUrl: Option[String])
   extends Actor with ActorLogReceive with ExecutorBackend with Logging {
 
   Utils.checkHostPort(hostPort, "Expected hostport")
 
   var executor: Executor = null
   var driver: ActorSelection = null
+  var workerMonitor: ActorSelection = null
 
   override def preStart() {
     logInfo("Connecting to driver: " + driverUrl)
     driver = context.actorSelection(driverUrl)
     driver ! RegisterExecutor(executorId, hostPort, cores, extractLogUrls)
     context.system.eventStream.subscribe(self, classOf[RemotingLifecycleEvent])
+
+    logInfo(s"workermonitor url = $workerMonitorUrl")
+    workerMonitorUrl match {
+      case Some(url) =>
+        workerMonitor = context.actorSelection(url)
+        logInfo("Connecting to worker monitor: " + workerMonitorUrl)
+        workerMonitor ! RegisterExecutorWithMonitor(executorId)
+
+      case None =>
+    }
+
   }
 
   def extractLogUrls: Map[String, String] = {
@@ -63,6 +78,13 @@ private[spark] class CoarseGrainedExecutorBackend(
   }
 
   override def receiveWithLogging = {
+    case RegisteredExecutorInWorkerMonitor =>
+      logInfo("Successfully registered with WorkerMonitor")
+
+    case HandledDataSpeed =>
+      logInfo("Get data size which has been handled by executor")
+      workerMonitor ! ExecutorHandledDataSpeed(executor.requireHandledDataSpeed, executorId)
+
     case RegisteredExecutor =>
       logInfo("Successfully registered with driver")
       val (hostname, _) = Utils.parseHostPort(hostPort)
@@ -95,6 +117,10 @@ private[spark] class CoarseGrainedExecutorBackend(
     case x: DisassociatedEvent =>
       if (x.remoteAddress == driver.anchorPath.address) {
         logError(s"Driver $x disassociated! Shutting down.")
+
+        if ((workerMonitor != null) && (!executor.excutorIsStoped))
+          workerMonitor ! StoppedExecutor(executorId)
+
         System.exit(1)
       } else {
         logWarning(s"Received irrelevant DisassociatedEvent $x")
@@ -105,6 +131,7 @@ private[spark] class CoarseGrainedExecutorBackend(
       executor.stop()
       context.stop(self)
       context.system.shutdown()
+      if (workerMonitor != null) workerMonitor ! StoppedExecutor(executorId)
   }
 
   override def statusUpdate(taskId: Long, state: TaskState, data: ByteBuffer) {
@@ -121,6 +148,7 @@ private[spark] object CoarseGrainedExecutorBackend extends Logging {
       cores: Int,
       appId: String,
       workerUrl: Option[String],
+      workerMonitorUrl: Option[String],
       userClassPath: Seq[URL]) {
 
     SignalLogger.register(log)
@@ -164,13 +192,22 @@ private[spark] object CoarseGrainedExecutorBackend extends Logging {
 
       // Start the CoarseGrainedExecutorBackend actor.
       val sparkHostPort = hostname + ":" + boundPort
+
+//      env.actorSystem.actorOf(
+//        Props(classOf[CoarseGrainedExecutorBackend],
+//          driverUrl, executorId, sparkHostPort, cores, userClassPath, env),
+//        name = "Executor")
+
+      // add a workerMonitorUrl to the executor, so it can sent the message to the workerMonitor.
       env.actorSystem.actorOf(
         Props(classOf[CoarseGrainedExecutorBackend],
-          driverUrl, executorId, sparkHostPort, cores, userClassPath, env),
+          driverUrl, executorId, sparkHostPort, cores, userClassPath, env, workerMonitorUrl),
         name = "Executor")
+
       workerUrl.foreach { url =>
         env.actorSystem.actorOf(Props(classOf[WorkerWatcher], url), name = "WorkerWatcher")
       }
+
       env.actorSystem.awaitTermination()
     }
   }
@@ -182,6 +219,7 @@ private[spark] object CoarseGrainedExecutorBackend extends Logging {
     var cores: Int = 0
     var appId: String = null
     var workerUrl: Option[String] = None
+    var workerMonitorUrl: Option[String] = None
     val userClassPath = new mutable.ListBuffer[URL]()
 
     var argv = args.toList
@@ -206,6 +244,9 @@ private[spark] object CoarseGrainedExecutorBackend extends Logging {
           // Worker url is used in spark standalone mode to enforce fate-sharing with worker
           workerUrl = Some(value)
           argv = tail
+        case ("--worker-monitor-url") :: value :: tail =>
+          workerMonitorUrl = Some(value)
+          argv = tail
         case ("--user-class-path") :: value :: tail =>
           userClassPath += new URL(value)
           argv = tail
@@ -221,7 +262,7 @@ private[spark] object CoarseGrainedExecutorBackend extends Logging {
       printUsageAndExit()
     }
 
-    run(driverUrl, executorId, hostname, cores, appId, workerUrl, userClassPath)
+    run(driverUrl, executorId, hostname, cores, appId, workerUrl, workerMonitorUrl, userClassPath)
   }
 
   private def printUsageAndExit() = {
