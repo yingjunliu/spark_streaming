@@ -96,7 +96,6 @@ private[streaming] class BlockManagerBasedBlockHandler(
 
   def reallocateBlock(blockId: StreamBlockId) = {
     val newBlockManagerId = blockManager.randomChooseBlockManagerForReallocate()
-    val testBlockManagerId = newBlockManagerId
     if (newBlockManagerId != blockManager.blockManagerId) {
       val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
 
