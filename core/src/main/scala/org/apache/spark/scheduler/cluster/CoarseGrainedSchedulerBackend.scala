@@ -71,6 +71,9 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
   // Executors we have requested the cluster manager to kill that have not died yet
   private val executorsPendingToRemove = new HashSet[String]
 
+  private val workerMonitorToExecutorId = new HashMap[ActorSelection, HashSet[String]]
+  private val executorIdToWorkerMonitor = new HashMap[String, ActorSelection]
+
   class DriverActor(sparkProperties: Seq[(String, String)]) extends Actor with ActorLogReceive {
     override protected def log = CoarseGrainedSchedulerBackend.this.log
     private val addressToExecutorId = new HashMap[Address, String]
@@ -112,6 +115,18 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
             SparkListenerExecutorAdded(System.currentTimeMillis(), executorId, data))
           makeOffers()
         }
+
+      // Add worker monitor to get data handled speed in each worker
+      case RegisterWorkerMonitor(executorId, workerMonitorUrl) =>
+        val workerMonitorTemp = context.actorSelection(workerMonitorUrl)
+        if (!workerMonitorToExecutorId.contains(workerMonitorTemp)) {
+          workerMonitorToExecutorId.put(workerMonitorTemp, HashSet[String]())
+        }
+        workerMonitorToExecutorId(workerMonitorTemp) += executorId
+        if (executorIdToWorkerMonitor.contains(executorId)) {
+          executorIdToWorkerMonitor.remove(executorId)
+        }
+        executorIdToWorkerMonitor.put(executorId, workerMonitorTemp)
 
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)

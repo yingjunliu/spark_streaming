@@ -232,6 +232,18 @@ class BlockManagerMaster(
     allBlockManagerId
   }
 
+  /**
+   * When the scheduler decided to distribute the block. Some new blocks will be generated.
+   * So these new blocks' location should be added in block manager master.
+   * And the blockManagerInfo will be update too.
+   *
+   * Added by Liuzhiyi
+   */
+  def addNewBlockInDistribute(blockId: BlockId, newBlockManagerId: BlockManagerId): Unit = {
+    tell(DistributeBlock(blockId, newBlockManagerId))
+    logInfo(s"The block ${blockId} has been added to ${newBlockManagerId}")
+  }
+
   /** Send a one-way message to the master actor, to which we expect it to reply with true. */
   private def tell(message: Any) {
     if (!askDriverWithReply[Boolean](message)) {

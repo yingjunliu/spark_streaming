@@ -135,6 +135,9 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     case GetAllBlockManagerId =>
       sender ! getAllBlockManagerId()
 
+    case DistributeBlock(blockId, newBlockManager) =>
+      sender ! distributeBlock(blockId, newBlockManager)
+
     case other =>
       logWarning("Got unknown message: " + other)
   }
@@ -408,13 +411,48 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     blockIds.map(blockId => getLocations(blockId))
   }
 
+  private def distributeBlock(blockId: BlockId, newBlockManagerId: BlockManagerId): Boolean = {
+    if (blockLocations.containsKey(blockId)) {
+      logInfo(s"the blockId ${blockId} has exist")
+      false
+    } else {
+//      blockManagerInfo(newBlockManagerId).updateLastSeenMs()
+//      blockManagerInfo(newBlockManagerId).updateBlockInfo(
+//        blockId, storageLevel, memSize, diskSize, tachyonSize)
+
+      val locations = new mutable.HashSet[BlockManagerId]
+      locations.add(newBlockManagerId)
+      blockLocations.put(blockId, locations)
+
+      true
+    }
+  }
+
   private def relocateBlockId(blockId: BlockId,
                               oldBlockManager: BlockManagerId,
                               newBlockManager: BlockManagerId): Boolean = {
-    if (blockLocations.contains(blockId)) {
+    if (blockLocations.containsKey(blockId)) {
       val oldBlockLocations = blockLocations(blockId)
       oldBlockLocations.remove(oldBlockManager)
       oldBlockLocations.add(newBlockManager)
+
+      // The blockManager should be updated too.
+      // Added by Liuzhiyi
+      if (blockManagerInfo.contains(oldBlockManager) && blockManagerInfo.contains(newBlockManager)) {
+        val oldBlockManagerInfo = blockManagerInfo(oldBlockManager)
+        val blockStatusInfo = oldBlockManagerInfo.getBlockStatus(blockId) match {
+          case Some(blockStatus) => blockStatus
+          case None => null
+        }
+        oldBlockManagerInfo.removeBlock(blockId)
+
+        val newBlockManagerInfo = blockManagerInfo(newBlockManager)
+        newBlockManagerInfo.updateBlockInfo(blockId,
+                                            blockStatusInfo.storageLevel,
+                                            blockStatusInfo.memSize,
+                                            blockStatusInfo.diskSize,
+                                            blockStatusInfo.tachyonSize)
+      }
 
       true
     } else {
@@ -553,6 +591,14 @@ private[spark] class BlockManagerInfo(
     if (_blocks.containsKey(blockId)) {
       _remainingMem += _blocks.get(blockId).memSize
       _blocks.remove(blockId)
+    }
+  }
+
+  def getBlockStatus(blockId: BlockId): Option[BlockStatus] = {
+    if (_blocks.containsKey(blockId)) {
+      Some(_blocks(blockId))
+    } else {
+      None
     }
   }
 

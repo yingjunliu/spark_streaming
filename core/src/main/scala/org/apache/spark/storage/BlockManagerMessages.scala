@@ -123,4 +123,8 @@ private[spark] object BlockManagerMessages {
 
   // Added by Liuzhiyi
   case object GetAllBlockManagerId extends ToBlockManagerMaster
+
+  // Added by Liuzhiyi
+  case class DistributeBlock(blockId: BlockId,
+                             newblockManagerId: BlockManagerId) extends ToBlockManagerMaster
 }

@@ -898,6 +898,78 @@ private[spark] class BlockManager(
   }
 
   /**
+   * Distribute the block according to the scheduler.
+   * Only called by scheduler
+   *
+   * Added by Liuzhiyi
+   */
+  def blockDistribute(blockId: BlockId,
+                      destinationBlockManagerIds: Seq[BlockManagerId],
+                      level: StorageLevel,
+                      distributeNumber: Int): Boolean = {
+    require(destinationBlockManagerIds.length == (distributeNumber - 1))
+    val tLevel = StorageLevel(
+      level.useDisk, level.useMemory, level.useOffHeap, level.deserialized, 1)
+
+    val STREAM = "input-([0-9]+)-([0-9]+)-([0-9]+)".r
+    var streamId: String = null
+    var uniqueId: String = null
+    blockId.name match {
+      case STREAM(streamIdTemp, uniqueIdTemp, sliceIdTemp) =>
+        streamId = streamIdTemp
+        uniqueId = uniqueIdTemp
+
+      case _ =>
+        return false
+    }
+
+    doGetLocal(blockId, asBlockResult = false).asInstanceOf[Option[ByteBuffer]] match {
+      case Some(data) =>
+        val length: Int = data.limit() / distributeNumber
+        for (i <- 1 to distributeNumber) {
+          val blockIdTemp = new StreamBlockId(streamId.toInt, uniqueId.toInt, i)
+
+          if (i != distributeNumber) {
+            val arrayTemp = new Array[Byte](length)
+            val bufferTemp = ByteBuffer.allocate(length)
+            data.get(arrayTemp)
+            bufferTemp.put(arrayTemp)
+
+            val onePeerStartTime = System.currentTimeMillis
+            bufferTemp.rewind()
+            val destinationBlockManagerId = destinationBlockManagerIds(i - 1)
+            logInfo(s"Trying to reallocate $blockId of ${bufferTemp.limit()} bytes to $destinationBlockManagerId")
+            blockTransferService.uploadBlockSync(
+              destinationBlockManagerId.host, destinationBlockManagerId.port,
+              destinationBlockManagerId.executorId, blockIdTemp,
+              new NioManagedBuffer(bufferTemp), tLevel)
+            logInfo(s"Reallocated $blockId of ${data.limit()} bytes to $destinationBlockManagerId in %s ms"
+              .format(System.currentTimeMillis - onePeerStartTime))
+
+            master.addNewBlockInDistribute(blockIdTemp, destinationBlockManagerId)
+          } else {
+            val arrayTemp = new Array[Byte](data.limit() - data.position())
+            val bufferTemp = ByteBuffer.allocate(data.limit() - data.position())
+            data.get(arrayTemp)
+            bufferTemp.put(arrayTemp)
+            putBytes(blockIdTemp, bufferTemp, tLevel, true)
+
+            master.addNewBlockInDistribute(blockIdTemp, this.blockManagerId)
+          }
+
+        }
+
+        removeBlock(blockId, true)
+
+        true
+
+      case _ =>
+        logInfo(s"Can't find block $blockId locally, refuse to reallocate it -- reallocateBlock")
+        false
+    }
+  }
+
+  /**
    * Reallocation the block to support spark streaming.
    * When this node has high load, then it will reallocation some blocks to other node
    * so that the task can be finished in other node.
@@ -935,10 +1007,6 @@ private[spark] class BlockManager(
   def randomChooseBlockManagerForReallocate(): BlockManagerId = {
     val blockManagerIds = master.getAllBlockManagerId()
     val randomNum = new Random()
-//    var newBlockManagerId: BlockManagerId = blockManagerId
-//
-//    while(newBlockManagerId == blockManagerId)
-//      newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
     val newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
 
     newBlockManagerId

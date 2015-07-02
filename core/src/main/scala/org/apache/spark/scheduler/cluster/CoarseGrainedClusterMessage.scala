@@ -48,6 +48,10 @@ private[spark] object CoarseGrainedClusterMessages {
     Utils.checkHostPort(hostPort, "Expected host port")
   }
 
+  // Worker monitor to get data handle speed
+  case class RegisterWorkerMonitor(executorId: String,
+                                   workerMonitorUrl: String) extends CoarseGrainedClusterMessage
+
   case class StatusUpdate(executorId: String, taskId: Long, state: TaskState,
     data: SerializableBuffer) extends CoarseGrainedClusterMessage
 
