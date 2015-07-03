@@ -138,6 +138,9 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     case DistributeBlock(blockId, newBlockManager) =>
       sender ! distributeBlock(blockId, newBlockManager)
 
+    case AllocateBlockIdsInBlockManager(blockIds) =>
+      sender ! allocateBlockIdsInBlockManager(blockIds)
+
     case other =>
       logWarning("Got unknown message: " + other)
   }
@@ -411,6 +414,31 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     blockIds.map(blockId => getLocations(blockId))
   }
 
+  private def allocateBlockIdsInBlockManager(blockIds: mutable.HashSet[BlockId]): Boolean = {
+    for (blockId <- blockIds) {
+      if(!blockLocations.containsKey(blockId)) {
+        logInfo(s"The block location not contains ${blockId}, allocate blocks " +
+          s"in block manager failed")
+        return false
+      }
+      val locations = blockLocations.get(blockId)
+      locations.foreach( location => {
+        val blockManagerSlaveActor = blockManagerInfo.get(location)
+        if(blockManagerSlaveActor.isDefined) {
+          blockManagerSlaveActor.get.slaveActor.ask(AllocateBlockIdToBlockManager(blockId))(akkaTimeout)
+        }
+      })
+    }
+
+    true
+  }
+
+  /**
+   * The block manager splits the block and form a new block.
+   * Registers new block and records their locations.
+   *
+   * Added by Liuzhiyi
+   */
   private def distributeBlock(blockId: BlockId, newBlockManagerId: BlockManagerId): Boolean = {
     if (blockLocations.containsKey(blockId)) {
       logInfo(s"the blockId ${blockId} has exist")
@@ -428,6 +456,11 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     }
   }
 
+  /**
+   * Relocate the exist block from one block manager to another.
+   *
+   * Added by Liuzhiyi
+   */
   private def relocateBlockId(blockId: BlockId,
                               oldBlockManager: BlockManagerId,
                               newBlockManager: BlockManagerId): Boolean = {
@@ -460,6 +493,12 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     }
   }
 
+  /**
+   * The block manager can randomly choose new block manager to send blocks.
+   * Only for testing
+   *
+   * Added by Liuzhiyi
+   */
   private def getAllBlockManagerId(): Seq[BlockManagerId] = {
     blockManagerInfo.keySet.toSeq
   }

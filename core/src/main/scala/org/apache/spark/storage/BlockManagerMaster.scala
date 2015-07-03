@@ -17,6 +17,7 @@
 
 package org.apache.spark.storage
 
+import scala.collection.mutable.HashSet
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -214,7 +215,7 @@ class BlockManagerMaster(
    */
   def relocateBlockId(blockId: BlockId,
                       oldBlockManager: BlockManagerId,
-                      newBlockManager: BlockManagerId): Unit ={
+                      newBlockManager: BlockManagerId): Unit = {
     tell(RelocateBlock(blockId, oldBlockManager, newBlockManager))
     logInfo(s"The block ${blockId} has been remove to ${newBlockManager} from ${oldBlockManager}")
   }
@@ -230,6 +231,18 @@ class BlockManagerMaster(
     val allBlockManagerId = askDriverWithReply[Seq[BlockManagerId]](GetAllBlockManagerId)
     logInfo("Get all block manager Id: " + allBlockManagerId.toArray)
     allBlockManagerId
+  }
+
+  /**
+   * Mark the block Ids which will be used soon to block manager.
+   * The operations will be done in block manager through master actor and slave actor.
+   * Only used in Spark Streaming
+   *
+   * Added by Liuzhiyi
+   */
+  def allocateBlockIdsInBlockManager(blockIds: HashSet[BlockId]): Unit = {
+    tell(AllocateBlockIdsInBlockManager(blockIds))
+    logInfo(s"Has allocated block ids in block manager")
   }
 
   /**

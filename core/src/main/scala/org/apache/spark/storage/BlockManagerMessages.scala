@@ -19,6 +19,8 @@ package org.apache.spark.storage
 
 import java.io.{Externalizable, ObjectInput, ObjectOutput}
 
+import scala.collection.mutable.HashSet
+
 import akka.actor.ActorRef
 
 import org.apache.spark.util.Utils
@@ -46,6 +48,8 @@ private[spark] object BlockManagerMessages {
   // Reallocate blocks to other node
   case class ReallocateBlock(blockId: BlockId, blockManger: BlockManagerId, level: StorageLevel)
     extends ToBlockManagerSlave
+
+  case class AllocateBlockIdToBlockManager(blockId: BlockId) extends ToBlockManagerSlave
 
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -127,4 +131,8 @@ private[spark] object BlockManagerMessages {
   // Added by Liuzhiyi
   case class DistributeBlock(blockId: BlockId,
                              newblockManagerId: BlockManagerId) extends ToBlockManagerMaster
+
+  // Added by Liuzhiyi
+  case class AllocateBlockIdsInBlockManager(blockIds: HashSet[BlockId])
+          extends ToBlockManagerMaster
 }

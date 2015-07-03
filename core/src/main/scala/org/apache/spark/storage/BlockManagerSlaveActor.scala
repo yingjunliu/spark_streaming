@@ -68,6 +68,9 @@ class BlockManagerSlaveActor(
 
     case GetMatchingBlockIds(filter, _) =>
       sender ! blockManager.getMatchingBlockIds(filter)
+
+    case AllocateBlockIdToBlockManager(blockId) =>
+      blockManager.allocateBlockIdToBatch(blockId)
   }
 
   private def doAsync[T](actionMessage: String, responseActor: ActorRef)(body: => T) {

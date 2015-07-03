@@ -19,12 +19,15 @@ package org.apache.spark.streaming.scheduler
 
 import java.nio.ByteBuffer
 
+import org.apache.spark.storage.BlockId
+
 import scala.collection.mutable
 import scala.language.implicitConversions
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 
+import org.apache.spark.SparkEnv
 import org.apache.spark.{SparkException, Logging, SparkConf}
 import org.apache.spark.streaming.Time
 import org.apache.spark.streaming.util.WriteAheadLogManager
@@ -105,6 +108,18 @@ private[streaming] class ReceivedBlockTracker(
       writeToLog(BatchAllocationEvent(batchTime, allocatedBlocks))
       timeToAllocatedBlocks(batchTime) = allocatedBlocks
       lastAllocatedBatchTime = batchTime
+
+      // Added by Liuzhiyi
+      val blockManager = SparkEnv.get.blockManager
+      val blockIds = mutable.HashSet[BlockId]()
+      for (blockIdsInStreamId <- getBlocksOfBatch(batchTime).values) {
+        for (blockIdInStreamId <- blockIdsInStreamId) {
+          blockIds += blockIdInStreamId.blockStoreResult.blockId
+        }
+      }
+      blockManager.allocateBlockIds(blockIds)
+      // Added end
+
       allocatedBlocks
     } else {
       // This situation occurs when:

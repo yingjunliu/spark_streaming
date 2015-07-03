@@ -20,7 +20,7 @@ package org.apache.spark.storage
 import java.io.{BufferedOutputStream, ByteArrayOutputStream, File, InputStream, OutputStream}
 import java.nio.{ByteBuffer, MappedByteBuffer}
 
-import scala.collection.mutable.{ArrayBuffer, HashMap}
+import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -161,6 +161,14 @@ private[spark] class BlockManager(
    * Executor.updateDependencies. When the BlockManager is initialized, user level jars hasn't been
    * loaded yet. */
   private lazy val compressionCodec: CompressionCodec = CompressionCodec.createCodec(conf)
+
+  /*
+   * Store unallocated blocks. When the scheduler decide to reload the data, these blocks will
+   * be handled.
+   *
+   * Added by Liuzhiyi
+   */
+  private val unallocatedBlockIdToBatch = HashSet[BlockId]()
 
   /**
    * Construct a BlockManager with a memory limit set based on system properties.
@@ -844,6 +852,9 @@ private[spark] class BlockManager(
     }
     logDebug("Put block %s locally took %s".format(blockId, Utils.getUsedTimeMs(startTimeMs)))
 
+    // Added by Liuzhiyi
+    unallocatedBlockIdToBatch += blockId
+
     // Either we're storing bytes and we asynchronously started replication, or we're storing
     // values and need to serialize and replicate them now:
     if (putLevel.replication > 1) {
@@ -895,6 +906,40 @@ private[spark] class BlockManager(
       }
       cachedPeers
     }
+  }
+
+  /**
+   * Remove block ids from unallocate set
+   *
+   * Added by Liuzhiyi
+   */
+  def allocateBlockIdsToBatch(blockIds: HashSet[BlockId]): Unit = {
+    for (blockId <- blockIds) {
+      if (unallocatedBlockIdToBatch.contains(blockId)) {
+        logInfo(s"the unallocatedBlockIdToBatch not contain ${blockId} in block manager ${blockManagerId}")
+      } else {
+        unallocatedBlockIdToBatch -= blockId
+      }
+    }
+    logInfo(s"allocated block ids ${blockIds} in block manager ${blockManagerId}")
+  }
+
+  /**
+   * Remove block id from unallocate set
+   *
+   * Added by Liuzhiyi
+   */
+  def allocateBlockIdToBatch(blockId: BlockId): Unit = {
+    if (unallocatedBlockIdToBatch.contains(blockId)) {
+      logInfo(s"the unallocatedBlockIdToBatch not contain ${blockId} in block manager ${blockManagerId}")
+    } else {
+      unallocatedBlockIdToBatch -= blockId
+    }
+    logInfo(s"allocated block id ${blockId} in block manager ${blockManagerId}")
+  }
+
+  def allocateBlockIds(blockIds: HashSet[BlockId]): Unit = {
+    master.allocateBlockIdsInBlockManager(blockIds)
   }
 
   /**
