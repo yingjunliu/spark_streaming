@@ -176,7 +176,7 @@ private[streaming] class ReceiverSupervisorImpl(
     logInfo(s"Before reallocate, block name is ${blockId.name}")
     blockId.name match {
       case STREAM(streamId, uniqueId, sliceId) =>
-        if (sliceId != 0) receivedBlockHandler.reallocateBlock(blockId)
+        if (sliceId != "0") receivedBlockHandler.reallocateBlock(blockId)
         logInfo(s"Relocated block ${blockId}")
 
       case _ =>

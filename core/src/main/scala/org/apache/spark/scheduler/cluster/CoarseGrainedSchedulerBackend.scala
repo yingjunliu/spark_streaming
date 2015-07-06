@@ -74,7 +74,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 
   private val workerMonitorToExecutorId = new HashMap[ActorSelection, HashSet[String]]
   private val executorIdToWorkerMonitor = new HashMap[String, ActorSelection]
-  private val workersHandleSpeed = new HashMap[ActorRef, Double]
+  private val workersHandleSpeed = new HashMap[String, Double]
 
   class DriverActor(sparkProperties: Seq[(String, String)]) extends Actor with ActorLogReceive {
     override protected def log = CoarseGrainedSchedulerBackend.this.log
@@ -126,12 +126,23 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
           workerMonitorToExecutorId.put(workerMonitorTemp, HashSet[String]())
         }
         workerMonitorToExecutorId(workerMonitorTemp) += executorId
-        if (executorIdToWorkerMonitor.contains(executorId)) {
-          executorIdToWorkerMonitor.remove(executorId)
-        }
+//        if (executorIdToWorkerMonitor.contains(executorId)) {
+//          executorIdToWorkerMonitor.remove(executorId)
+//        }
         executorIdToWorkerMonitor.put(executorId, workerMonitorTemp)
         workerMonitorTemp ! RegistedWorkerMonitorInSchedulerBackend
         logInfo(s"Registered worker monitor ${workerMonitorUrl}")
+
+      case HandledSpeedInWorkerMonitor(host: String, handleSpeed: Double) =>
+//        if (workersHandleSpeed.contains(host)) {
+//          workersHandleSpeed.remove(host)
+//        }
+        if (handleSpeed == 0.0) {
+          logInfo(s"[Worning] The handle speed in host ${host} is 0!")
+        } else {
+          logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
+        }
+        workersHandleSpeed.put(host, handleSpeed)
 
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)
@@ -221,6 +232,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
           executorData.freeCores -= scheduler.CPUS_PER_TASK
           executorData.executorActor ! LaunchTask(new SerializableBuffer(serializedTask))
         }
+      }
+
+      for (workerMonitor <- workerMonitorToExecutorId.keysIterator) {
+        workerMonitor ! QuaryHandledSpeed
       }
     }
 

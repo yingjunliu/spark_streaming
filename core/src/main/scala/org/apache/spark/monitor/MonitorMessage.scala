@@ -32,4 +32,9 @@ private[spark] object MonitorMessages {
 
   //CoarseGrainedSchedulerBackend to WorkerMonitor
   case object RegistedWorkerMonitorInSchedulerBackend
+
+  case object QuaryHandledSpeed
+
+  case class HandledSpeedInWorkerMonitor(host: String,
+                                        handleSpeed: Double) extends MonitorMessage
 }

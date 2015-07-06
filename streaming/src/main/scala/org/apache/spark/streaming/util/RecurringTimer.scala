@@ -21,8 +21,10 @@ import org.apache.spark.Logging
 import org.apache.spark.util.{Clock, SystemClock}
 
 private[streaming]
-class RecurringTimer(clock: Clock, period: Long, callback: (Long) => Unit, name: String)
+class RecurringTimer(clock: Clock, period: Long, callbackFunc: (Long) => Unit, name: String)
   extends Logging {
+
+  private var callback = callbackFunc
 
   private val thread = new Thread("RecurringTimer - " + name) {
     setDaemon(true)
@@ -85,6 +87,10 @@ class RecurringTimer(clock: Clock, period: Long, callback: (Long) => Unit, name:
       logInfo("Stopped timer for " + name + " after time " + prevTime)
     }
     prevTime
+  }
+
+  def changeCallbackFunc(callbackFunc: (Long) => Unit): Unit = {
+    callback = callbackFunc
   }
 
   /**
