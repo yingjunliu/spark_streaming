@@ -116,7 +116,7 @@ private[spark] class Executor(
   // Maintains the list of running tasks.
   private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
 
-  private var handledDataSpeed = new ConcurrentHashMap[Long, Double]
+  private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
 
   startDriverHeartbeater()
 
@@ -131,7 +131,13 @@ private[spark] class Executor(
     runningTasks.put(taskId, tr)
     threadPool.execute(tr)
 
-    handledDataSpeed.put(taskId, handledDataSpeed.get(taskId) + tr.handledDataSpeed)
+    if (handledDataSpeed.contains(taskId)) {
+      handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + tr.handledDataSpeed) / 2)
+      logInfo(s"The executor contains task ${taskId}")
+    } else {
+      handledDataSpeed.put(taskId, tr.handledDataSpeed)
+      logInfo(s"The executor not contain task ${taskId}")
+    }
     tr.handledDataSpeed = 0.0
   }
 
@@ -143,6 +149,7 @@ private[spark] class Executor(
       totalHandledDataSpeed += i._2
     }
 
+    logInfo(s"The handled data speed in executor ${executorId} is ${totalHandledDataSpeed}")
     totalHandledDataSpeed
   }
 

@@ -31,6 +31,7 @@ import org.apache.spark.{ExecutorAllocationClient, Logging, SparkEnv, SparkExcep
 import org.apache.spark.scheduler._
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, SerializableBuffer, AkkaUtils, Utils}
+import org.apache.spark.monitor.MonitorMessages._
 
 /**
  * A scheduler backend that waits for coarse grained executors to connect to it through Akka.
@@ -73,6 +74,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 
   private val workerMonitorToExecutorId = new HashMap[ActorSelection, HashSet[String]]
   private val executorIdToWorkerMonitor = new HashMap[String, ActorSelection]
+  private val workersHandleSpeed = new HashMap[ActorRef, Double]
 
   class DriverActor(sparkProperties: Seq[(String, String)]) extends Actor with ActorLogReceive {
     override protected def log = CoarseGrainedSchedulerBackend.this.log
@@ -117,7 +119,8 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
         }
 
       // Add worker monitor to get data handled speed in each worker
-      case RegisterWorkerMonitor(executorId, workerMonitorUrl) =>
+      // Added by Liuzhiyi
+      case RegisterWorkerMonitorToSchedulerBackend(executorId, workerMonitorUrl) =>
         val workerMonitorTemp = context.actorSelection(workerMonitorUrl)
         if (!workerMonitorToExecutorId.contains(workerMonitorTemp)) {
           workerMonitorToExecutorId.put(workerMonitorTemp, HashSet[String]())
@@ -127,6 +130,8 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
           executorIdToWorkerMonitor.remove(executorId)
         }
         executorIdToWorkerMonitor.put(executorId, workerMonitorTemp)
+        workerMonitorTemp ! RegistedWorkerMonitorInSchedulerBackend
+        logInfo(s"Registered worker monitor ${workerMonitorUrl}")
 
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)

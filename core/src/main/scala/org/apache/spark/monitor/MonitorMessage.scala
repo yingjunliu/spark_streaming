@@ -29,4 +29,7 @@ private[spark] object MonitorMessages {
   //WorkerMonitor to Worker
   //Added by Liuzhiyi
   case class RegisterWorkerMonitor(MonitorAkkaUrls: String) extends MonitorMessage
+
+  //CoarseGrainedSchedulerBackend to WorkerMonitor
+  case object RegistedWorkerMonitorInSchedulerBackend
 }

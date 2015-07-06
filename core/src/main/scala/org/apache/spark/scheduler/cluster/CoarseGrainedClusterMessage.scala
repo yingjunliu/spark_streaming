@@ -49,7 +49,7 @@ private[spark] object CoarseGrainedClusterMessages {
   }
 
   // Worker monitor to get data handle speed
-  case class RegisterWorkerMonitor(executorId: String,
+  case class RegisterWorkerMonitorToSchedulerBackend(executorId: String,
                                    workerMonitorUrl: String) extends CoarseGrainedClusterMessage
 
   case class StatusUpdate(executorId: String, taskId: Long, state: TaskState,

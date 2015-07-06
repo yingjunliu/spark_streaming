@@ -66,7 +66,7 @@ private[spark] class CoarseGrainedExecutorBackend(
         logInfo("Connecting to worker monitor: " + workerMonitorUrl)
         workerMonitor ! RegisterExecutorWithMonitor(executorId)
 
-        driver ! RegisterWorkerMonitor(executorId, url)
+        driver ! RegisterWorkerMonitorToSchedulerBackend(executorId, url)
 
       case None =>
     }

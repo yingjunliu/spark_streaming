@@ -129,25 +129,25 @@ private[streaming] class BlockGenerator(
     listener.onAddData(data, metadata)
   }
 
-//  /** Change the buffer to which single records are added to. */
-//  private def updateCurrentBuffer(time: Long): Unit = synchronized {
-//    try {
-//      val newBlockBuffer = currentBuffer
-//      currentBuffer = new ArrayBuffer[Any]
-//      if (newBlockBuffer.size > 0) {
-//        val blockId = StreamBlockId(receiverId, time - blockInterval)
-//        val newBlock = new Block(blockId, newBlockBuffer)
-//        listener.onGenerateBlock(blockId)
-//        blocksForPushing.put(newBlock)  // put is blocking when queue is full
-//        logDebug("Last element in " + blockId + " is " + newBlockBuffer.last)
-//      }
-//    } catch {
-//      case ie: InterruptedException =>
-//        logInfo("Block updating timer thread was interrupted")
-//      case e: Exception =>
-//        reportError("Error in block updating thread", e)
-//    }
-//  }
+  /** Change the buffer to which single records are added to. */
+  private def updateCurrentBuffer(time: Long): Unit = synchronized {
+    try {
+      val newBlockBuffer = currentBuffer
+      currentBuffer = new ArrayBuffer[Any]
+      if (newBlockBuffer.size > 0) {
+        val blockId = StreamBlockId(receiverId, time - blockInterval)
+        val newBlock = new Block(blockId, newBlockBuffer)
+        listener.onGenerateBlock(blockId)
+        blocksForPushing.put(newBlock)  // put is blocking when queue is full
+        logDebug("Last element in " + blockId + " is " + newBlockBuffer.last)
+      }
+    } catch {
+      case ie: InterruptedException =>
+        logInfo("Block updating timer thread was interrupted")
+      case e: Exception =>
+        reportError("Error in block updating thread", e)
+    }
+  }
   /**
    * Change the buffer to which single records are added to
    *
@@ -157,7 +157,7 @@ private[streaming] class BlockGenerator(
    *
    * Added by Liuzhiyi
    */
-  private def updateCurrentBuffer(time: Long): Unit = synchronized {
+  private def updateCurrentBufferWithSplit(time: Long): Unit = synchronized {
     try {
       val newBlockBuffer = currentBuffer
       currentBuffer = new ArrayBuffer[Any]

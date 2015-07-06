@@ -29,6 +29,7 @@ private[spark] class WorkerMonitor(
     host,
     port,
     actorName)
+  private var schedulerBackend: ActorRef = null
 
   override def preStart() = {
     logInfo("Start worker monitor")
@@ -51,6 +52,10 @@ private[spark] class WorkerMonitor(
     case StoppedExecutor(executorId) =>
       executors.remove(executorId)
       logInfo(s"Remove executor ${executorId}")
+
+    case RegistedWorkerMonitorInSchedulerBackend =>
+      schedulerBackend = sender
+      logInfo(s"Registerd scheduler backend ${sender}")
   }
 
 }

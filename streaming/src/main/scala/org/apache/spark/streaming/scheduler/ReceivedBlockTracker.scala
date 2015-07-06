@@ -118,6 +118,7 @@ private[streaming] class ReceivedBlockTracker(
         }
       }
       blockManager.allocateBlockIds(blockIds)
+      logInfo(s"Allocated Blocks ${blockIds}")
       // Added end
 
       allocatedBlocks
