@@ -116,7 +116,8 @@ private[spark] class Executor(
   // Maintains the list of running tasks.
   private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
 
-  private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
+//  private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
+  private val handledDataSpeed = new HashMap[Long, Double]
 
   startDriverHeartbeater()
 
@@ -132,7 +133,7 @@ private[spark] class Executor(
     threadPool.execute(tr)
 
     if (handledDataSpeed.contains(taskId)) {
-      handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + tr.handledDataSpeed) / 2)
+      handledDataSpeed.put(taskId, (handledDataSpeed.getOrDefault(taskId, 0) + tr.handledDataSpeed) / 2)
       logInfo(s"The executor contains task ${taskId}")
     } else {
       handledDataSpeed.put(taskId, tr.handledDataSpeed)
@@ -143,10 +144,12 @@ private[spark] class Executor(
 
   def requireHandledDataSpeed = {
     var totalHandledDataSpeed: Double = 0.0
+    logInfo(s"The handledDataSpeed length is ${handledDataSpeed.size}")
 
     for(i <- handledDataSpeed)
     {
       totalHandledDataSpeed += i._2
+      logInfo(s"${i._1}:${i._2}")
     }
 
     logInfo(s"The handled data speed in executor ${executorId} is ${totalHandledDataSpeed}")
@@ -159,7 +162,7 @@ private[spark] class Executor(
       tr.kill(interruptThread)
     }
 
-    handledDataSpeed.remove(taskId)
+    //handledDataSpeed.remove(taskId)
   }
 
   def stop() {
