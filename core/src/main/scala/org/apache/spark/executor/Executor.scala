@@ -132,14 +132,6 @@ private[spark] class Executor(
     runningTasks.put(taskId, tr)
     threadPool.execute(tr)
 
-    if (handledDataSpeed.contains(taskId)) {
-      handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + tr.handledDataSpeedInTaskRunner) / 2)
-      logInfo(s"The executor contains task ${taskId}")
-    } else {
-      val test = tr.handledDataSpeedInTaskRunner
-      handledDataSpeed.put(taskId, test)
-      logInfo(s"The executor not contain task ${taskId}, handle speed is ${test}")
-    }
     //tr.handledDataSpeed = 0.0
   }
 
@@ -239,7 +231,14 @@ private[spark] class Executor(
         handledDataSpeedInTaskRunner = handledDataSize / (taskFinish - taskStart)
         logInfo(s"The handledDataSize is ${handledDataSize}, taskFinish is ${taskFinish} " +
           s"taskStart is ${taskStart}, speed is ${handledDataSpeedInTaskRunner}, taskId is ${taskId}")
-        execBackend.updateHandledSpeed(executorId, taskId, handledDataSpeedInTaskRunner)
+//        execBackend.updateHandledSpeed(executorId, taskId, handledDataSpeedInTaskRunner)
+        if (handledDataSpeed.contains(taskId)) {
+          handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + handledDataSpeedInTaskRunner) / 2)
+          logInfo(s"The executor contains task ${taskId}")
+        } else {
+          handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
+          logInfo(s"The executor not contain task ${taskId}, handle speed is ${handledDataSpeedInTaskRunner}")
+        }
 
         // If the task has been killed, let's fail it.
         if (task.killed) {
