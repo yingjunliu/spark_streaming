@@ -139,6 +139,10 @@ private[spark] class CoarseGrainedExecutorBackend(
   override def statusUpdate(taskId: Long, state: TaskState, data: ByteBuffer) {
     driver ! StatusUpdate(executorId, taskId, state, data)
   }
+
+  override def updateHandledSpeed(executorId: String, taskId: Long, handledSpeed: Double): Unit = {
+    logInfo(s"get executor ${executorId}'s task ${taskId}, speed is ${handledSpeed}")
+  }
 }
 
 private[spark] object CoarseGrainedExecutorBackend extends Logging {
