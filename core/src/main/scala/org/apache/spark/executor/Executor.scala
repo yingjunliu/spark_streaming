@@ -138,7 +138,7 @@ private[spark] class Executor(
       handledDataSpeed.put(taskId, tr.handledDataSpeed)
       logInfo(s"The executor not contain task ${taskId}")
     }
-    tr.handledDataSpeed = 0.0
+    //tr.handledDataSpeed = 0.0
   }
 
   def requireHandledDataSpeed = {
@@ -189,7 +189,7 @@ private[spark] class Executor(
     @volatile var attemptedTask: Option[Task[Any]] = None
     @volatile var startGCTime: Long = _
 
-    @volatile var handledDataSpeed = 0.0
+    var handledDataSpeed = 0.0
 
     def kill(interruptThread: Boolean) {
       logInfo(s"Executor is trying to kill $taskName (TID $taskId)")
@@ -231,6 +231,9 @@ private[spark] class Executor(
         taskStart = System.currentTimeMillis()
         val (handledDataSize, value) = task.run(taskAttemptId = taskId, attemptNumber = attemptNumber)
         val taskFinish = System.currentTimeMillis()
+
+        logInfo(s"The handledDataSize is ${handledDataSize}, taskFinish is ${taskFinish} " +
+          s"taskStart is ${taskStart}")
 
         handledDataSpeed = handledDataSize / (taskFinish - taskStart)
 
