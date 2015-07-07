@@ -103,8 +103,8 @@
       <file leaf-file-name="Executor.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/Executor.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24918033" vertical-offset="1995" max-vertical-offset="8645">
-              <caret line="146" column="71" selection-start-line="146" selection-start-column="71" selection-end-line="146" selection-end-column="71" />
+            <state vertical-scroll-proportion="0.65409833" vertical-offset="1881" max-vertical-offset="8645">
+              <caret line="153" column="0" selection-start-line="153" selection-start-column="0" selection-end-line="153" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -1581,8 +1581,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/Executor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24918033" vertical-offset="1995" max-vertical-offset="8645">
-          <caret line="146" column="71" selection-start-line="146" selection-start-column="71" selection-end-line="146" selection-end-column="71" />
+        <state vertical-scroll-proportion="0.65409833" vertical-offset="1881" max-vertical-offset="8645">
+          <caret line="153" column="0" selection-start-line="153" selection-start-column="0" selection-end-line="153" selection-end-column="0" />
           <folding />
         </state>
       </provider>
