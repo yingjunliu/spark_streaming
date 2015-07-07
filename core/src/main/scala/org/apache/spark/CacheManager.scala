@@ -20,7 +20,7 @@ package org.apache.spark
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-import org.apache.spark.rdd.RDD
+import org.apache.spark.rdd.{RDD, BlockRDDPartition}
 import org.apache.spark.storage._
 
 /**
@@ -39,9 +39,16 @@ private[spark] class CacheManager(blockManager: BlockManager) extends Logging {
   def getBlockSize[T](
       rdd: RDD[T],
       partition: Partition): Long = {
-    val key = RDDBlockId(rdd.id, partition.index)
-
-    blockManager.getBlockSize(key)
+//    val key = RDDBlockId(rdd.id, partition.index)
+//
+//    blockManager.getBlockSize(key)
+    try{
+      val blockId = partition.asInstanceOf[BlockRDDPartition].blockId
+      blockManager.getBlockSize(blockId)
+    } catch {
+      case _ =>
+        0L
+    }
   }
 
   /** Gets or computes an RDD partition. Used by RDD.iterator() when an RDD is cached. */

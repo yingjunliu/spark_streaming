@@ -252,6 +252,7 @@ abstract class RDD[T: ClassTag](
    */
   final def getRddBlockSize(split: Partition): Long = {
     SparkEnv.get.cacheManager.getBlockSize(this, split)
+    //SparkEnv.get.blockManager.getBlockSize()
   }
 
   /**
