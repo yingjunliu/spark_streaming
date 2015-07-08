@@ -18,6 +18,8 @@
 package org.apache.spark.streaming.scheduler
 
 
+import org.apache.spark.util.AkkaUtils
+
 import scala.collection.mutable.{HashMap, SynchronizedMap}
 import scala.language.existentials
 
@@ -288,7 +290,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       val checkpointDirOption = Option(ssc.checkpointDir)
       val serializableHadoopConf = new SerializableWritable(ssc.sparkContext.hadoopConfiguration)
 
-      val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor
+      val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor.path.address
 
       // Function to start the receiver on the worker node
       val startReceiver = (iterator: Iterator[Receiver[_]]) => {
