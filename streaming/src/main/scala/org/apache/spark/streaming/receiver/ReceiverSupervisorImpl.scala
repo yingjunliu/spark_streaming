@@ -174,7 +174,7 @@ private[streaming] class ReceiverSupervisorImpl(
 
     try {
       val speed: Double = env.blockManager.getBlockSize(blockId) / (System.currentTimeMillis - startTime)
-      logInfo(s"The speed is ${speed}")
+      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackendUrl}")
 
 //      schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
 //        StreamingDataSpeed("testStreaming", speed)
@@ -193,8 +193,10 @@ private[streaming] class ReceiverSupervisorImpl(
     logInfo(s"Before reallocate, block name is ${blockId.name}")
     blockId.name match {
       case STREAM(streamId, uniqueId, sliceId) =>
-        if (sliceId != "0") receivedBlockHandler.reallocateBlock(blockId)
-        logInfo(s"Relocated block ${blockId}")
+        if (sliceId != "0") {
+          receivedBlockHandler.reallocateBlock(blockId)
+          logInfo(s"Relocated block ${blockId}")
+        }
 
       case _ =>
         logInfo(s"None streaming block to reallocate")
