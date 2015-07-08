@@ -29,9 +29,6 @@ import com.google.common.base.Throwables
 import org.apache.hadoop.conf.Configuration
 
 import org.apache.spark.{Logging, SparkEnv, SparkException}
-import org.apache.spark.scheduler.SchedulerBackend
-import org.apache.spark.scheduler.cluster.CoarseGrainedSchedulerBackend
-import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.storage.StreamBlockId
 import org.apache.spark.streaming.Time
 import org.apache.spark.streaming.scheduler._
@@ -48,7 +45,6 @@ private[streaming] class ReceiverSupervisorImpl(
     env: SparkEnv,
     hadoopConf: Configuration,
     checkpointDirOption: Option[String],
-    schedulerBackend: ActorPath = null
   ) extends ReceiverSupervisor(receiver, env.conf) with Logging {
 
   private val receivedBlockHandler: ReceivedBlockHandler = {
@@ -174,14 +170,8 @@ private[streaming] class ReceiverSupervisorImpl(
 
     try {
       val speed: Double = env.blockManager.getBlockSize(blockId) / (System.currentTimeMillis - startTime)
-      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackend}")
+      trackerActor ! StreamingReceiverSpeed(0, speed)
 
-      val driver = env.actorSystem.actorSelection(schedulerBackend)
-      logInfo(s"Driver is ${driver}")
-
-//      schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
-//        StreamingDataSpeed("testStreaming", speed)
-      driver ! StreamingDataSpeed("testStreaming", speed)
     } catch {
       case _ => None
     }

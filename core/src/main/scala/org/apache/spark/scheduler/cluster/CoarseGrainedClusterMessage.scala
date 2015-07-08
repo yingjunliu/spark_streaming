@@ -90,6 +90,6 @@ private[spark] object CoarseGrainedClusterMessages {
   case class KillExecutors(executorIds: Seq[String]) extends CoarseGrainedClusterMessage
 
   // Streaming receiver to scheduler backend.
-  case class StreamingDataSpeed(streamingId: String, Speed: Double) extends CoarseGrainedClusterMessage
+  case class StreamingDataSpeed(streamId: Int, Speed: Double) extends CoarseGrainedClusterMessage
 
 }

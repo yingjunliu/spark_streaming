@@ -18,6 +18,7 @@
 package org.apache.spark.streaming.scheduler
 
 
+import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages.StreamingDataSpeed
 import org.apache.spark.util.AkkaUtils
 
 import scala.collection.mutable.{HashMap, SynchronizedMap}
@@ -46,6 +47,8 @@ private[streaming] case class AddBlock(receivedBlockInfo: ReceivedBlockInfo)
   extends ReceiverTrackerMessage
 private[streaming] case class ReportError(streamId: Int, message: String, error: String)
 private[streaming] case class DeregisterReceiver(streamId: Int, msg: String, error: String)
+  extends ReceiverTrackerMessage
+private[streaming] case class StreamingReceiverSpeed(streamId: Int, speed: Double)
   extends ReceiverTrackerMessage
 
 /**
@@ -216,6 +219,10 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       case DeregisterReceiver(streamId, message, error) =>
         deregisterReceiver(streamId, message, error)
         sender ! true
+      case StreamingReceiverSpeed(streamId, speed) =>
+        val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor
+        driver ! StreamingDataSpeed(streamId, speed)
+        logInfo(s"streamId is ${streamId}, speed is ${speed}")
     }
   }
 
@@ -290,8 +297,8 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       val checkpointDirOption = Option(ssc.checkpointDir)
       val serializableHadoopConf = new SerializableWritable(ssc.sparkContext.hadoopConfiguration)
 
-      val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor.path
-      val driverAddress = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActorAddress
+//      val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor.path
+//      val driverAddress = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActorAddress
 
       // Function to start the receiver on the worker node
       val startReceiver = (iterator: Iterator[Receiver[_]]) => {
@@ -300,10 +307,8 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
             "Could not start receiver as object not found.")
         }
         val receiver = iterator.next()
-//        val supervisor = new ReceiverSupervisorImpl(
-//          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption, driverAddress)
         val supervisor = new ReceiverSupervisorImpl(
-          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption, driver)
+          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption)
         supervisor.start()
         supervisor.awaitTermination()
       }

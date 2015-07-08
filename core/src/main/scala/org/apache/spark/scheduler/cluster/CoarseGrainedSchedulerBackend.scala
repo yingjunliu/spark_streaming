@@ -133,7 +133,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
         workerMonitorTemp ! RegistedWorkerMonitorInSchedulerBackend
         logInfo(s"Registered worker monitor ${workerMonitorUrl}")
 
-      case HandledSpeedInWorkerMonitor(host: String, handleSpeed: Double) =>
+      case HandledSpeedInWorkerMonitor(host, handleSpeed) =>
 //        if (workersHandleSpeed.contains(host)) {
 //          workersHandleSpeed.remove(host)
 //        }
@@ -143,10 +143,9 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 //          logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
 //        }
         workersHandleSpeed.put(host, handleSpeed)
-        logInfo(s"WorkerHandledSpeed is ${workersHandleSpeed}")
 
-      case StreamingDataSpeed(streamingId, speed) =>
-        logInfo(s"The speed in streaming ${streamingId} is ${speed}")
+      case StreamingDataSpeed(streamId, speed) =>
+        logInfo(s"The speed in streaming ${streamId} is ${speed}")
 
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)
