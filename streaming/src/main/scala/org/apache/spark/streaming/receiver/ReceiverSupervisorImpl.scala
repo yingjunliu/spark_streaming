@@ -174,7 +174,7 @@ private[streaming] class ReceiverSupervisorImpl(
 
     try {
       val speed: Double = env.blockManager.getBlockSize(blockId) / (System.currentTimeMillis - startTime)
-      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackend}")
+      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackend.toString}")
 
 //      schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
 //        StreamingDataSpeed("testStreaming", speed)

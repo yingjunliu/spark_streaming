@@ -37,7 +37,7 @@ private[spark] class WorkerMonitor(
 
   override def preStart() = {
     logInfo("Start worker monitor")
-    logInfo("Connection to the worker ")
+    logInfo(s"Connection to the worker ${worker.path.address}")
     worker ! RegisterWorkerMonitor(actorAkkaUrls)
 
     /*
