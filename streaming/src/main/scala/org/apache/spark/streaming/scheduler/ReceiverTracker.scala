@@ -25,6 +25,7 @@ import akka.actor._
 
 import org.apache.spark.{Logging, SerializableWritable, SparkEnv, SparkException}
 import org.apache.spark.scheduler.SchedulerBackend
+import org.apache.spark.scheduler.cluster.CoarseGrainedSchedulerBackend
 import org.apache.spark.streaming.{StreamingContext, Time}
 import org.apache.spark.streaming.receiver.{CleanupOldBlocks, Receiver, ReceiverSupervisorImpl, StopReceiver}
 
@@ -294,8 +295,10 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
             "Could not start receiver as object not found.")
         }
         val receiver = iterator.next()
+        val driverUrl = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor.path.address.toString
+        logInfo(s"the driver url is ${driverUrl}")
         val supervisor = new ReceiverSupervisorImpl(
-          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption, ssc.sc.schedulerBackend)
+          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption)
         supervisor.start()
         supervisor.awaitTermination()
       }
