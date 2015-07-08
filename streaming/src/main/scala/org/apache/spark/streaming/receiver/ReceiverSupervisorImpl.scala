@@ -48,7 +48,7 @@ private[streaming] class ReceiverSupervisorImpl(
     env: SparkEnv,
     hadoopConf: Configuration,
     checkpointDirOption: Option[String],
-    schedulerBackend: Address
+    schedulerBackend: String = ""
   ) extends ReceiverSupervisor(receiver, env.conf) with Logging {
 
   private val receivedBlockHandler: ReceivedBlockHandler = {
@@ -174,7 +174,9 @@ private[streaming] class ReceiverSupervisorImpl(
 
     try {
       val speed: Double = env.blockManager.getBlockSize(blockId) / (System.currentTimeMillis - startTime)
-      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackend.toString}")
+      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackend}")
+
+      env.actorSystem.actorSelection(schedulerBackend)
 
 //      schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
 //        StreamingDataSpeed("testStreaming", speed)
