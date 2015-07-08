@@ -102,16 +102,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SparkDeploySchedulerBackend.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/cluster/SparkDeploySchedulerBackend.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2926">
-              <caret line="29" column="31" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="CoarseGrainedExecutorBackend.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/CoarseGrainedExecutorBackend.scala">
           <provider selected="true" editor-type-id="text-editor">
@@ -125,8 +115,8 @@
       <file leaf-file-name="ReceiverSupervisorImpl.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisorImpl.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7508197" vertical-offset="2278" max-vertical-offset="4123">
-              <caret line="174" column="75" selection-start-line="174" selection-start-column="75" selection-end-line="174" selection-end-column="75" />
+            <state vertical-scroll-proportion="0.595082" vertical-offset="2392" max-vertical-offset="4142">
+              <caret line="175" column="42" selection-start-line="175" selection-start-column="42" selection-end-line="175" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -986,13 +976,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/ResultTask.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43934426" vertical-offset="397" max-vertical-offset="1007">
-          <caret line="56" column="58" selection-start-line="56" selection-start-column="58" selection-end-line="56" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/Task.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="158" max-vertical-offset="3230">
@@ -1381,18 +1364,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/storage/MemoryStore.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49655172" vertical-offset="1213" max-vertical-offset="9614">
+          <caret line="101" column="12" selection-start-line="101" selection-start-column="12" selection-end-line="101" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/storage/BlockManager.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3327869" vertical-offset="5687" max-vertical-offset="27094">
-          <caret line="348" column="6" selection-start-line="348" selection-start-column="6" selection-end-line="348" selection-end-column="6" />
+        <state vertical-scroll-proportion="0.45737705" vertical-offset="5687" max-vertical-offset="27094">
+          <caret line="352" column="70" selection-start-line="352" selection-start-column="70" selection-end-line="352" selection-end-column="70" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisorImpl.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7508197" vertical-offset="2278" max-vertical-offset="4123">
-          <caret line="174" column="75" selection-start-line="174" selection-start-column="75" selection-end-line="174" selection-end-column="75" />
+        <state vertical-scroll-proportion="0.595082" vertical-offset="2392" max-vertical-offset="4142">
+          <caret line="175" column="42" selection-start-line="175" selection-start-column="42" selection-end-line="175" selection-end-column="42" />
           <folding />
         </state>
       </provider>
