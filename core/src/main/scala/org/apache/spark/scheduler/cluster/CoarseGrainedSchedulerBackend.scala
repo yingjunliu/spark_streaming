@@ -277,10 +277,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
     // TODO (prashant) send conf instead of properties
     driverActor = actorSystem.actorOf(
       Props(new DriverActor(properties)), name = CoarseGrainedSchedulerBackend.ACTOR_NAME)
-    val tempAddress = driverActor.path.address
-    val tempHost = tempAddress.host match {case Some(host) => host}
-    driverActorAddress = AkkaUtils.address(tempAddress.protocol, tempAddress.system,
-      tempHost, tempAddress.port, CoarseGrainedSchedulerBackend.ACTOR_NAME)
+//    val tempAddress = driverActor.path.address
+//    val tempHost = tempAddress.host match {case Some(host) => host}
+//    driverActorAddress = AkkaUtils.address(tempAddress.protocol, tempAddress.system,
+//      tempHost, tempAddress.port, CoarseGrainedSchedulerBackend.ACTOR_NAME)
   }
 
   def stopExecutors() {
