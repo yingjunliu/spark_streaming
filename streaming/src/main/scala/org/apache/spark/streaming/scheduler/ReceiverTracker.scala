@@ -288,6 +288,9 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       val checkpointDirOption = Option(ssc.checkpointDir)
       val serializableHadoopConf = new SerializableWritable(ssc.sparkContext.hadoopConfiguration)
 
+      val driverUrl = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor.path.address.toString
+      logInfo(s"the driver url is ${driverUrl}")
+
       // Function to start the receiver on the worker node
       val startReceiver = (iterator: Iterator[Receiver[_]]) => {
         if (!iterator.hasNext) {
@@ -295,8 +298,6 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
             "Could not start receiver as object not found.")
         }
         val receiver = iterator.next()
-        val driverUrl = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor.path.address.toString
-        logInfo(s"the driver url is ${driverUrl}")
         val supervisor = new ReceiverSupervisorImpl(
           receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption)
         supervisor.start()

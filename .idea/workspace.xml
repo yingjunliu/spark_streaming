@@ -83,7 +83,7 @@
       <file leaf-file-name="SparkContext.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/SparkContext.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="39203" max-vertical-offset="43415">
+            <state vertical-scroll-proportion="0.0" vertical-offset="39317" max-vertical-offset="43415">
               <caret line="2137" column="35" selection-start-line="2137" selection-start-column="35" selection-end-line="2137" selection-end-column="35" />
               <folding />
             </state>
@@ -110,11 +110,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ReceiverSupervisorImpl.scala" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ReceiverSupervisorImpl.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisorImpl.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="3.052459" vertical-offset="855" max-vertical-offset="4104">
-              <caret line="176" column="39" selection-start-line="176" selection-start-column="39" selection-end-line="176" selection-end-column="39" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2337" max-vertical-offset="4104">
+              <caret line="173" column="0" selection-start-line="173" selection-start-column="0" selection-end-line="173" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -140,11 +140,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ReceiverTracker.scala" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ReceiverTracker.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="5017" max-vertical-offset="5871">
-              <caret line="299" column="47" selection-start-line="299" selection-start-column="47" selection-end-line="299" selection-end-column="47" />
+            <state vertical-scroll-proportion="0.5590164" vertical-offset="4884" max-vertical-offset="5890">
+              <caret line="299" column="38" selection-start-line="299" selection-start-column="38" selection-end-line="299" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -196,8 +196,8 @@
         <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/StreamingContext.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedClusterMessage.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedSchedulerBackend.scala" />
-        <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala" />
         <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisorImpl.scala" />
+        <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala" />
       </list>
     </option>
   </component>
@@ -1192,14 +1192,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/SparkContext.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="39203" max-vertical-offset="43415">
-          <caret line="2137" column="35" selection-start-line="2137" selection-start-column="35" selection-end-line="2137" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/Receiver.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="4376" max-vertical-offset="5016">
@@ -1240,14 +1232,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1484" max-vertical-offset="3287">
-          <caret line="105" column="19" selection-start-line="105" selection-start-column="19" selection-end-line="105" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/deploy/worker/Worker.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.42786884" vertical-offset="9847" max-vertical-offset="10906">
@@ -1264,18 +1248,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
+    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/SparkContext.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5017" max-vertical-offset="5871">
-          <caret line="299" column="47" selection-start-line="299" selection-start-column="47" selection-end-line="299" selection-end-column="47" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="39203" max-vertical-offset="43415">
+          <caret line="2137" column="35" selection-start-line="2137" selection-start-column="35" selection-end-line="2137" selection-end-column="35" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisorImpl.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="3.052459" vertical-offset="855" max-vertical-offset="4104">
-          <caret line="176" column="39" selection-start-line="176" selection-start-column="39" selection-end-line="176" selection-end-column="39" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2337" max-vertical-offset="4104">
+          <caret line="173" column="0" selection-start-line="173" selection-start-column="0" selection-end-line="173" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1484" max-vertical-offset="3287">
+          <caret line="105" column="19" selection-start-line="105" selection-start-column="19" selection-end-line="105" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5590164" vertical-offset="4884" max-vertical-offset="5890">
+          <caret line="299" column="38" selection-start-line="299" selection-start-column="38" selection-end-line="299" selection-end-column="38" />
           <folding />
         </state>
       </provider>
