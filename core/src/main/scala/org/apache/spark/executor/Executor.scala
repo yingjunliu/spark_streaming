@@ -117,7 +117,6 @@ private[spark] class Executor(
   private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
 
   private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
-//  private val handledDataSpeed = new HashMap[Long, Double]
 
   startDriverHeartbeater()
 
@@ -137,15 +136,12 @@ private[spark] class Executor(
 
   def requireHandledDataSpeed = {
     var totalHandledDataSpeed: Double = 0.0
-    logInfo(s"The handledDataSpeed length is ${handledDataSpeed.size}")
 
     for(i <- handledDataSpeed)
     {
       totalHandledDataSpeed += i._2
-      logInfo(s"${i._1}:${i._2}")
     }
 
-    logInfo(s"The handled data speed in executor ${executorId} is ${totalHandledDataSpeed}")
     totalHandledDataSpeed
   }
 
@@ -184,8 +180,6 @@ private[spark] class Executor(
     @volatile var task: Task[Any] = _
     @volatile var attemptedTask: Option[Task[Any]] = None
     @volatile var startGCTime: Long = _
-
-    var handledDataSpeedInTaskRunner = 0.0
 
     def kill(interruptThread: Boolean) {
       logInfo(s"Executor is trying to kill $taskName (TID $taskId)")
@@ -228,16 +222,11 @@ private[spark] class Executor(
         val (handledDataSize, value) = task.run(taskAttemptId = taskId, attemptNumber = attemptNumber)
         val taskFinish = System.currentTimeMillis()
 
-        handledDataSpeedInTaskRunner = handledDataSize / (taskFinish - taskStart)
-        logInfo(s"The handledDataSize is ${handledDataSize}, taskFinish is ${taskFinish} " +
-          s"taskStart is ${taskStart}, speed is ${handledDataSpeedInTaskRunner}, taskId is ${taskId}")
-//        execBackend.updateHandledSpeed(executorId, taskId, handledDataSpeedInTaskRunner)
+        val handledDataSpeedInTaskRunner: Double = handledDataSize / (taskFinish - taskStart)
         if (handledDataSpeed.contains(taskId)) {
           handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + handledDataSpeedInTaskRunner) / 2)
-          logInfo(s"The executor contains task ${taskId}")
         } else {
           handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
-          logInfo(s"The executor not contain task ${taskId}, handle speed is ${handledDataSpeedInTaskRunner}")
         }
 
         // If the task has been killed, let's fail it.

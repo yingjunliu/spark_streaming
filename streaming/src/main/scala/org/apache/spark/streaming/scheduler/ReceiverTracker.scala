@@ -24,6 +24,7 @@ import scala.language.existentials
 import akka.actor._
 
 import org.apache.spark.{Logging, SerializableWritable, SparkEnv, SparkException}
+import org.apache.spark.scheduler.SchedulerBackend
 import org.apache.spark.streaming.{StreamingContext, Time}
 import org.apache.spark.streaming.receiver.{CleanupOldBlocks, Receiver, ReceiverSupervisorImpl, StopReceiver}
 
@@ -294,7 +295,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         }
         val receiver = iterator.next()
         val supervisor = new ReceiverSupervisorImpl(
-          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption)
+          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption, ssc.sc.schedulerBackend)
         supervisor.start()
         supervisor.awaitTermination()
       }

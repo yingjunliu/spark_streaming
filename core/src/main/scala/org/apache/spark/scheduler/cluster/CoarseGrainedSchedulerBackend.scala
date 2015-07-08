@@ -137,12 +137,16 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 //        if (workersHandleSpeed.contains(host)) {
 //          workersHandleSpeed.remove(host)
 //        }
-        if (handleSpeed == 0.0) {
-          logInfo(s"[Worning] The handle speed in host ${host} is 0!")
-        } else {
-          logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
-        }
+//        if (handleSpeed == 0.0) {
+//          logInfo(s"[Worning] The handle speed in host ${host} is 0!")
+//        } else {
+//          logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
+//        }
         workersHandleSpeed.put(host, handleSpeed)
+        logInfo(s"WorkerHandledSpeed is ${workersHandleSpeed}")
+
+      case StreamingDataSpeed(streamingId, speed) =>
+        logInfo(s"The speed in streaming ${streamingId} is ${speed}")
 
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)

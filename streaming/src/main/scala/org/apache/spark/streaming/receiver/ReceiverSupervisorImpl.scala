@@ -29,6 +29,9 @@ import com.google.common.base.Throwables
 import org.apache.hadoop.conf.Configuration
 
 import org.apache.spark.{Logging, SparkEnv, SparkException}
+import org.apache.spark.scheduler.SchedulerBackend
+import org.apache.spark.scheduler.cluster.CoarseGrainedSchedulerBackend
+import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.storage.StreamBlockId
 import org.apache.spark.streaming.Time
 import org.apache.spark.streaming.scheduler._
@@ -44,7 +47,8 @@ private[streaming] class ReceiverSupervisorImpl(
     receiver: Receiver[_],
     env: SparkEnv,
     hadoopConf: Configuration,
-    checkpointDirOption: Option[String]
+    checkpointDirOption: Option[String],
+    schedulerBackend: SchedulerBackend = null
   ) extends ReceiverSupervisor(receiver, env.conf) with Logging {
 
   private val receivedBlockHandler: ReceivedBlockHandler = {
@@ -145,6 +149,8 @@ private[streaming] class ReceiverSupervisorImpl(
     pushAndReportBlock(ByteBufferBlock(bytes), metadataOption, blockIdOption)
   }
 
+  val startTime = System.currentTimeMillis
+
   /** Store block and report it to driver */
   def pushAndReportBlock(
       receivedBlock: ReceivedBlock,
@@ -165,6 +171,16 @@ private[streaming] class ReceiverSupervisorImpl(
     val future = trackerActor.ask(AddBlock(blockInfo))(askTimeout)
     Await.result(future, askTimeout)
     logDebug(s"Reported block $blockId")
+
+    try {
+      val speed: Double = env.blockManager.getBlockSize(blockId) / (System.currentTimeMillis - startTime)
+      logInfo(s"The speed is ${speed}")
+      schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
+        StreamingDataSpeed("testStreaming", speed)
+    } catch {
+      _ => None
+    }
+
 
     /**
      * Relocate the streaming block when slice number is not 0
