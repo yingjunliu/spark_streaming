@@ -178,7 +178,7 @@ private[streaming] class ReceiverSupervisorImpl(
       schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
         StreamingDataSpeed("testStreaming", speed)
     } catch {
-      _ => None
+      case _ => None
     }
 
 
