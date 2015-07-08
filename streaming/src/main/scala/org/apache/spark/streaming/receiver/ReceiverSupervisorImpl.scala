@@ -146,7 +146,7 @@ private[streaming] class ReceiverSupervisorImpl(
   }
 
   val startTime = System.currentTimeMillis
-  var totalReceivedSize = 0
+  var totalReceivedSize: Long = 0L
 
   /** Store block and report it to driver */
   def pushAndReportBlock(
