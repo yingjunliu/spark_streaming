@@ -146,6 +146,7 @@ private[streaming] class ReceiverSupervisorImpl(
   }
 
   val startTime = System.currentTimeMillis
+  var totalReceivedSize = 0
 
   /** Store block and report it to driver */
   def pushAndReportBlock(
@@ -169,7 +170,8 @@ private[streaming] class ReceiverSupervisorImpl(
     logDebug(s"Reported block $blockId")
 
     try {
-      val speed: Double = env.blockManager.getBlockSize(blockId) / (System.currentTimeMillis - startTime)
+      totalReceivedSize += env.blockManager.getBlockSize(blockId)
+      val speed: Double = totalReceivedSize / (System.currentTimeMillis - startTime)
       trackerActor ! StreamingReceiverSpeed(0, speed)
 
     } catch {
