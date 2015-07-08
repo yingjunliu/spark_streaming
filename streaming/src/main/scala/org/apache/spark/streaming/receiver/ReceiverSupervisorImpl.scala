@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Await
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, Props, ActorRef}
 import akka.pattern.ask
 import com.google.common.base.Throwables
 import org.apache.hadoop.conf.Configuration
@@ -48,7 +48,7 @@ private[streaming] class ReceiverSupervisorImpl(
     env: SparkEnv,
     hadoopConf: Configuration,
     checkpointDirOption: Option[String],
-    schedulerBackendUrl: String = ""
+    schedulerBackend: ActorRef
   ) extends ReceiverSupervisor(receiver, env.conf) with Logging {
 
   private val receivedBlockHandler: ReceivedBlockHandler = {
@@ -174,10 +174,10 @@ private[streaming] class ReceiverSupervisorImpl(
 
     try {
       val speed: Double = env.blockManager.getBlockSize(blockId) / (System.currentTimeMillis - startTime)
-      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackendUrl}")
+      logInfo(s"The speed is ${speed}, driver backend address is ${schedulerBackend}")
 
-//      schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
-//        StreamingDataSpeed("testStreaming", speed)
+      schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor !
+        StreamingDataSpeed("testStreaming", speed)
     } catch {
       case _ => None
     }
