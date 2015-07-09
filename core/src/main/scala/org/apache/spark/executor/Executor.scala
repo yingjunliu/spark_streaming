@@ -118,7 +118,8 @@ private[spark] class Executor(
 
   private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
 
-  private var startTime = new ConcurrentHashMap[Long, Long]
+  private val startTime = new ConcurrentHashMap[Long, Long]
+  private val taskDataSize = new ConcurrentHashMap[Long, Long]
 
   startDriverHeartbeater()
 
@@ -149,6 +150,13 @@ private[spark] class Executor(
     handledDataSpeed.clear()
 
     result
+  }
+
+  def requireHandledDataSize: Map[Long, Long] = {
+    val taskDataSizeTemp = taskDataSize.toMap
+    taskDataSize.clear()
+
+    taskDataSizeTemp
   }
 
   def killTask(taskId: Long, interruptThread: Boolean) {
@@ -283,11 +291,12 @@ private[spark] class Executor(
           }
         }
 
-        val handledDataSpeedInTaskRunner: Double = handledDataSize / (System.currentTimeMillis - startTime(taskId))
-        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
-        startTime.remove(taskId)
+//        val handledDataSpeedInTaskRunner: Double = handledDataSize / (System.currentTimeMillis - startTime(taskId))
+//        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
+//        startTime.remove(taskId)
 
         execBackend.statusUpdate(taskId, TaskState.FINISHED, serializedResult)
+        taskDataSize(taskId) = handledDataSize
 
       } catch {
         case ffe: FetchFailedException => {

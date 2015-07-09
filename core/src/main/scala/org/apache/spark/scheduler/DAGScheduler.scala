@@ -98,6 +98,8 @@ class DAGScheduler(
 
   private[scheduler] val activeJobs = new HashSet[ActiveJob]
 
+  private[scheduler] val jobSubmissionTimes = new HashMap[Int, Long]
+
   /**
    * Contains the locations that each RDD's partitions are cached on.  This map's keys are RDD ids
    * and its values are arrays indexed by partition numbers. Each array value is the set of
@@ -746,6 +748,7 @@ class DAGScheduler(
       val shouldRunLocally =
         localExecutionEnabled && allowLocal && finalStage.parents.isEmpty && partitions.length == 1
       val jobSubmissionTime = clock.getTimeMillis()
+      jobSubmissionTimes(jobId) = jobSubmissionTime
       if (shouldRunLocally) {
         // Compute very short actions like first() or take() with no parent stages locally.
         listenerBus.post(
@@ -972,6 +975,7 @@ class DAGScheduler(
                     cleanupStateForJobAndIndependentStages(job)
                     listenerBus.post(
                       SparkListenerJobEnd(job.jobId, clock.getTimeMillis(), JobSucceeded))
+                    jobSubmissionTimes.remove(job.jobId)
                   }
 
                   // taskSucceeded runs some user code that might throw an exception. Make sure
