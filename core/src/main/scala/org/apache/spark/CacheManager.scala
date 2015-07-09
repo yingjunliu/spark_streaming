@@ -39,18 +39,22 @@ private[spark] class CacheManager(blockManager: BlockManager) extends Logging {
   def getBlockSize[T](
       rdd: RDD[T],
       partition: Partition): Long = {
-//    val key = RDDBlockId(rdd.id, partition.index)
-//
-//    blockManager.getBlockSize(key)
-    try{
-      val blockId = partition.asInstanceOf[BlockRDDPartition].blockId
-      val size = blockManager.getBlockSize(blockId)
-      logInfo(s"The size in blockId ${blockId} is ${size}")
-      size
-    } catch {
-      case _ =>
-        -2L
+    val key = RDDBlockId(rdd.id, partition.index)
+
+    blockManager.get(key) match {
+      case Some(blockResult) => 0L
+      case None =>
+        try{
+          val blockId = partition.asInstanceOf[BlockRDDPartition].blockId
+          val size = blockManager.getBlockSize(blockId)
+          logInfo(s"The size in blockId ${blockId} is ${size}")
+          size
+        } catch {
+          case _ =>
+            0L
+        }
     }
+
   }
 
   /** Gets or computes an RDD partition. Used by RDD.iterator() when an RDD is cached. */
