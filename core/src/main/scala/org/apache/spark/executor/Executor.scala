@@ -141,6 +141,7 @@ private[spark] class Executor(
     {
       totalHandledDataSpeed += i._2
     }
+    handledDataSpeed.clear()
 
     totalHandledDataSpeed
   }
@@ -151,7 +152,11 @@ private[spark] class Executor(
       tr.kill(interruptThread)
     }
 
-    handledDataSpeed.remove(taskId)
+    try{
+      handledDataSpeed.remove(taskId)
+    } catch {
+      case _ => None
+    }
   }
 
   def stop() {
