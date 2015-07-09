@@ -118,6 +118,8 @@ private[spark] class Executor(
 
   private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
 
+  private var startTime = new ConcurrentHashMap[Long, Long]
+
   startDriverHeartbeater()
 
   def launchTask(
@@ -126,6 +128,7 @@ private[spark] class Executor(
       attemptNumber: Int,
       taskName: String,
       serializedTask: ByteBuffer) {
+    startTime(taskId) = System.currentTimeMillis()
     val tr = new TaskRunner(context, taskId = taskId, attemptNumber = attemptNumber, taskName,
       serializedTask)
     runningTasks.put(taskId, tr)
@@ -229,13 +232,13 @@ private[spark] class Executor(
         val (handledDataSize, value) = task.run(taskAttemptId = taskId, attemptNumber = attemptNumber)
         val taskFinish = System.currentTimeMillis()
 
-        val handledDataSpeedInTaskRunner: Double = handledDataSize / (taskFinish - taskStart)
+//        val handledDataSpeedInTaskRunner: Double = handledDataSize / (taskFinish - taskStart)
 //        if (handledDataSpeed.contains(taskId)) {
 //          handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + handledDataSpeedInTaskRunner) / 2)
 //        } else {
 //          handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
 //        }
-        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
+//        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
 
         // If the task has been killed, let's fail it.
         if (task.killed) {
@@ -279,6 +282,10 @@ private[spark] class Executor(
             serializedDirectResult
           }
         }
+
+        val handledDataSpeedInTaskRunner: Double = handledDataSize / (System.currentTimeMillis - startTime(taskId))
+        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
+        startTime.remove(taskId)
 
         execBackend.statusUpdate(taskId, TaskState.FINISHED, serializedResult)
 
