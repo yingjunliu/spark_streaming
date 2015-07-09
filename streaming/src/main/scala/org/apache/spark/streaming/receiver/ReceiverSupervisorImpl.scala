@@ -162,7 +162,8 @@ private[streaming] class ReceiverSupervisorImpl(
 
     val time = System.currentTimeMillis
     val blockStoreResult = receivedBlockHandler.storeBlock(blockId, receivedBlock)
-    logDebug(s"Pushed block $blockId in ${(System.currentTimeMillis - time)} ms")
+    val endTime = System.currentTimeMillis
+    logDebug(s"Pushed block $blockId in ${(endTime - time)} ms")
 
     val blockInfo = ReceivedBlockInfo(streamId, numRecords, blockStoreResult)
     val future = trackerActor.ask(AddBlock(blockInfo))(askTimeout)
@@ -171,9 +172,8 @@ private[streaming] class ReceiverSupervisorImpl(
 
     try {
       totalReceivedSize = env.blockManager.getBlockSize(blockId)
-      val speed: Double = totalReceivedSize / (System.currentTimeMillis - startTime)
+      val speed: Double = totalReceivedSize / (endTime - time)
       trackerActor ! StreamingReceiverSpeed(streamId, speed)
-      startTime = System.currentTimeMillis
 
     } catch {
       case _ => None
