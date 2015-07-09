@@ -223,11 +223,12 @@ private[spark] class Executor(
         val taskFinish = System.currentTimeMillis()
 
         val handledDataSpeedInTaskRunner: Double = handledDataSize / (taskFinish - taskStart)
-        if (handledDataSpeed.contains(taskId)) {
-          handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + handledDataSpeedInTaskRunner) / 2)
-        } else {
-          handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
-        }
+//        if (handledDataSpeed.contains(taskId)) {
+//          handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + handledDataSpeedInTaskRunner) / 2)
+//        } else {
+//          handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
+//        }
+        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
 
         // If the task has been killed, let's fail it.
         if (task.killed) {
