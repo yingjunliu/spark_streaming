@@ -143,10 +143,11 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 //          logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
 //        }
         workersHandleSpeed.put(host, handleSpeed)
+        logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
 
       case StreamingDataSpeed(host, speed) =>
         logInfo(s"The speed in streaming ${host} is ${speed}")
-        logInfo(s"the workers handle speed is ${workersHandleSpeed}")
+        //logInfo(s"the workers handle speed is ${workersHandleSpeed(host)}")
 
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)
