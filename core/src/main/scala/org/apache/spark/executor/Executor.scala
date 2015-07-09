@@ -141,9 +141,11 @@ private[spark] class Executor(
     {
       totalHandledDataSpeed += i._2
     }
+
+    val result: Double = totalHandledDataSpeed / handledDataSpeed.size()
     handledDataSpeed.clear()
 
-    totalHandledDataSpeed
+    result
   }
 
   def killTask(taskId: Long, interruptThread: Boolean) {
