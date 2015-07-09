@@ -168,6 +168,7 @@ class JobScheduler(val ssc: StreamingContext) extends Logging {
 
   private class JobHandler(job: Job) extends Runnable {
     def run() {
+      logInfo(s"Job ${job.id} start time is ${job.time}, and the run start time is ${System.currentTimeMillis()}")
       eventActor ! JobStarted(job)
       // Disable checks for existing output directories in jobs launched by the streaming scheduler,
       // since we may need to write output to an existing directory during checkpoint recovery;

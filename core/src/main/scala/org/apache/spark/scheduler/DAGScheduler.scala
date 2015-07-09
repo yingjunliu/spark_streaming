@@ -771,6 +771,8 @@ class DAGScheduler(
   /** Submits stage, but first recursively submits any missing parents. */
   private def submitStage(stage: Stage) {
     val jobId = activeJobForStage(stage)
+    logInfo(s"stage ${stage} submition time is ${System.currentTimeMillis} " +
+      s"while job ${jobId.get} submition time is ${jobSubmissionTimes(jobId.get)}")
     if (jobId.isDefined) {
       logDebug("submitStage(" + stage + ")")
       if (!waitingStages(stage) && !runningStages(stage) && !failedStages(stage)) {
