@@ -172,7 +172,7 @@ private[streaming] class ReceiverSupervisorImpl(
     try {
       totalReceivedSize = env.blockManager.getBlockSize(blockId)
       val speed: Double = totalReceivedSize / (System.currentTimeMillis - startTime)
-      trackerActor ! StreamingReceiverSpeed(totalReceivedSize.toInt, speed)
+      trackerActor ! StreamingReceiverSpeed(streamId, speed)
       startTime = System.currentTimeMillis
 
     } catch {
