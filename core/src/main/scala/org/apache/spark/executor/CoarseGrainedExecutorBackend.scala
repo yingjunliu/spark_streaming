@@ -35,7 +35,7 @@ import org.apache.spark.scheduler.TaskDescription
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
 
-import org.apache.spark.monitor.MonitorMessages._
+import org.apache.spark.monitor.WorkerMonitorMessages._
 
 private[spark] class CoarseGrainedExecutorBackend(
     driverUrl: String,

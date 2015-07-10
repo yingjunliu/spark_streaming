@@ -5,7 +5,23 @@ package org.apache.spark.monitor
  */
 private[spark] sealed trait MonitorMessage extends Serializable
 
-private[spark] object MonitorMessages {
+private [spark] object MonitorMessages {
+  case class RequestRegisterWorkerMonitor(workerMonitorUrl: String, host: String) extends MonitorMessage
+
+  case object RegisterdWorkerMonitorInJobMonitor extends MonitorMessage
+
+  case object QuaryWorkerHandledSpeed extends MonitorMessage
+
+  case class WorkerHandledSpeed(host: String, speed: Double) extends MonitorMessage
+
+  case object QuaryWorkerHandledDataSize extends MonitorMessage
+
+  case class WorkerHandledDataSize(host: String, size: Long) extends MonitorMessage
+}
+
+private[spark] sealed trait WorkerMonitorMessage extends Serializable
+
+private[spark] object WorkerMonitorMessages {
 
   // WorkerMonitor to Executor
   // Added by Liuzhiyi
@@ -15,11 +31,11 @@ private[spark] object MonitorMessages {
 
   // Executor to WorkerMonitor
   // Added by Liuzhiyi
-  case class ExecutorHandledDataSpeed(size: Double, executorId: String) extends MonitorMessage
+  case class ExecutorHandledDataSpeed(size: Double, executorId: String) extends WorkerMonitorMessage
 
-  case class RegisterExecutorWithMonitor(executorId: String) extends MonitorMessage
+  case class RegisterExecutorWithMonitor(executorId: String) extends WorkerMonitorMessage
 
-  case class StoppedExecutor(executorId: String) extends MonitorMessage
+  case class StoppedExecutor(executorId: String) extends WorkerMonitorMessage
 
 
   // Worker to WorkerMonitor
@@ -28,7 +44,7 @@ private[spark] object MonitorMessages {
 
   //WorkerMonitor to Worker
   //Added by Liuzhiyi
-  case class RegisterWorkerMonitor(MonitorAkkaUrls: String) extends MonitorMessage
+  case class RegisterWorkerMonitor(MonitorAkkaUrls: String) extends WorkerMonitorMessage
 
   //CoarseGrainedSchedulerBackend to WorkerMonitor
   case object RegistedWorkerMonitorInSchedulerBackend
@@ -36,5 +52,17 @@ private[spark] object MonitorMessages {
   case object QuaryHandledSpeed
 
   case class HandledSpeedInWorkerMonitor(host: String,
-                                        handleSpeed: Double) extends MonitorMessage
+                                        handleSpeed: Double) extends WorkerMonitorMessage
+
+  case class SendJobMonitorUrl(url: String) extends WorkerMonitorMessage
+}
+
+private[spark] sealed trait JobMonitorMessage extends Serializable
+
+private[spark] object JobMonitorMessages {
+  case class RequestRegisterJobMonitor(monitorAkkaUrls: String) extends JobMonitorMessage
+
+  case class RequestRegisterReceiver(receiverId: String) extends JobMonitorMessage
+
+  case object RegisteredReceiver extends JobMonitorMessage
 }

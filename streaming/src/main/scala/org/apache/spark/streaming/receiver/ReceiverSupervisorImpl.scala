@@ -33,6 +33,7 @@ import org.apache.spark.storage.StreamBlockId
 import org.apache.spark.streaming.Time
 import org.apache.spark.streaming.scheduler._
 import org.apache.spark.util.{AkkaUtils, Utils}
+import org.apache.spark.monitor.JobMonitorMessages._
 
 /**
  * Concrete implementation of [[org.apache.spark.streaming.receiver.ReceiverSupervisor]]
@@ -44,7 +45,8 @@ private[streaming] class ReceiverSupervisorImpl(
     receiver: Receiver[_],
     env: SparkEnv,
     hadoopConf: Configuration,
-    checkpointDirOption: Option[String]
+    checkpointDirOption: Option[String],
+    jobMonitorUrl: String = ""
   ) extends ReceiverSupervisor(receiver, env.conf) with Logging {
 
   private val receivedBlockHandler: ReceivedBlockHandler = {
@@ -76,14 +78,24 @@ private[streaming] class ReceiverSupervisorImpl(
     env.actorSystem.actorSelection(url)
   }
 
+  private val jobMonitorActor = env.actorSystem.actorSelection(jobMonitorUrl)
+
   /** Timeout for Akka actor messages */
   private val askTimeout = AkkaUtils.askTimeout(env.conf)
+
+  private val ReceiverId = "Receiver-" + streamId + "-" + System.currentTimeMillis()
 
   /** Akka actor for receiving messages from the ReceiverTracker in the driver */
   private val actor = env.actorSystem.actorOf(
     Props(new Actor {
+      override def preStart() = {
+        jobMonitorActor ! RequestRegisterReceiver(ReceiverId)
+      }
 
       override def receive() = {
+        case RegisteredReceiver =>
+          logInfo("Registered in job monitor")
+
         case StopReceiver =>
           logInfo("Received stop signal")
           stop("Stopped by driver", None)
@@ -93,7 +105,7 @@ private[streaming] class ReceiverSupervisorImpl(
       }
 
       def ref = self
-    }), "Receiver-" + streamId + "-" + System.currentTimeMillis())
+    }), ReceiverId)
 
   /** Unique block ids if one wants to add blocks directly */
   private val newBlockId = new AtomicLong(System.currentTimeMillis())

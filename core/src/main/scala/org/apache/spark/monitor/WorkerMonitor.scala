@@ -1,16 +1,14 @@
 package org.apache.spark.monitor
 
-import java.util
 import java.util.{Timer, TimerTask}
 
-import akka.actor.{ActorRef, Actor, Address, AddressFromURIString}
-import akka.remote.{AssociatedEvent, AssociationErrorEvent, AssociationEvent, DisassociatedEvent, RemotingLifecycleEvent}
+import akka.actor._
 
 import org.apache.spark.Logging
-import org.apache.spark.monitor.MonitorMessages._
+import org.apache.spark.monitor.MonitorMessages.RequestRegisterWorkerMonitor
+import org.apache.spark.monitor.WorkerMonitorMessages._
 import org.apache.spark.util.{AkkaUtils, ActorLogReceive}
 
-import scala.collection.mutable
 import scala.collection.mutable._
 
 /**
@@ -34,6 +32,7 @@ private[spark] class WorkerMonitor(
     port,
     actorName)
   private var schedulerBackend: ActorRef = null
+  private var jobMonitor: ActorSelection = null
 
   override def preStart() = {
     logInfo("Start worker monitor")
@@ -54,6 +53,10 @@ private[spark] class WorkerMonitor(
   override def receiveWithLogging = {
     case RegistedWorkerMonitor =>
       logInfo("Registed worker monitor")
+
+    case SendJobMonitorUrl(url) =>
+      jobMonitor = context.actorSelection(url)
+      jobMonitor ! RequestRegisterWorkerMonitor(actorAkkaUrls, host)
 
     case ExecutorHandledDataSpeed(size, executorId) =>
       totalHandleSpeed(executorId) = size

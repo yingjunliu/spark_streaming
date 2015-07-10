@@ -31,7 +31,7 @@ import org.apache.spark.{ExecutorAllocationClient, Logging, SparkEnv, SparkExcep
 import org.apache.spark.scheduler._
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, SerializableBuffer, AkkaUtils, Utils}
-import org.apache.spark.monitor.MonitorMessages._
+import org.apache.spark.monitor.WorkerMonitorMessages._
 
 /**
  * A scheduler backend that waits for coarse grained executors to connect to it through Akka.
