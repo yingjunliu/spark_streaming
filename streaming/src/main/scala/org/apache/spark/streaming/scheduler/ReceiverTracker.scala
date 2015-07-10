@@ -223,7 +223,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         case SPARK_REGEX(sparkUrls) =>
           val masterUrls = sparkUrls.split(",").map("spark://" + _)
           val masterAkkaUrls = masterUrls.map(Master.toAkkaUrl(_, AkkaUtils.protocol(ssc.sc.env.actorSystem)))
-
+          logInfo(s"the masterAkkaUrls is ${masterAkkaUrls}")
           for (masterAkkaUrl <- masterAkkaUrls) {
             val masterActor = context.actorSelection(masterAkkaUrl)
             masterActor ! RequestJobMonitorUrl
@@ -248,6 +248,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         logInfo(s"streamId is ${streamId}, speed is ${speed}")
 
       case JobMonitorUrl(url) =>
+        logInfo(s"Job Monitor Url is ${url}")
         jobMonitor = context.actorSelection(url)
         jobMonitorUrl = url
         for (reciever <- receiverInfo) {

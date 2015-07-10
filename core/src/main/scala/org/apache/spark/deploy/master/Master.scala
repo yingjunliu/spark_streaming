@@ -212,6 +212,7 @@ private[spark] class Master(
       logInfo(s"Registered job monitor ${monitorAkkaUrls}")
 
     case RequestJobMonitorUrl =>
+      logInfo(s"The request job monitor sender is ${sender}")
       sender ! JobMonitorUrl(jobMonitorUrls)
 
     case ElectedLeader => {
