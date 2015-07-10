@@ -33,6 +33,7 @@ import org.apache.spark.scheduler.cluster.CoarseGrainedSchedulerBackend
 import org.apache.spark.streaming.{StreamingContext, Time}
 import org.apache.spark.streaming.receiver.{CleanupOldBlocks, Receiver, ReceiverSupervisorImpl, StopReceiver}
 import org.apache.spark.deploy.DeployMessages._
+import org.apache.spark.monitor.JobMonitorMessages._
 
 /**
  * Messages used by the NetworkReceiver and the ReceiverTracker to communicate
@@ -248,6 +249,12 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       case JobMonitorUrl(url) =>
         jobMonitor = context.actorSelection(url)
         jobMonitorUrl = url
+        for (reciever <- receiverInfo) {
+          jobMonitor ! RequestRegisterReceiver(reciever._1.toString())
+        }
+
+      case RegisteredReceiver =>
+        logInfo(s"Regestered in job monitor ${sender}")
     }
   }
 
@@ -330,7 +337,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         }
         val receiver = iterator.next()
         val supervisor = new ReceiverSupervisorImpl(
-          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption, jobMonitorUrl)
+          receiver, SparkEnv.get, serializableHadoopConf.value, checkpointDirOption)
         supervisor.start()
         supervisor.awaitTermination()
       }
