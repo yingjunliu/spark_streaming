@@ -76,8 +76,8 @@
       <file leaf-file-name="ReceiverTracker.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.49655172" vertical-offset="3683" max-vertical-offset="6821">
-              <caret line="224" column="35" selection-start-line="224" selection-start-column="35" selection-end-line="224" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.79137933" vertical-offset="4082" max-vertical-offset="6859">
+              <caret line="254" column="32" selection-start-line="254" selection-start-column="32" selection-end-line="254" selection-end-column="32" />
               <folding>
                 <element signature="e#849#893#0" expanded="true" />
               </folding>
@@ -212,8 +212,8 @@
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/monitor/JobMonitor.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/monitor/MonitorMessage.scala" />
         <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/receiver/ReceiverSupervisorImpl.scala" />
-        <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/deploy/master/Master.scala" />
+        <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala" />
       </list>
     </option>
   </component>
@@ -1502,8 +1502,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.49655172" vertical-offset="3683" max-vertical-offset="6821">
-          <caret line="224" column="35" selection-start-line="224" selection-start-column="35" selection-end-line="224" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.79137933" vertical-offset="4082" max-vertical-offset="6859">
+          <caret line="254" column="32" selection-start-line="254" selection-start-column="32" selection-end-line="254" selection-end-column="32" />
           <folding>
             <element signature="e#849#893#0" expanded="true" />
           </folding>
