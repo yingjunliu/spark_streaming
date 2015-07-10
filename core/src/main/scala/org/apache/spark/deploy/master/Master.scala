@@ -209,6 +209,10 @@ private[spark] class Master(
     // Register the job monitor
     case RequestRegisterJobMonitor(monitorAkkaUrls) =>
       jobMonitorUrls = monitorAkkaUrls
+      logInfo(s"Registered job monitor ${monitorAkkaUrls}")
+
+    case RequestJobMonitorUrl =>
+      sender ! JobMonitorUrl(jobMonitorUrls)
 
     case ElectedLeader => {
       val (storedApps, storedDrivers, storedWorkers) = persistenceEngine.readPersistedData()

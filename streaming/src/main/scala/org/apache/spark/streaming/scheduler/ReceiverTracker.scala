@@ -218,6 +218,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       // Regular expression for connecting to Spark deploy clusters
       val SPARK_REGEX = """spark://(.*)""".r
 
+      logInfo(s"the master is ${ssc.sc.master}")
       ssc.sc.master match {
         case SPARK_REGEX(sparkUrls) =>
           val masterUrls = sparkUrls.split(",").map("spark://" + _)
