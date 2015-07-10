@@ -239,9 +239,9 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
         }
       }
 
-      for (workerMonitor <- workerMonitorToExecutorId.keysIterator) {
-        workerMonitor ! QuaryHandledSpeed
-      }
+//      for (workerMonitor <- workerMonitorToExecutorId.keysIterator) {
+//        workerMonitor ! QuaryHandledSpeed
+//      }
     }
 
     // Remove a disconnected slave from the cluster

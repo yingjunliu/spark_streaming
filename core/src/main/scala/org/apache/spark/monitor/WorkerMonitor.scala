@@ -5,7 +5,7 @@ import java.util.{Timer, TimerTask}
 import akka.actor._
 
 import org.apache.spark.Logging
-import org.apache.spark.monitor.MonitorMessages.RequestRegisterWorkerMonitor
+import org.apache.spark.monitor.MonitorMessages._
 import org.apache.spark.monitor.WorkerMonitorMessages._
 import org.apache.spark.util.{AkkaUtils, ActorLogReceive}
 
@@ -47,7 +47,7 @@ private[spark] class WorkerMonitor(
     val timer = new Timer()
     val timerDelay = 2000
     val timerPeriod = 1000
-    timer.schedule(new querySpeedTimerTask(executors), timerDelay, timerPeriod)
+    timer.schedule(new WorkerQuerySpeedTimerTask(executors), timerDelay, timerPeriod)
   }
 
   override def receiveWithLogging = {
@@ -75,17 +75,17 @@ private[spark] class WorkerMonitor(
       schedulerBackend = sender
       logInfo(s"Registerd scheduler backend ${sender}")
 
-    case QuaryHandledSpeed =>
+    case QuaryWorkerHandledSpeed =>
       var totalSpeed: Double = 0.0
       for (speed <- totalHandleSpeed.valuesIterator) {
         totalSpeed += speed
       }
-      sender ! HandledSpeedInWorkerMonitor(host, totalSpeed)
+      sender ! WorkerHandledSpeed(host, totalSpeed)
   }
 
 }
 
-private[monitor] class querySpeedTimerTask(executors: HashMap[String, ActorRef]) extends TimerTask {
+private[monitor] class WorkerQuerySpeedTimerTask(executors: HashMap[String, ActorRef]) extends TimerTask {
   override def run(): Unit = {
     for(executor <- executors.valuesIterator) {
       executor ! HandledDataSpeed

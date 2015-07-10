@@ -30,12 +30,19 @@ private[spark] class JobMonitor(
     host,
     port,
     actorName)
-  val receivers = new HashMap[String, ActorRef]
+  val receivers = new HashMap[Int, ActorRef]
+  val streamIdToSpeed = new HashMap[Int, Double]
+  val workerToSpeed = new HashMap[String, Double]
 
   override def preStart() = {
     logInfo("Start job monitor")
     logInfo(s"Try to register job monitor to master ${master}")
     master ! RequestRegisterJobMonitor(monitorAkkaUrls)
+
+    val timer = new Timer()
+    val timerDelay = 2000
+    val timerPeriod = 1000
+    timer.schedule(new querySpeedTimerTask(workerMonitors.values.toArray), timerDelay, timerPeriod)
   }
 
   override def receiveWithLogging = {
@@ -47,9 +54,24 @@ private[spark] class JobMonitor(
       workerMonitors(host) = workerMonitorActor
 
     // With receiver
-    case RequestRegisterReceiver(receiverId) =>
-      receivers(receiverId) = sender
+    case RequestRegisterReceiver(streamId) =>
+      receivers(streamId) = sender
       logInfo(s"Registered receiver ${sender}")
       sender ! RegisteredReceiver
+
+    case StreamingReceiverSpeed(streamId, speed) =>
+      streamIdToSpeed(streamId) = speed
+
+    case WorkerHandledSpeed(host, speed) =>
+      workerToSpeed(host) = speed
+  }
+}
+
+private[monitor] class querySpeedTimerTask(workerMonitorActors: Array[ActorSelection])
+                        extends TimerTask {
+  override def run(): Unit = {
+      for (workerMonitorActor <- workerMonitorActors) {
+        workerMonitorActor ! QuaryWorkerHandledSpeed
+    }
   }
 }

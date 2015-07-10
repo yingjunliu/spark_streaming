@@ -235,7 +235,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       case RegisterReceiver(streamId, typ, host, receiverActor) =>
         registerReceiver(streamId, typ, host, receiverActor, sender)
         sender ! true
-        jobMonitor ! RequestRegisterReceiver(streamId.toString)
+        jobMonitor ! RequestRegisterReceiver(streamId)
 
       case AddBlock(receivedBlockInfo) =>
         sender ! addBlock(receivedBlockInfo)
@@ -251,6 +251,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor
         driver ! StreamingDataSpeed(receiverInfo(streamId).location, speed)
         logInfo(s"streamId is ${streamId}, speed is ${speed}")
+        jobMonitor ! StreamingReceiverSpeed(streamId, speed)
 
       case JobMonitorUrl(url) =>
         logInfo(s"Job Monitor Url is ${url}")

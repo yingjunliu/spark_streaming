@@ -51,9 +51,6 @@ private[spark] object WorkerMonitorMessages {
 
   case object QuaryHandledSpeed
 
-  case class HandledSpeedInWorkerMonitor(host: String,
-                                        handleSpeed: Double) extends WorkerMonitorMessage
-
   case class SendJobMonitorUrl(url: String) extends WorkerMonitorMessage
 }
 
@@ -62,7 +59,9 @@ private[spark] sealed trait JobMonitorMessage extends Serializable
 private[spark] object JobMonitorMessages {
   case class RequestRegisterJobMonitor(monitorAkkaUrls: String) extends JobMonitorMessage
 
-  case class RequestRegisterReceiver(receiverId: String) extends JobMonitorMessage
+  case class RequestRegisterReceiver(streamId: Int) extends JobMonitorMessage
 
   case object RegisteredReceiver extends JobMonitorMessage
+
+  case class StreamingReceiverSpeed(streamId: Int, speed: Double) extends JobMonitorMessage
 }
