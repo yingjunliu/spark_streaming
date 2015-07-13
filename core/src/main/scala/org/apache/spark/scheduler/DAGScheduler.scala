@@ -106,7 +106,8 @@ class DAGScheduler(
 
   private[scheduler] val jobFinishTime = new HashMap[Int, Long]
 
-  private[scheduler] val schedulerActor = new DAGSchedulerActor(sc, this)
+  private[scheduler] val schedulerActor =
+    sc.env.actorSystem.actorOf(Props(new DAGSchedulerActor(sc, this)), "DAGSchedulerActor")
 
   private[scheduler] val jobIdToTaskIds = new HashMap[Int, HashMap[Int, HashSet[Long]]]
 
