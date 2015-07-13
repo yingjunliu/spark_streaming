@@ -73,9 +73,21 @@
       <file leaf-file-name="ReceiverTracker.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.1666665" vertical-offset="1061" max-vertical-offset="6593">
-              <caret line="94" column="26" selection-start-line="94" selection-start-column="26" selection-end-line="94" selection-end-column="26" />
+            <state vertical-scroll-proportion="-5.0666666" vertical-offset="57" max-vertical-offset="6593">
+              <caret line="41" column="54" selection-start-line="41" selection-start-column="54" selection-end-line="41" selection-end-column="54" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DAGScheduler.scala" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.36551723" vertical-offset="9687" max-vertical-offset="28044">
+              <caret line="536" column="60" selection-start-line="536" selection-start-column="60" selection-end-line="536" selection-end-column="60" />
+              <folding>
+                <element signature="e#838#877#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -96,18 +108,6 @@
             <state vertical-scroll-proportion="-7.0666666" vertical-offset="4633" max-vertical-offset="7885">
               <caret line="284" column="90" selection-start-line="284" selection-start-column="90" selection-end-line="284" selection-end-column="90" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DAGScheduler.scala" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5948276" vertical-offset="1422" max-vertical-offset="27930">
-              <caret line="108" column="41" selection-start-line="108" selection-start-column="41" selection-end-line="108" selection-end-column="41" />
-              <folding>
-                <element signature="e#838#877#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -1641,14 +1641,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.1666665" vertical-offset="1061" max-vertical-offset="6593">
-          <caret line="94" column="26" selection-start-line="94" selection-start-column="26" selection-end-line="94" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/CoarseGrainedExecutorBackend.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="6" max-vertical-offset="5320">
@@ -1665,10 +1657,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.0666666" vertical-offset="57" max-vertical-offset="6593">
+          <caret line="41" column="54" selection-start-line="41" selection-start-column="54" selection-end-line="41" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5948276" vertical-offset="1422" max-vertical-offset="27930">
-          <caret line="108" column="41" selection-start-line="108" selection-start-column="41" selection-end-line="108" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.36551723" vertical-offset="9687" max-vertical-offset="28044">
+          <caret line="536" column="60" selection-start-line="536" selection-start-column="60" selection-end-line="536" selection-end-column="60" />
           <folding>
             <element signature="e#838#877#0" expanded="true" />
           </folding>

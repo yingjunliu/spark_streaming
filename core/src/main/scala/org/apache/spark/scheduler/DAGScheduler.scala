@@ -534,7 +534,7 @@ class DAGScheduler(
         throw exception
     }
     jobFinishTime(waiter.jobId) = System.currentTimeMillis()
-    schedulerActor.jobFinished(waiter.jobId)
+    schedulerActor ! JobFinishedInDAGScheduler(waiter.jobId)
   }
 
   def runApproximateJob[T, U, R](
@@ -1440,6 +1440,9 @@ private[spark] object DAGScheduler {
   val RESUBMIT_TIMEOUT = 200
 }
 
+private sealed trait DAGSchedulerMessage
+private case class JobFinishedInDAGScheduler(jobId: Int) extends DAGSchedulerMessage
+
 private[spark] class DAGSchedulerActor(sc: SparkContext, dagScheduler: DAGScheduler) extends Actor with Logging {
   private var jobMonitor: ActorSelection = null
   private var jobMonitorUrl: String = ""
@@ -1475,5 +1478,8 @@ private[spark] class DAGSchedulerActor(sc: SparkContext, dagScheduler: DAGSchedu
       jobMonitor = context.actorSelection(url)
       jobMonitorUrl = url
       jobMonitor ! RequestRegisterDAGScheduler(sc.applicationId)
+
+    case JobFinishedInDAGScheduler(jobId) =>
+      jobFinished(jobId)
   }
 }
