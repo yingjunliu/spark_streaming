@@ -148,6 +148,14 @@ private[streaming] class BlockGenerator(
         reportError("Error in block updating thread", e)
     }
   }
+
+  def changeUpdateFunction(needSplit: Boolean) = {
+    if (needSplit) {
+      blockIntervalTimer.changeCallbackFunc(updateCurrentBufferWithSplit)
+    } else {
+      blockIntervalTimer.changeCallbackFunc(updateCurrentBuffer)
+    }
+  }
   /**
    * Change the buffer to which single records are added to
    *

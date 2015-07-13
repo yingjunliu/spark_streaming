@@ -78,4 +78,6 @@ private[spark] object JobMonitorMessages {
                          startTime: Long,
                          endTime: Long)
     extends JobMonitorMessage
+
+  case class SplitRecieverDataOrNot(streamId: Int, needSplit: Boolean) extends JobMonitorMessage
 }

@@ -31,7 +31,7 @@ import org.apache.spark.{Logging, SerializableWritable, SparkEnv, SparkException
 import org.apache.spark.scheduler.SchedulerBackend
 import org.apache.spark.scheduler.cluster.CoarseGrainedSchedulerBackend
 import org.apache.spark.streaming.{StreamingContext, Time}
-import org.apache.spark.streaming.receiver.{CleanupOldBlocks, Receiver, ReceiverSupervisorImpl, StopReceiver}
+import org.apache.spark.streaming.receiver._
 import org.apache.spark.deploy.DeployMessages._
 import org.apache.spark.monitor.JobMonitorMessages._
 
@@ -260,6 +260,10 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
 
       case RegisteredReceiver =>
         logInfo(s"Regestered in job monitor ${sender}")
+
+      case SplitRecieverDataOrNot(streamId, needSplit) =>
+        receiverInfo(streamId).actor ! NeedSplit(needSplit)
+
     }
   }
 

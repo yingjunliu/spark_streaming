@@ -93,6 +93,9 @@ private[streaming] class ReceiverSupervisorImpl(
         case CleanupOldBlocks(threshTime) =>
           logDebug("Received delete old batch signal")
           cleanupOldBlocks(threshTime)
+        case NeedSplit(need) =>
+          logInfo(s"the reciever split is ${need}")
+          blockGenerator.changeUpdateFunction(need)
       }
 
       def ref = self

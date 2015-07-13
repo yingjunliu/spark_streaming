@@ -37,6 +37,8 @@ private[spark] class JobMonitor(
   val DAGSchedulers = new HashMap[String, ActorRef]
   val jobTimes = new HashMap[Int, Array[Long]]
 
+  var hasSplit = false
+
   override def preStart() = {
     logInfo("Start job monitor")
     logInfo(s"Try to register job monitor to master ${master}")
@@ -94,8 +96,11 @@ private[spark] class JobMonitor(
 
         logInfo(s"worker to speed is ${workerToSpeed}, the host ${host} totalSpeed is ${totalSpeed}")
 
-        if (totalSpeed > workerToSpeed(host)) {
-          //distrubute the block
+        if (totalSpeed > workerToSpeed(host) && (!hasSplit)) {
+          for (streamId <- hostToStreamId(host)) {
+            receivers(streamId) ! SplitRecieverDataOrNot(streamId, true)
+            hasSplit = true
+          }
         }
       }
   }
