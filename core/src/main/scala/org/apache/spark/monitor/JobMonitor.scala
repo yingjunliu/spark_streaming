@@ -85,7 +85,7 @@ private[spark] class JobMonitor(
       }
 
     case WorkerHandledDataSize(host, size, jobId) =>
-      workerToSpeed(host) = size / (jobTimes(jobId)(1) - jobTimes(jobId)(1))
+      workerToSpeed(host) = size / (jobTimes(jobId)(1) - jobTimes(jobId)(0))
       if (hostToStreamId.contains(host)) {
         var totalSpeed: Double = 0.0
         for (streamId <- hostToStreamId(host)) {

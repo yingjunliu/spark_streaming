@@ -45,10 +45,10 @@ private[spark] class WorkerMonitor(
      * When monitor set, the timer task will delay {timerDelay} times
      * Evey {timerPeriod} time will query once.
      */
-    val timer = new Timer()
-    val timerDelay = 2000
-    val timerPeriod = 1000
-    timer.schedule(new WorkerQuerySpeedTimerTask(executors), timerDelay, timerPeriod)
+//    val timer = new Timer()
+//    val timerDelay = 2000
+//    val timerPeriod = 1000
+//    timer.schedule(new WorkerQuerySpeedTimerTask(executors), timerDelay, timerPeriod)
   }
 
   override def receiveWithLogging = {
@@ -93,10 +93,10 @@ private[spark] class WorkerMonitor(
 
 }
 
-private[monitor] class WorkerQuerySpeedTimerTask(executors: HashMap[String, ActorRef]) extends TimerTask {
-  override def run(): Unit = {
-    for(executor <- executors.valuesIterator) {
-      executor ! HandledDataSpeed
-    }
-  }
-}
+//private[monitor] class WorkerQuerySpeedTimerTask(executors: HashMap[String, ActorRef]) extends TimerTask {
+//  override def run(): Unit = {
+//    for(executor <- executors.valuesIterator) {
+//      executor ! HandledDataSpeed
+//    }
+//  }
+//}
