@@ -66,7 +66,7 @@ private[spark] class JobMonitor(
       DAGSchedulers(appId) = sender
       logInfo(s"Registered DAGScheduler ${sender}")
 
-    case StreamingReceiverSpeed(streamId, speed, host) =>
+    case StreamingReceiverSpeedToMonitor(streamId, speed, host) =>
       streamIdToSpeed(streamId) = speed
       hostToStreamId.getOrElseUpdate(host, new HashSet[Int]()) += streamId
 

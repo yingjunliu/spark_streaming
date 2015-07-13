@@ -72,7 +72,7 @@ private[spark] object JobMonitorMessages {
 
   case object RegisteredReceiver
 
-  case class StreamingReceiverSpeed(streamId: Int, speed: Double, host: String) extends JobMonitorMessage
+  case class StreamingReceiverSpeedToMonitor(streamId: Int, speed: Double, host: String) extends JobMonitorMessage
 
   case class JobFinished(jobId: Int,
                          startTime: Long,
