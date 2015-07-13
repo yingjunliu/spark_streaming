@@ -98,6 +98,7 @@ private[spark] class JobMonitor(
 
         if (totalSpeed > workerToSpeed(host) && (!hasSplit)) {
           for (streamId <- hostToStreamId(host)) {
+            logInfo(s"split stream ${streamId}")
             receivers(streamId) ! SplitRecieverDataOrNot(streamId, true)
             hasSplit = true
           }

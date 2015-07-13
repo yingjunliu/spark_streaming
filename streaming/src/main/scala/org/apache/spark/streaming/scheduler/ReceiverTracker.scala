@@ -262,6 +262,7 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         logInfo(s"Regestered in job monitor ${sender}")
 
       case SplitRecieverDataOrNot(streamId, needSplit) =>
+        logInfo(s"the stream ${streamId} split state is ${needSplit}")
         receiverInfo(streamId).actor ! NeedSplit(needSplit)
 
     }
