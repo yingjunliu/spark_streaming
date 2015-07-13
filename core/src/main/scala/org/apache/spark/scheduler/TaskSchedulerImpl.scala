@@ -77,6 +77,8 @@ private[spark] class TaskSchedulerImpl(
   val taskIdToTaskSetId = new HashMap[Long, String]
   val taskIdToExecutorId = new HashMap[Long, String]
 
+  val stageIdToTaskId = new HashMap[Int, HashSet[Long]]
+
   @volatile private var hasReceivedTask = false
   @volatile private var hasLaunchedTask = false
   private val starvationTimer = new Timer(true)
@@ -232,6 +234,9 @@ private[spark] class TaskSchedulerImpl(
           for (task <- taskSet.resourceOffer(execId, host, maxLocality)) {
             tasks(i) += task
             val tid = task.taskId
+
+            dagScheduler.jobIdToTaskIds(taskSet.priority)(taskSet.stageId) += tid
+
             taskIdToTaskSetId(tid) = taskSet.taskSet.id
             taskIdToExecutorId(tid) = execId
             executorsByHost(host) += execId

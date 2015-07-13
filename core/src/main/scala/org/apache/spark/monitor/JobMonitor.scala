@@ -10,7 +10,7 @@ import org.apache.spark.monitor.JobMonitorMessages._
 import org.apache.spark.util.ActorLogReceive
 import org.apache.spark.util.{AkkaUtils, ActorLogReceive}
 
-import scala.collection.mutable.HashMap
+import scala.collection.mutable.{HashMap, HashSet}
 
 /**
  * Created by junjun on 2015/7/10.
@@ -32,17 +32,20 @@ private[spark] class JobMonitor(
     actorName)
   val receivers = new HashMap[Int, ActorRef]
   val streamIdToSpeed = new HashMap[Int, Double]
+  val hostToStreamId = new HashMap[String, HashSet[Int]]
   val workerToSpeed = new HashMap[String, Double]
+  val DAGSchedulers = new HashMap[String, ActorRef]
+  val jobTimes = new HashMap[Int, Array[Long]]
 
   override def preStart() = {
     logInfo("Start job monitor")
     logInfo(s"Try to register job monitor to master ${master}")
     master ! RequestRegisterJobMonitor(monitorAkkaUrls)
 
-    val timer = new Timer()
-    val timerDelay = 2000
-    val timerPeriod = 1000
-    timer.schedule(new querySpeedTimerTask(workerMonitors.values.toArray), timerDelay, timerPeriod)
+//    val timer = new Timer()
+//    val timerDelay = 2000
+//    val timerPeriod = 1000
+//    timer.schedule(new querySpeedTimerTask(workerMonitors.values.toArray), timerDelay, timerPeriod)
   }
 
   override def receiveWithLogging = {
@@ -59,19 +62,50 @@ private[spark] class JobMonitor(
       logInfo(s"Registered receiver ${sender}")
       sender ! RegisteredReceiver
 
-    case StreamingReceiverSpeed(streamId, speed) =>
+    case RequestRegisterDAGScheduler(appId) =>
+      DAGSchedulers(appId) = sender
+      logInfo(s"Registered DAGScheduler ${sender}")
+
+    case StreamingReceiverSpeed(streamId, speed, host) =>
       streamIdToSpeed(streamId) = speed
+      hostToStreamId.getOrElseUpdate(host, new HashSet[Int]()) += streamId
 
     case WorkerHandledSpeed(host, speed) =>
-      workerToSpeed(host) = speed
+//      workerToSpeed(host) = speed
+
+    case JobFinished(jobId, startTime, endTime) =>
+      val timesTemp = new Array[Long](2)
+      timesTemp(0) = startTime
+      timesTemp(1) = endTime
+      jobTimes(jobId) = timesTemp
+      logInfo(s"job ${jobId} start at ${startTime} and end at ${endTime}")
+
+      for (workerMonitor <- workerMonitors.values) {
+        workerMonitor ! QuaryWorkerHandledDataSize(jobId)
+      }
+
+    case WorkerHandledDataSize(host, size, jobId) =>
+      workerToSpeed(host) = size / (jobTimes(jobId)(1) - jobTimes(jobId)(1))
+      if (hostToStreamId.contains(host)) {
+        var totalSpeed: Double = 0.0
+        for (streamId <- hostToStreamId(host)) {
+          totalSpeed += streamIdToSpeed(streamId)
+        }
+
+        logInfo(s"worker to speed is ${workerToSpeed}, the host ${host} totalSpeed is ${totalSpeed}")
+
+        if (totalSpeed > workerToSpeed(host)) {
+          //distrubute the block
+        }
+      }
   }
 }
 
-private[monitor] class querySpeedTimerTask(workerMonitorActors: Array[ActorSelection])
-                        extends TimerTask {
-  override def run(): Unit = {
-      for (workerMonitorActor <- workerMonitorActors) {
-        workerMonitorActor ! QuaryWorkerHandledSpeed
-    }
-  }
-}
+//private[monitor] class querySpeedTimerTask(workerMonitorActors: Array[ActorSelection])
+//                        extends TimerTask {
+//  override def run(): Unit = {
+//      for (workerMonitorActor <- workerMonitorActors) {
+//        workerMonitorActor ! QuaryWorkerHandledSpeed
+//    }
+//  }
+//}

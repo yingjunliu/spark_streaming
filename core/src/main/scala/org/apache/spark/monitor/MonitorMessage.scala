@@ -1,5 +1,7 @@
 package org.apache.spark.monitor
 
+import scala.collection.mutable._
+
 /**
  * Created by junjun on 2015/5/5.
  */
@@ -8,15 +10,15 @@ private[spark] sealed trait MonitorMessage extends Serializable
 private [spark] object MonitorMessages {
   case class RequestRegisterWorkerMonitor(workerMonitorUrl: String, host: String) extends MonitorMessage
 
-  case object RegisterdWorkerMonitorInJobMonitor extends MonitorMessage
+  case object RegisterdWorkerMonitorInJobMonitor
 
-  case object QuaryWorkerHandledSpeed extends MonitorMessage
+  case object QuaryWorkerHandledSpeed
 
   case class WorkerHandledSpeed(host: String, speed: Double) extends MonitorMessage
 
-  case object QuaryWorkerHandledDataSize extends MonitorMessage
+  case class QuaryWorkerHandledDataSize(jobId: Int) extends MonitorMessage
 
-  case class WorkerHandledDataSize(host: String, size: Long) extends MonitorMessage
+  case class WorkerHandledDataSize(host: String, size: Long, jobId: Int) extends MonitorMessage
 }
 
 private[spark] sealed trait WorkerMonitorMessage extends Serializable
@@ -28,6 +30,9 @@ private[spark] object WorkerMonitorMessages {
   case object HandledDataSpeed
 
   case object RegisteredExecutorInWorkerMonitor
+
+  case class QuaryHandledDataSize(stageIdToTaskIds: HashMap[Int, HashSet[Long]])
+    extends WorkerMonitorMessage
 
   // Executor to WorkerMonitor
   // Added by Liuzhiyi
@@ -52,6 +57,8 @@ private[spark] object WorkerMonitorMessages {
   case object QuaryHandledSpeed
 
   case class SendJobMonitorUrl(url: String) extends WorkerMonitorMessage
+
+  case class HandledDataInExecutor(jobId: Int, dataSize: Long) extends WorkerMonitorMessage
 }
 
 private[spark] sealed trait JobMonitorMessage extends Serializable
@@ -61,7 +68,14 @@ private[spark] object JobMonitorMessages {
 
   case class RequestRegisterReceiver(streamId: Int) extends JobMonitorMessage
 
-  case object RegisteredReceiver extends JobMonitorMessage
+  case class RequestRegisterDAGScheduler(appId: String) extends JobMonitorMessage
 
-  case class StreamingReceiverSpeed(streamId: Int, speed: Double) extends JobMonitorMessage
+  case object RegisteredReceiver
+
+  case class StreamingReceiverSpeed(streamId: Int, speed: Double, host: String) extends JobMonitorMessage
+
+  case class JobFinished(jobId: Int,
+                         startTime: Long,
+                         endTime: Long)
+    extends JobMonitorMessage
 }

@@ -63,6 +63,8 @@ private[spark] object CoarseGrainedClusterMessages {
     }
   }
 
+  case class HandledDataUpdate(executorId: String, taskId: Long, DataSize: Long) extends CoarseGrainedClusterMessage
+
   // Internal messages in driver
   case object ReviveOffers extends CoarseGrainedClusterMessage
 

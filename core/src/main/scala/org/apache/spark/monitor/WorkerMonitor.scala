@@ -33,6 +33,7 @@ private[spark] class WorkerMonitor(
     actorName)
   private var schedulerBackend: ActorRef = null
   private var jobMonitor: ActorSelection = null
+  private val jobIdToDataSize = new HashMap[Int, Long]
 
   override def preStart() = {
     logInfo("Start worker monitor")
@@ -81,6 +82,13 @@ private[spark] class WorkerMonitor(
         totalSpeed += speed
       }
       sender ! WorkerHandledSpeed(host, totalSpeed)
+
+    case QuaryWorkerHandledDataSize(jobId) =>
+      sender ! WorkerHandledDataSize(host, jobIdToDataSize(jobId), jobId)
+      jobIdToDataSize.remove(jobId)
+
+    case HandledDataInExecutor(jobId, dataSize) =>
+      jobIdToDataSize(jobId) = jobIdToDataSize.getOrElseUpdate(jobId, 0) + dataSize
   }
 
 }

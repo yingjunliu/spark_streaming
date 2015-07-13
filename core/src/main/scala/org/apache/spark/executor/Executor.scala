@@ -295,8 +295,8 @@ private[spark] class Executor(
 //        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
 //        startTime.remove(taskId)
 
+        execBackend.handledDataUpdate(taskId, handledDataSize)
         execBackend.statusUpdate(taskId, TaskState.FINISHED, serializedResult)
-        taskDataSize(taskId) = handledDataSize
 
       } catch {
         case ffe: FetchFailedException => {

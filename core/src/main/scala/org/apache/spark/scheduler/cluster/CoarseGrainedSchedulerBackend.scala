@@ -133,7 +133,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
         workerMonitorTemp ! RegistedWorkerMonitorInSchedulerBackend
         logInfo(s"Registered worker monitor ${workerMonitorUrl}")
 
-      case HandledSpeedInWorkerMonitor(host, handleSpeed) =>
+//      case HandledSpeedInWorkerMonitor(host, handleSpeed) =>
 //        if (workersHandleSpeed.contains(host)) {
 //          workersHandleSpeed.remove(host)
 //        }
@@ -142,7 +142,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 //        } else {
 //          logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
 //        }
-        workersHandleSpeed.put(host, handleSpeed)
+//        workersHandleSpeed.put(host, handleSpeed)
 //        logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
 
       case StreamingDataSpeed(host, speed) =>
@@ -162,6 +162,11 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
                 "from unknown executor $sender with ID $executorId")
           }
         }
+
+      // Added by Liuzhiyi
+      case HandledDataUpdate(executorId, taskId, dataSize) =>
+        val jobId = scheduler.activeTaskSets(scheduler.taskIdToTaskSetId(taskId)).priority
+        executorIdToWorkerMonitor(executorId) ! HandledDataInExecutor(jobId, dataSize)
 
       case ReviveOffers =>
         makeOffers()

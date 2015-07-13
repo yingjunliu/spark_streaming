@@ -31,6 +31,7 @@ import scala.util.control.NonFatal
 
 import akka.pattern.ask
 import akka.util.Timeout
+import akka.actor._
 
 import org.apache.spark._
 import org.apache.spark.broadcast.Broadcast
@@ -40,6 +41,9 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.storage._
 import org.apache.spark.util._
 import org.apache.spark.storage.BlockManagerMessages.BlockManagerHeartbeat
+import org.apache.spark.deploy.master._
+import org.apache.spark.deploy.DeployMessages._
+import org.apache.spark.monitor.JobMonitorMessages._
 
 /**
  * The high-level scheduling layer that implements stage-oriented scheduling. It computes a DAG of
@@ -99,6 +103,12 @@ class DAGScheduler(
   private[scheduler] val activeJobs = new HashSet[ActiveJob]
 
   private[scheduler] val jobSubmissionTimes = new HashMap[Int, Long]
+
+  private[scheduler] val jobFinishTime = new HashMap[Int, Long]
+
+  private[scheduler] val schedulerActor = new DAGSchedulerActor(sc, this)
+
+  private[scheduler] val jobIdToTaskIds = new HashMap[Int, HashMap[Int, HashSet[Long]]]
 
   /**
    * Contains the locations that each RDD's partitions are cached on.  This map's keys are RDD ids
@@ -400,6 +410,8 @@ class DAGScheduler(
         val s = stages.head
         s.jobIds += jobId
         jobIdToStageIds.getOrElseUpdate(jobId, new HashSet[Int]()) += s.id
+        jobIdToTaskIds.getOrElseUpdate(jobId, new HashMap[Int, HashSet[Long]])
+        jobIdToTaskIds(jobId).getOrElseUpdate(s.id, new HashSet[Long]())
         val parents: List[Stage] = getParentStages(s.rdd, jobId)
         val parentsWithoutThisJobId = parents.filter { ! _.jobIds.contains(jobId) }
         updateJobIdStageIdMapsList(parentsWithoutThisJobId ++ stages.tail)
@@ -520,6 +532,8 @@ class DAGScheduler(
           (waiter.jobId, callSite.shortForm, (System.nanoTime - start) / 1e9))
         throw exception
     }
+    jobFinishTime(waiter.jobId) = System.currentTimeMillis()
+    schedulerActor.jobFinished(waiter.jobId)
   }
 
   def runApproximateJob[T, U, R](
@@ -977,7 +991,7 @@ class DAGScheduler(
                     cleanupStateForJobAndIndependentStages(job)
                     listenerBus.post(
                       SparkListenerJobEnd(job.jobId, clock.getTimeMillis(), JobSucceeded))
-                    jobSubmissionTimes.remove(job.jobId)
+                    //jobSubmissionTimes.remove(job.jobId)
                   }
 
                   // taskSucceeded runs some user code that might throw an exception. Make sure
@@ -1423,4 +1437,42 @@ private[spark] object DAGScheduler {
   // this is a simplistic way to avoid resubmitting tasks in the non-fetchable map stage one by one
   // as more failure events come in
   val RESUBMIT_TIMEOUT = 200
+}
+
+private[spark] class DAGSchedulerActor(sc: SparkContext, dagScheduler: DAGScheduler) extends Actor with Logging {
+  private var jobMonitor: ActorSelection = null
+  private var jobMonitorUrl: String = ""
+
+  def jobFinished(jobId: Int) = {
+    val startTime = dagScheduler.jobSubmissionTimes(jobId)
+    val finishedTime = dagScheduler.jobFinishTime(jobId)
+    dagScheduler.jobSubmissionTimes.remove(jobId)
+    dagScheduler.jobFinishTime.remove(jobId)
+
+    jobMonitor ! JobFinished(jobId, startTime, finishedTime)
+  }
+
+  override def preStart() = {
+    // Regular expression for connecting to Spark deploy clusters
+    val SPARK_REGEX = """spark://(.*)""".r
+
+    sc.master match {
+      case SPARK_REGEX(sparkUrls) =>
+        val masterUrls = sparkUrls.split(",").map("spark://" + _)
+        val masterAkkaUrls = masterUrls.map(Master.toAkkaUrl(_, AkkaUtils.protocol(sc.env.actorSystem)))
+        logInfo(s"the masterAkkaUrls is ${masterAkkaUrls}")
+        for (masterAkkaUrl <- masterAkkaUrls) {
+          val masterActor = context.actorSelection(masterAkkaUrl)
+            masterActor ! RequestJobMonitorUrl
+        }
+    }
+  }
+
+  override def receive = {
+    case JobMonitorUrl(url) =>
+      logInfo(s"Job Monitor Url is ${url}")
+      jobMonitor = context.actorSelection(url)
+      jobMonitorUrl = url
+      jobMonitor ! RequestRegisterDAGScheduler(sc.applicationId)
+  }
 }

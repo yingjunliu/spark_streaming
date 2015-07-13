@@ -155,6 +155,10 @@ private[spark] class CoarseGrainedExecutorBackend(
       taskStartTime.remove(taskId)
     }
   }
+
+  override def handledDataUpdate(taskId: Long, dataSize: Long) = {
+    driver ! HandledDataUpdate(executorId, taskId, dataSize)
+  }
 }
 
 private[spark] object CoarseGrainedExecutorBackend extends Logging {
