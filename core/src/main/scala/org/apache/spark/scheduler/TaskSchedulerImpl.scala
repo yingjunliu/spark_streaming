@@ -234,9 +234,6 @@ private[spark] class TaskSchedulerImpl(
           for (task <- taskSet.resourceOffer(execId, host, maxLocality)) {
             tasks(i) += task
             val tid = task.taskId
-
-            dagScheduler.jobIdToTaskIds(taskSet.priority)(taskSet.stageId) += tid
-
             taskIdToTaskSetId(tid) = taskSet.taskSet.id
             taskIdToExecutorId(tid) = execId
             executorsByHost(host) += execId

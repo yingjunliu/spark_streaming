@@ -60,11 +60,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="DAGScheduler.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="3249" max-vertical-offset="27493">
+              <caret line="223" column="61" selection-start-line="223" selection-start-column="61" selection-end-line="223" selection-end-column="61" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="JobMonitor.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/monitor/JobMonitor.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="473" max-vertical-offset="2280">
               <caret line="45" column="61" selection-start-line="45" selection-start-column="61" selection-end-line="45" selection-end-column="61" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TaskSchedulerImpl.scala" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5606557" vertical-offset="3572" max-vertical-offset="10241">
+              <caret line="238" column="43" selection-start-line="238" selection-start-column="43" selection-end-line="238" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -110,11 +130,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DStreamGraph.scala" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DStreamGraph.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/DStreamGraph.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.45737705" vertical-offset="1659" max-vertical-offset="3420">
-              <caret line="122" column="33" selection-start-line="122" selection-start-column="33" selection-end-line="122" selection-end-column="33" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1659" max-vertical-offset="3420">
+              <caret line="116" column="5" selection-start-line="116" selection-start-column="5" selection-end-line="116" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -178,7 +198,6 @@
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/deploy/master/MasterMessages.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/deploy/DeployMessage.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/deploy/master/Master.scala" />
-        <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/ExecutorBackend.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedClusterMessage.scala" />
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/CoarseGrainedExecutorBackend.scala" />
@@ -196,6 +215,7 @@
         <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/monitor/JobMonitor.scala" />
         <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/ReceiverTracker.scala" />
         <option value="$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/DStreamGraph.scala" />
+        <option value="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala" />
       </list>
     </option>
   </component>
@@ -1515,13 +1535,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3439" max-vertical-offset="10298">
-          <caret line="231" column="46" selection-start-line="231" selection-start-column="46" selection-end-line="231" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/scheduler/JobSet.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5508197" vertical-offset="329" max-vertical-offset="1197">
@@ -1540,14 +1553,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="26359" max-vertical-offset="43415">
           <caret line="1464" column="19" selection-start-line="1464" selection-start-column="19" selection-end-line="1464" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4731" max-vertical-offset="27493">
-          <caret line="298" column="36" selection-start-line="298" selection-start-column="36" selection-end-line="298" selection-end-column="36" />
           <folding />
         </state>
       </provider>
@@ -1674,8 +1679,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/streaming/src/main/scala/org/apache/spark/streaming/DStreamGraph.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45737705" vertical-offset="1659" max-vertical-offset="3420">
-          <caret line="122" column="33" selection-start-line="122" selection-start-column="33" selection-end-line="122" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1659" max-vertical-offset="3420">
+          <caret line="116" column="5" selection-start-line="116" selection-start-column="5" selection-end-line="116" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3249" max-vertical-offset="27493">
+          <caret line="223" column="61" selection-start-line="223" selection-start-column="61" selection-end-line="223" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5606557" vertical-offset="3572" max-vertical-offset="10241">
+          <caret line="238" column="43" selection-start-line="238" selection-start-column="43" selection-end-line="238" selection-end-column="43" />
           <folding />
         </state>
       </provider>
