@@ -248,9 +248,10 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         sender ! true
 
       case StreamingReceiverSpeed(streamId, speed) =>
-        val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor
-        driver ! StreamingDataSpeed(receiverInfo(streamId).location, speed)
-        logInfo(s"streamId is ${streamId}, speed is ${speed}")
+//        val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor
+//        driver ! StreamingDataSpeed(receiverInfo(streamId).location, speed)
+        logInfo(s"streamId is ${streamId}, speed is ${speed}, location is ${receiverInfo(streamId).location}")
+        logInfo(s"${receiverInfo}")
         jobMonitor ! StreamingReceiverSpeedToMonitor(streamId, speed, receiverInfo(streamId).location)
 
       case JobMonitorUrl(url) =>

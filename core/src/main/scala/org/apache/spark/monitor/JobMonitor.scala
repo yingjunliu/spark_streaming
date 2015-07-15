@@ -35,9 +35,11 @@ private[spark] class JobMonitor(
   val hostToStreamId = new HashMap[String, HashSet[Int]]
   val workerToSpeed = new HashMap[String, Double]
   val DAGSchedulers = new HashMap[String, ActorRef]
-  val jobTimes = new HashMap[Int, Array[Long]]
+  val jobTimes = new HashMap[Int, Double]
+  val jobFinishReportTime = new HashMap[Long, Int]
 
   var hasSplit = false
+  var workerMonitorReturnCount: Int = 0
 
   override def preStart() = {
     logInfo("Start job monitor")
@@ -48,6 +50,10 @@ private[spark] class JobMonitor(
 //    val timerDelay = 2000
 //    val timerPeriod = 1000
 //    timer.schedule(new querySpeedTimerTask(workerMonitors.values.toArray), timerDelay, timerPeriod)
+  }
+
+  def splitOrNot(): Boolean = {
+    false
   }
 
   override def receiveWithLogging = {
@@ -71,30 +77,31 @@ private[spark] class JobMonitor(
     case StreamingReceiverSpeedToMonitor(streamId, speed, host) =>
       streamIdToSpeed(streamId) = speed
       hostToStreamId.getOrElseUpdate(host, new HashSet[Int]()) += streamId
+      logInfo(s"streamId ${streamId}, speed ${speed}, host${host}")
 
     case WorkerHandledSpeed(host, speed) =>
 //      workerToSpeed(host) = speed
 
-    case JobFinished(jobId, startTime, endTime) =>
-      val timesTemp = new Array[Long](2)
-      timesTemp(0) = startTime
-      timesTemp(1) = endTime
-      jobTimes(jobId) = timesTemp
-      logInfo(s"job ${jobId} start at ${startTime} and end at ${endTime}")
+    case JobFinished(jobId, runTime) =>
+      jobTimes(jobId) = runTime
+      logInfo(s"job ${jobId} runTime is ${runTime}")
+      jobFinishReportTime(System.currentTimeMillis) = jobId
 
       for (workerMonitor <- workerMonitors.values) {
         workerMonitor ! QuaryWorkerHandledDataSize(jobId)
       }
 
     case WorkerHandledDataSize(host, size, jobId) =>
-      workerToSpeed(host) = size / (jobTimes(jobId)(1) - jobTimes(jobId)(0))
+      workerToSpeed(host) = size / jobTimes(jobId)
+      logInfo(s"worker ${host}, jobId is ${jobId}, size is ${size}, speed is ${workerToSpeed(host)}")
+      workerMonitorReturnCount += 1
       if (hostToStreamId.contains(host)) {
         var totalSpeed: Double = 0.0
         for (streamId <- hostToStreamId(host)) {
           totalSpeed += streamIdToSpeed(streamId)
         }
 
-        logInfo(s"worker to speed is ${workerToSpeed}, the host ${host} totalSpeed is ${totalSpeed}")
+//        logInfo(s"jobId ${jobId}, workerToSpeed ${workerToSpeed}, host ${host} totalSpeed ${totalSpeed}")
 
         if (totalSpeed > workerToSpeed(host) && (!hasSplit)) {
           for (streamId <- hostToStreamId(host)) {

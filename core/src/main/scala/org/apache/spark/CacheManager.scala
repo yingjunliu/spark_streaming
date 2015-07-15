@@ -45,10 +45,14 @@ private[spark] class CacheManager(blockManager: BlockManager) extends Logging {
       case Some(blockResult) => 0L
       case None =>
         try{
-          val blockId = partition.asInstanceOf[BlockRDDPartition].blockId
-          val size = blockManager.getBlockSize(blockId)
-          logInfo(s"The size in blockId ${blockId} is ${size}")
-          size
+          if (checkLockForPartition[T](key)) {
+            0L
+          } else {
+            val blockId = partition.asInstanceOf[BlockRDDPartition].blockId
+            val size = blockManager.getBlockSize(blockId)
+            logInfo(s"The size in blockId ${blockId} is ${size}")
+            size
+          }
         } catch {
           case _ =>
             0L
@@ -113,6 +117,16 @@ private[spark] class CacheManager(blockManager: BlockManager) extends Logging {
             loading.notifyAll()
           }
         }
+    }
+  }
+
+  private def checkLockForPartition[T](id: RDDBlockId): Boolean = {
+    loading.synchronized {
+      if (!loading.contains(id)) {
+        false
+      } else {
+        true
+      }
     }
   }
 

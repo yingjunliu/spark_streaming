@@ -74,7 +74,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 
   private val workerMonitorToExecutorId = new HashMap[ActorSelection, HashSet[String]]
   private val executorIdToWorkerMonitor = new HashMap[String, ActorSelection]
-  private val workersHandleSpeed = new HashMap[String, Double]
+//  private val workersHandleSpeed = new HashMap[String, Double]
 
   class DriverActor(sparkProperties: Seq[(String, String)]) extends Actor with ActorLogReceive {
     override protected def log = CoarseGrainedSchedulerBackend.this.log

@@ -89,6 +89,7 @@ private[spark] class WorkerMonitor(
 
     case HandledDataInExecutor(jobId, dataSize) =>
       jobIdToDataSize(jobId) = jobIdToDataSize.getOrElseUpdate(jobId, 0) + dataSize
+      logInfo(s"job ${jobId} data now is ${jobIdToDataSize(jobId)}")
   }
 
 }

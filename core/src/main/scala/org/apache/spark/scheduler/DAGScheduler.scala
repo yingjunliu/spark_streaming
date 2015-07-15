@@ -109,8 +109,6 @@ class DAGScheduler(
   private[scheduler] val schedulerActor =
     sc.env.actorSystem.actorOf(Props(new DAGSchedulerActor(sc, this)), "DAGSchedulerActor")
 
-  private[scheduler] val jobIdToTaskIds = new HashMap[Int, HashMap[Int, HashSet[Long]]]
-
   /**
    * Contains the locations that each RDD's partitions are cached on.  This map's keys are RDD ids
    * and its values are arrays indexed by partition numbers. Each array value is the set of
@@ -411,8 +409,6 @@ class DAGScheduler(
         val s = stages.head
         s.jobIds += jobId
         jobIdToStageIds.getOrElseUpdate(jobId, new HashSet[Int]()) += s.id
-        jobIdToTaskIds.getOrElseUpdate(jobId, new HashMap[Int, HashSet[Long]])
-        jobIdToTaskIds(jobId).getOrElseUpdate(s.id, new HashSet[Long]())
         val parents: List[Stage] = getParentStages(s.rdd, jobId)
         val parentsWithoutThisJobId = parents.filter { ! _.jobIds.contains(jobId) }
         updateJobIdStageIdMapsList(parentsWithoutThisJobId ++ stages.tail)
@@ -522,19 +518,21 @@ class DAGScheduler(
       properties: Properties = null)
   {
     val start = System.nanoTime
+    var runTime: Double = 0
     val waiter = submitJob(rdd, func, partitions, callSite, allowLocal, resultHandler, properties)
     waiter.awaitResult() match {
       case JobSucceeded => {
+        runTime = (System.nanoTime - start) / 1e6
         logInfo("Job %d finished: %s, took %f s".format
-          (waiter.jobId, callSite.shortForm, (System.nanoTime - start) / 1e9))
+          (waiter.jobId, callSite.shortForm, runTime / 1e3))
       }
       case JobFailed(exception: Exception) =>
         logInfo("Job %d failed: %s, took %f s".format
           (waiter.jobId, callSite.shortForm, (System.nanoTime - start) / 1e9))
         throw exception
     }
-    jobFinishTime(waiter.jobId) = System.currentTimeMillis()
-    schedulerActor ! JobFinishedInDAGScheduler(waiter.jobId)
+//    jobFinishTime(waiter.jobId) = System.currentTimeMillis()
+    schedulerActor ! JobFinishedInDAGScheduler(waiter.jobId, runTime)
   }
 
   def runApproximateJob[T, U, R](
@@ -763,7 +761,7 @@ class DAGScheduler(
       val shouldRunLocally =
         localExecutionEnabled && allowLocal && finalStage.parents.isEmpty && partitions.length == 1
       val jobSubmissionTime = clock.getTimeMillis()
-      jobSubmissionTimes(jobId) = jobSubmissionTime
+      //jobSubmissionTimes(jobId) = jobSubmissionTime
       if (shouldRunLocally) {
         // Compute very short actions like first() or take() with no parent stages locally.
         listenerBus.post(
@@ -786,8 +784,6 @@ class DAGScheduler(
   /** Submits stage, but first recursively submits any missing parents. */
   private def submitStage(stage: Stage) {
     val jobId = activeJobForStage(stage)
-    logInfo(s"stage ${stage} submition time is ${System.currentTimeMillis} " +
-      s"while job ${jobId.get} submition time is ${jobSubmissionTimes(jobId.get)}")
     if (jobId.isDefined) {
       logDebug("submitStage(" + stage + ")")
       if (!waitingStages(stage) && !runningStages(stage) && !failedStages(stage)) {
@@ -1441,19 +1437,20 @@ private[spark] object DAGScheduler {
 }
 
 private sealed trait DAGSchedulerMessage
-private case class JobFinishedInDAGScheduler(jobId: Int) extends DAGSchedulerMessage
+private case class JobFinishedInDAGScheduler(jobId: Int, runTime: Double) extends DAGSchedulerMessage
 
 private[spark] class DAGSchedulerActor(sc: SparkContext, dagScheduler: DAGScheduler) extends Actor with Logging {
   private var jobMonitor: ActorSelection = null
   private var jobMonitorUrl: String = ""
 
-  def jobFinished(jobId: Int) = {
-    val startTime = dagScheduler.jobSubmissionTimes(jobId)
-    val finishedTime = dagScheduler.jobFinishTime(jobId)
-    dagScheduler.jobSubmissionTimes.remove(jobId)
-    dagScheduler.jobFinishTime.remove(jobId)
+  def jobFinished(jobId: Int, runTime: Double) = {
+//    val startTime = dagScheduler.jobSubmissionTimes(jobId)
+//    val finishedTime = dagScheduler.jobFinishTime(jobId)
+//    dagScheduler.jobSubmissionTimes.remove(jobId)
+//    dagScheduler.jobFinishTime.remove(jobId)
 
-    jobMonitor ! JobFinished(jobId, startTime, finishedTime)
+
+    jobMonitor ! JobFinished(jobId, runTime)
   }
 
   override def preStart() = {
@@ -1479,7 +1476,7 @@ private[spark] class DAGSchedulerActor(sc: SparkContext, dagScheduler: DAGSchedu
       jobMonitorUrl = url
       jobMonitor ! RequestRegisterDAGScheduler(sc.applicationId)
 
-    case JobFinishedInDAGScheduler(jobId) =>
-      jobFinished(jobId)
+    case JobFinishedInDAGScheduler(jobId, runTime) =>
+      jobFinished(jobId, runTime)
   }
 }

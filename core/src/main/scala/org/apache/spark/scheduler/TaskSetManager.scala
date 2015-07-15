@@ -237,6 +237,11 @@ private[spark] class TaskSetManager(
     pendingTasksForHost.getOrElse(host, ArrayBuffer())
   }
 
+  def getPendingTasksNumberForHost(host: String): Int = {
+    val number = pendingTasksForHost.getOrElse(host, ArrayBuffer())
+    number.size
+  }
+
   /**
    * Return the pending rack-local task list for a given rack, or an empty list if
    * there is no map entry for that rack
