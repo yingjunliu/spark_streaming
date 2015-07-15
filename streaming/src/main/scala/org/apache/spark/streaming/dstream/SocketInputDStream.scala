@@ -73,7 +73,6 @@ class SocketReceiver[T: ClassTag](
       val iterator = bytesToObjects(socket.getInputStream())
       while(!isStopped && iterator.hasNext) {
         val temp = iterator.next
-        logInfo(s"test: recieve size is ${temp.asInstanceOf[String].size}")
         store(temp)
       }
       logInfo("Stopped receiving")

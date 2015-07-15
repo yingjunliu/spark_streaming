@@ -90,7 +90,7 @@ private[streaming] class BlockGenerator(
   @volatile private var stopped = false
 
   /** The bufferSlice is used to control the Slice in generate block. */
-  private var bufferSlice = 3
+  private var bufferSlice = 2
 
   /** Start block generating and pushing threads. */
   def start() {

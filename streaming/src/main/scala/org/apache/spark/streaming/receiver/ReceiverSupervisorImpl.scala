@@ -183,6 +183,7 @@ private[streaming] class ReceiverSupervisorImpl(
           arrayBuffer.size
         case _ => 0
       }
+      logInfo(s"total recieved size is ${totalReceivedSize}")
       val speed: Double = totalReceivedSize / (System.currentTimeMillis - startTime)
       trackerActor ! StreamingReceiverSpeed(streamId, speed)
       startTime = System.currentTimeMillis()
