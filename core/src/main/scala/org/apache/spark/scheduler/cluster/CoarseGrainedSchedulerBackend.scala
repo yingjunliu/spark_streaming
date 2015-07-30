@@ -31,6 +31,7 @@ import org.apache.spark.{ExecutorAllocationClient, Logging, SparkEnv, SparkExcep
 import org.apache.spark.scheduler._
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, SerializableBuffer, AkkaUtils, Utils}
+import org.apache.spark.monitor.WorkerMonitorMessages._
 
 /**
  * A scheduler backend that waits for coarse grained executors to connect to it through Akka.
@@ -70,6 +71,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 
   // Executors we have requested the cluster manager to kill that have not died yet
   private val executorsPendingToRemove = new HashSet[String]
+
+  private val workerMonitorToExecutorId = new HashMap[ActorSelection, HashSet[String]]
+  private val executorIdToWorkerMonitor = new HashMap[String, ActorSelection]
+//  private val workersHandleSpeed = new HashMap[String, Double]
 
   class DriverActor(sparkProperties: Seq[(String, String)]) extends Actor with ActorLogReceive {
     override protected def log = CoarseGrainedSchedulerBackend.this.log
@@ -113,6 +118,37 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
           makeOffers()
         }
 
+      // Add worker monitor to get data handled speed in each worker
+      // Added by Liuzhiyi
+      case RegisterWorkerMonitorToSchedulerBackend(executorId, workerMonitorUrl) =>
+        val workerMonitorTemp = context.actorSelection(workerMonitorUrl)
+        if (!workerMonitorToExecutorId.contains(workerMonitorTemp)) {
+          workerMonitorToExecutorId.put(workerMonitorTemp, HashSet[String]())
+        }
+        workerMonitorToExecutorId(workerMonitorTemp) += executorId
+//        if (executorIdToWorkerMonitor.contains(executorId)) {
+//          executorIdToWorkerMonitor.remove(executorId)
+//        }
+        executorIdToWorkerMonitor.put(executorId, workerMonitorTemp)
+        workerMonitorTemp ! RegistedWorkerMonitorInSchedulerBackend
+        logInfo(s"Registered worker monitor ${workerMonitorUrl}")
+
+//      case HandledSpeedInWorkerMonitor(host, handleSpeed) =>
+//        if (workersHandleSpeed.contains(host)) {
+//          workersHandleSpeed.remove(host)
+//        }
+//        if (handleSpeed == 0.0) {
+//          logInfo(s"[Worning] The handle speed in host ${host} is 0!")
+//        } else {
+//          logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
+//        }
+//        workersHandleSpeed.put(host, handleSpeed)
+//        logInfo(s"The handle speed in host ${host} is ${handleSpeed}")
+
+      case StreamingDataSpeed(host, speed) =>
+        //logInfo(s"The speed in streaming ${host} is ${speed}")
+        //logInfo(s"the workers handle speed is ${workersHandleSpeed(host)}")
+
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)
         if (TaskState.isFinished(state)) {
@@ -126,6 +162,11 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
                 "from unknown executor $sender with ID $executorId")
           }
         }
+
+      // Added by Liuzhiyi
+      case HandledDataUpdate(executorId, taskId, dataSize) =>
+        val jobId = scheduler.activeTaskSets(scheduler.taskIdToTaskSetId(taskId)).priority
+        executorIdToWorkerMonitor(executorId) ! HandledDataInExecutor(jobId, dataSize)
 
       case ReviveOffers =>
         makeOffers()
@@ -202,6 +243,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
           executorData.executorActor ! LaunchTask(new SerializableBuffer(serializedTask))
         }
       }
+
+//      for (workerMonitor <- workerMonitorToExecutorId.keysIterator) {
+//        workerMonitor ! QuaryHandledSpeed
+//      }
     }
 
     // Remove a disconnected slave from the cluster
@@ -225,6 +270,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
   }
 
   var driverActor: ActorRef = null
+  var driverActorAddress = ""
   val taskIdsOnSlave = new HashMap[String, HashSet[String]]
 
   override def start() {
@@ -237,6 +283,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
     // TODO (prashant) send conf instead of properties
     driverActor = actorSystem.actorOf(
       Props(new DriverActor(properties)), name = CoarseGrainedSchedulerBackend.ACTOR_NAME)
+//    val tempAddress = driverActor.path.address
+//    val tempHost = tempAddress.host match {case Some(host) => host}
+//    driverActorAddress = AkkaUtils.address(tempAddress.protocol, tempAddress.system,
+//      tempHost, tempAddress.port, CoarseGrainedSchedulerBackend.ACTOR_NAME)
   }
 
   def stopExecutors() {

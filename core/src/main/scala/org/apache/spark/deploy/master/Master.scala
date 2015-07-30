@@ -44,6 +44,8 @@ import org.apache.spark.deploy.master.DriverState.DriverState
 import org.apache.spark.deploy.master.MasterMessages._
 import org.apache.spark.deploy.master.ui.MasterWebUI
 import org.apache.spark.deploy.rest.StandaloneRestServer
+import org.apache.spark.monitor.JobMonitor
+import org.apache.spark.monitor.JobMonitorMessages._
 import org.apache.spark.metrics.MetricsSystem
 import org.apache.spark.scheduler.{EventLoggingListener, ReplayListenerBus}
 import org.apache.spark.ui.SparkUI
@@ -133,6 +135,8 @@ private[spark] class Master(
     }
   private val restServerBoundPort = restServer.map(_.start())
 
+  private var jobMonitorUrls = ""
+
   override def preStart() {
     logInfo("Starting Spark master at " + masterUrl)
     logInfo(s"Running Spark version ${org.apache.spark.SPARK_VERSION}")
@@ -202,6 +206,15 @@ private[spark] class Master(
   }
 
   override def receiveWithLogging = {
+    // Register the job monitor
+    case RequestRegisterJobMonitor(monitorAkkaUrls) =>
+      jobMonitorUrls = monitorAkkaUrls
+      logInfo(s"Registered job monitor ${monitorAkkaUrls}")
+
+    case RequestJobMonitorUrl =>
+      logInfo(s"The request job monitor sender is ${sender}")
+      sender ! JobMonitorUrl(jobMonitorUrls)
+
     case ElectedLeader => {
       val (storedApps, storedDrivers, storedWorkers) = persistenceEngine.readPersistedData()
       state = if (storedApps.isEmpty && storedDrivers.isEmpty && storedWorkers.isEmpty) {
@@ -910,6 +923,15 @@ private[spark] object Master extends Logging {
     val timeout = AkkaUtils.askTimeout(conf)
     val portsRequest = actor.ask(BoundPortsRequest)(timeout)
     val portsResponse = Await.result(portsRequest, timeout).asInstanceOf[BoundPortsResponse]
+
+    val monitorSystemName = "sparkJobMonitor"
+    val monitorActorName = "JobMonitor"
+    val monitorSecurityMgr = new SecurityManager(conf)
+    val (monitorActorSystem, monitorBoundPort) = AkkaUtils.createActorSystem(monitorSystemName, host,
+      boundPort + 1, conf = conf, securityManager = monitorSecurityMgr)
+    monitorActorSystem.actorOf(Props(classOf[JobMonitor], actor, monitorSystemName, host,
+      monitorBoundPort, monitorActorName), name = monitorActorName)
+
     (actorSystem, boundPort, portsResponse.webUIPort, portsResponse.restPort)
   }
 }

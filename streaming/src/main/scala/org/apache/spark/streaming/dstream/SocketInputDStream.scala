@@ -72,7 +72,8 @@ class SocketReceiver[T: ClassTag](
       logInfo("Connected to " + host + ":" + port)
       val iterator = bytesToObjects(socket.getInputStream())
       while(!isStopped && iterator.hasNext) {
-        store(iterator.next)
+        val temp = iterator.next
+        store(temp)
       }
       logInfo("Stopped receiving")
       restart("Retrying connecting to " + host + ":" + port)

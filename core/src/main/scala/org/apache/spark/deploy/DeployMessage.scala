@@ -26,10 +26,10 @@ import org.apache.spark.deploy.master.RecoveryState.MasterState
 import org.apache.spark.deploy.worker.{DriverRunner, ExecutorRunner}
 import org.apache.spark.util.Utils
 
-private[deploy] sealed trait DeployMessage extends Serializable
+private[spark] sealed trait DeployMessage extends Serializable
 
 /** Contains messages sent between Scheduler actor nodes. */
-private[deploy] object DeployMessages {
+private[spark] object DeployMessages {
 
   // Worker to Master
 
@@ -65,6 +65,8 @@ private[deploy] object DeployMessages {
 
   case class Heartbeat(workerId: String) extends DeployMessage
 
+  case object RequestJobMonitorUrl extends  DeployMessage
+
   // Master to Worker
 
   case class RegisteredWorker(masterUrl: String, masterWebUiUrl: String) extends DeployMessage
@@ -89,6 +91,8 @@ private[deploy] object DeployMessages {
   case class KillDriver(driverId: String) extends DeployMessage
 
   case class ApplicationFinished(id: String)
+
+  case class JobMonitorUrl(url: String) extends DeployMessage
 
   // Worker internal
 

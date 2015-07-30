@@ -77,6 +77,8 @@ private[spark] class TaskSchedulerImpl(
   val taskIdToTaskSetId = new HashMap[Long, String]
   val taskIdToExecutorId = new HashMap[Long, String]
 
+  val stageIdToTaskId = new HashMap[Int, HashSet[Long]]
+
   @volatile private var hasReceivedTask = false
   @volatile private var hasLaunchedTask = false
   private val starvationTimer = new Timer(true)

@@ -27,7 +27,7 @@ import akka.actor.{Actor, ActorSelection, Props}
 import akka.pattern.Patterns
 import akka.remote.{RemotingLifecycleEvent, DisassociatedEvent}
 
-import org.apache.spark.{Logging, SecurityManager, SparkConf, SparkEnv}
+import org.apache.spark._
 import org.apache.spark.TaskState.TaskState
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.deploy.worker.WorkerWatcher
@@ -35,7 +35,7 @@ import org.apache.spark.scheduler.TaskDescription
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
 
-import org.apache.spark.monitor.MonitorMessages._
+import org.apache.spark.monitor.WorkerMonitorMessages._
 
 private[spark] class CoarseGrainedExecutorBackend(
     driverUrl: String,
@@ -53,6 +53,9 @@ private[spark] class CoarseGrainedExecutorBackend(
   var driver: ActorSelection = null
   var workerMonitor: ActorSelection = null
 
+  val taskStartTime = new mutable.HashMap[Long, Long]
+  val taskRunTime = new mutable.HashMap[Long, Long]
+
   override def preStart() {
     logInfo("Connecting to driver: " + driverUrl)
     driver = context.actorSelection(driverUrl)
@@ -65,6 +68,8 @@ private[spark] class CoarseGrainedExecutorBackend(
         workerMonitor = context.actorSelection(url)
         logInfo("Connecting to worker monitor: " + workerMonitorUrl)
         workerMonitor ! RegisterExecutorWithMonitor(executorId)
+
+        driver ! RegisterWorkerMonitorToSchedulerBackend(executorId, url)
 
       case None =>
     }
@@ -83,7 +88,15 @@ private[spark] class CoarseGrainedExecutorBackend(
 
     case HandledDataSpeed =>
       logInfo("Get data size which has been handled by executor")
-      workerMonitor ! ExecutorHandledDataSpeed(executor.requireHandledDataSpeed, executorId)
+      val taskHandledDataSize = executor.requireHandledDataSize
+      var totalHandledSpeed = 0.0
+      for (task <- taskHandledDataSize) {
+        totalHandledSpeed += task._2 / taskRunTime(task._1)
+        taskRunTime.remove(task._1)
+      }
+      val averageSpeed = totalHandledSpeed / taskHandledDataSize.size
+
+      workerMonitor ! ExecutorHandledDataSpeed(averageSpeed, executorId)
 
     case RegisteredExecutor =>
       logInfo("Successfully registered with driver")
@@ -102,6 +115,7 @@ private[spark] class CoarseGrainedExecutorBackend(
         val ser = env.closureSerializer.newInstance()
         val taskDesc = ser.deserialize[TaskDescription](data.value)
         logInfo("Got assigned task " + taskDesc.taskId)
+        taskStartTime(taskDesc.taskId) = System.currentTimeMillis()
         executor.launchTask(this, taskId = taskDesc.taskId, attemptNumber = taskDesc.attemptNumber,
           taskDesc.name, taskDesc.serializedTask)
       }
@@ -136,6 +150,14 @@ private[spark] class CoarseGrainedExecutorBackend(
 
   override def statusUpdate(taskId: Long, state: TaskState, data: ByteBuffer) {
     driver ! StatusUpdate(executorId, taskId, state, data)
+    if (state == TaskState.FINISHED) {
+      taskRunTime(taskId) = System.currentTimeMillis() - taskStartTime(taskId)
+      taskStartTime.remove(taskId)
+    }
+  }
+
+  override def handledDataUpdate(taskId: Long, dataSize: Long) = {
+    driver ! HandledDataUpdate(executorId, taskId, dataSize)
   }
 }
 

@@ -116,7 +116,10 @@ private[spark] class Executor(
   // Maintains the list of running tasks.
   private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
 
-  private var handledDataSpeed = new ConcurrentHashMap[Long, Double]
+  private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
+
+  private val startTime = new ConcurrentHashMap[Long, Long]
+  private val taskDataSize = new ConcurrentHashMap[Long, Long]
 
   startDriverHeartbeater()
 
@@ -126,13 +129,13 @@ private[spark] class Executor(
       attemptNumber: Int,
       taskName: String,
       serializedTask: ByteBuffer) {
+    startTime(taskId) = System.currentTimeMillis()
     val tr = new TaskRunner(context, taskId = taskId, attemptNumber = attemptNumber, taskName,
       serializedTask)
     runningTasks.put(taskId, tr)
     threadPool.execute(tr)
 
-    handledDataSpeed.put(taskId, handledDataSpeed.get(taskId) + tr.handledDataSpeed)
-    tr.handledDataSpeed = 0.0
+    //tr.handledDataSpeed = 0.0
   }
 
   def requireHandledDataSpeed = {
@@ -143,7 +146,17 @@ private[spark] class Executor(
       totalHandledDataSpeed += i._2
     }
 
-    totalHandledDataSpeed
+    val result: Double = totalHandledDataSpeed / handledDataSpeed.size()
+    handledDataSpeed.clear()
+
+    result
+  }
+
+  def requireHandledDataSize: Map[Long, Long] = {
+    val taskDataSizeTemp = taskDataSize.toMap
+    taskDataSize.clear()
+
+    taskDataSizeTemp
   }
 
   def killTask(taskId: Long, interruptThread: Boolean) {
@@ -152,7 +165,11 @@ private[spark] class Executor(
       tr.kill(interruptThread)
     }
 
-    handledDataSpeed.remove(taskId)
+    try{
+      handledDataSpeed.remove(taskId)
+    } catch {
+      case _ => None
+    }
   }
 
   def stop() {
@@ -181,8 +198,6 @@ private[spark] class Executor(
     @volatile var task: Task[Any] = _
     @volatile var attemptedTask: Option[Task[Any]] = None
     @volatile var startGCTime: Long = _
-
-    @volatile var handledDataSpeed = 0.0
 
     def kill(interruptThread: Boolean) {
       logInfo(s"Executor is trying to kill $taskName (TID $taskId)")
@@ -225,7 +240,13 @@ private[spark] class Executor(
         val (handledDataSize, value) = task.run(taskAttemptId = taskId, attemptNumber = attemptNumber)
         val taskFinish = System.currentTimeMillis()
 
-        handledDataSpeed = handledDataSize / (taskFinish - taskStart)
+//        val handledDataSpeedInTaskRunner: Double = handledDataSize / (taskFinish - taskStart)
+//        if (handledDataSpeed.contains(taskId)) {
+//          handledDataSpeed.put(taskId, (handledDataSpeed.get(taskId) + handledDataSpeedInTaskRunner) / 2)
+//        } else {
+//          handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
+//        }
+//        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
 
         // If the task has been killed, let's fail it.
         if (task.killed) {
@@ -270,6 +291,11 @@ private[spark] class Executor(
           }
         }
 
+//        val handledDataSpeedInTaskRunner: Double = handledDataSize / (System.currentTimeMillis - startTime(taskId))
+//        handledDataSpeed.put(taskId, handledDataSpeedInTaskRunner)
+//        startTime.remove(taskId)
+
+        execBackend.handledDataUpdate(taskId, handledDataSize)
         execBackend.statusUpdate(taskId, TaskState.FINISHED, serializedResult)
 
       } catch {

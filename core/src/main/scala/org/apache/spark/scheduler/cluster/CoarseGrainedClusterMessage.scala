@@ -48,6 +48,10 @@ private[spark] object CoarseGrainedClusterMessages {
     Utils.checkHostPort(hostPort, "Expected host port")
   }
 
+  // Worker monitor to get data handle speed
+  case class RegisterWorkerMonitorToSchedulerBackend(executorId: String,
+                                   workerMonitorUrl: String) extends CoarseGrainedClusterMessage
+
   case class StatusUpdate(executorId: String, taskId: Long, state: TaskState,
     data: SerializableBuffer) extends CoarseGrainedClusterMessage
 
@@ -58,6 +62,8 @@ private[spark] object CoarseGrainedClusterMessages {
       StatusUpdate(executorId, taskId, state, new SerializableBuffer(data))
     }
   }
+
+  case class HandledDataUpdate(executorId: String, taskId: Long, DataSize: Long) extends CoarseGrainedClusterMessage
 
   // Internal messages in driver
   case object ReviveOffers extends CoarseGrainedClusterMessage
@@ -84,5 +90,8 @@ private[spark] object CoarseGrainedClusterMessages {
   case class RequestExecutors(requestedTotal: Int) extends CoarseGrainedClusterMessage
 
   case class KillExecutors(executorIds: Seq[String]) extends CoarseGrainedClusterMessage
+
+  // Streaming receiver to scheduler backend.
+  case class StreamingDataSpeed(host: String, Speed: Double) extends CoarseGrainedClusterMessage
 
 }

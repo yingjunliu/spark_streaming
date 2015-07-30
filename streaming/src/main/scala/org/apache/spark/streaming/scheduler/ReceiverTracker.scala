@@ -18,14 +18,22 @@
 package org.apache.spark.streaming.scheduler
 
 
+import org.apache.spark.deploy.master.Master
+import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages.StreamingDataSpeed
+import org.apache.spark.util.AkkaUtils
+
 import scala.collection.mutable.{HashMap, SynchronizedMap}
 import scala.language.existentials
 
 import akka.actor._
 
 import org.apache.spark.{Logging, SerializableWritable, SparkEnv, SparkException}
+import org.apache.spark.scheduler.SchedulerBackend
+import org.apache.spark.scheduler.cluster.CoarseGrainedSchedulerBackend
 import org.apache.spark.streaming.{StreamingContext, Time}
-import org.apache.spark.streaming.receiver.{CleanupOldBlocks, Receiver, ReceiverSupervisorImpl, StopReceiver}
+import org.apache.spark.streaming.receiver._
+import org.apache.spark.deploy.DeployMessages._
+import org.apache.spark.monitor.JobMonitorMessages._
 
 /**
  * Messages used by the NetworkReceiver and the ReceiverTracker to communicate
@@ -42,6 +50,8 @@ private[streaming] case class AddBlock(receivedBlockInfo: ReceivedBlockInfo)
   extends ReceiverTrackerMessage
 private[streaming] case class ReportError(streamId: Int, message: String, error: String)
 private[streaming] case class DeregisterReceiver(streamId: Int, msg: String, error: String)
+  extends ReceiverTrackerMessage
+private[streaming] case class StreamingReceiverSpeed(streamId: Int, speed: Double)
   extends ReceiverTrackerMessage
 
 /**
@@ -70,6 +80,9 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
   // actor is created when generator starts.
   // This not being null means the tracker has been started and not stopped
   private var actor: ActorRef = null
+
+  private var jobMonitor: ActorSelection = null
+  private var jobMonitorUrl: String = null
 
   /** Start the actor and receiver execution thread. */
   def start() = synchronized {
@@ -201,17 +214,58 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
 
   /** Actor to receive messages from the receivers. */
   private class ReceiverTrackerActor extends Actor {
+    override def preStart() = {
+      // Regular expression for connecting to Spark deploy clusters
+      val SPARK_REGEX = """spark://(.*)""".r
+
+      logInfo(s"the master is ${ssc.sc.master}")
+      ssc.sc.master match {
+        case SPARK_REGEX(sparkUrls) =>
+          val masterUrls = sparkUrls.split(",").map("spark://" + _)
+          val masterAkkaUrls = masterUrls.map(Master.toAkkaUrl(_, AkkaUtils.protocol(ssc.sc.env.actorSystem)))
+          logInfo(s"the masterAkkaUrls is ${masterAkkaUrls}")
+          for (masterAkkaUrl <- masterAkkaUrls) {
+            val masterActor = context.actorSelection(masterAkkaUrl)
+            masterActor ! RequestJobMonitorUrl
+          }
+      }
+    }
+
     def receive = {
       case RegisterReceiver(streamId, typ, host, receiverActor) =>
         registerReceiver(streamId, typ, host, receiverActor, sender)
         sender ! true
+        jobMonitor ! RequestRegisterReceiver(streamId)
+
       case AddBlock(receivedBlockInfo) =>
         sender ! addBlock(receivedBlockInfo)
+
       case ReportError(streamId, message, error) =>
         reportError(streamId, message, error)
+
       case DeregisterReceiver(streamId, message, error) =>
         deregisterReceiver(streamId, message, error)
         sender ! true
+
+      case StreamingReceiverSpeed(streamId, speed) =>
+//        val driver = ssc.sc.schedulerBackend.asInstanceOf[CoarseGrainedSchedulerBackend].driverActor
+//        driver ! StreamingDataSpeed(receiverInfo(streamId).location, speed)
+        logInfo(s"streamId is ${streamId}, speed is ${speed}, location is ${receiverInfo(streamId).location}")
+        logInfo(s"${receiverInfo}")
+        jobMonitor ! StreamingReceiverSpeedToMonitor(streamId, speed, receiverInfo(streamId).location)
+
+      case JobMonitorUrl(url) =>
+        logInfo(s"Job Monitor Url is ${url}")
+        jobMonitor = context.actorSelection(url)
+        jobMonitorUrl = url
+
+      case RegisteredReceiver =>
+        logInfo(s"Regestered in job monitor ${sender}")
+
+      case SplitRecieverDataOrNot(streamId, needSplit) =>
+        logInfo(s"the stream ${streamId} split state is ${needSplit}")
+        receiverInfo(streamId).actor ! NeedSplit(needSplit)
+
     }
   }
 

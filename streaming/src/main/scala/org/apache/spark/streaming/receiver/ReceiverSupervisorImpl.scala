@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Await
 
-import akka.actor.{Actor, Props}
+import akka.actor._
 import akka.pattern.ask
 import com.google.common.base.Throwables
 import org.apache.hadoop.conf.Configuration
@@ -79,21 +79,27 @@ private[streaming] class ReceiverSupervisorImpl(
   /** Timeout for Akka actor messages */
   private val askTimeout = AkkaUtils.askTimeout(env.conf)
 
+  private val ReceiverId = "Receiver-" + streamId + "-" + System.currentTimeMillis()
+
   /** Akka actor for receiving messages from the ReceiverTracker in the driver */
   private val actor = env.actorSystem.actorOf(
     Props(new Actor {
 
       override def receive() = {
+
         case StopReceiver =>
           logInfo("Received stop signal")
           stop("Stopped by driver", None)
         case CleanupOldBlocks(threshTime) =>
           logDebug("Received delete old batch signal")
           cleanupOldBlocks(threshTime)
+        case NeedSplit(need) =>
+          logInfo(s"the reciever split is ${need}")
+          blockGenerator.changeUpdateFunction(need)
       }
 
       def ref = self
-    }), "Receiver-" + streamId + "-" + System.currentTimeMillis())
+    }), ReceiverId)
 
   /** Unique block ids if one wants to add blocks directly */
   private val newBlockId = new AtomicLong(System.currentTimeMillis())
@@ -145,6 +151,9 @@ private[streaming] class ReceiverSupervisorImpl(
     pushAndReportBlock(ByteBufferBlock(bytes), metadataOption, blockIdOption)
   }
 
+  var startTime = System.currentTimeMillis
+  var totalReceivedSize: Long = 0L
+
   /** Store block and report it to driver */
   def pushAndReportBlock(
       receivedBlock: ReceivedBlock,
@@ -159,12 +168,25 @@ private[streaming] class ReceiverSupervisorImpl(
 
     val time = System.currentTimeMillis
     val blockStoreResult = receivedBlockHandler.storeBlock(blockId, receivedBlock)
-    logDebug(s"Pushed block $blockId in ${(System.currentTimeMillis - time)} ms")
+    val endTime = System.currentTimeMillis
+    logDebug(s"Pushed block $blockId in ${(endTime - time)} ms")
 
     val blockInfo = ReceivedBlockInfo(streamId, numRecords, blockStoreResult)
     val future = trackerActor.ask(AddBlock(blockInfo))(askTimeout)
     Await.result(future, askTimeout)
     logDebug(s"Reported block $blockId")
+
+    try {
+      totalReceivedSize = env.blockManager.getBlockSize(blockId)
+
+      val speed: Double = totalReceivedSize / (System.currentTimeMillis - startTime)
+      trackerActor ! StreamingReceiverSpeed(streamId, speed)
+      startTime = System.currentTimeMillis()
+
+    } catch {
+      case _ => None
+    }
+
 
     /**
      * Relocate the streaming block when slice number is not 0
@@ -176,8 +198,10 @@ private[streaming] class ReceiverSupervisorImpl(
     logInfo(s"Before reallocate, block name is ${blockId.name}")
     blockId.name match {
       case STREAM(streamId, uniqueId, sliceId) =>
-        if (sliceId != 0) receivedBlockHandler.reallocateBlock(blockId)
-        logInfo(s"Relocated block ${blockId}")
+        if (sliceId != "0") {
+          receivedBlockHandler.reallocateBlock(blockId)
+          logInfo(s"Relocated block ${blockId}")
+        }
 
       case _ =>
         logInfo(s"None streaming block to reallocate")

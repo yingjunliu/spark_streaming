@@ -135,6 +135,12 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     case GetAllBlockManagerId =>
       sender ! getAllBlockManagerId()
 
+    case DistributeBlock(blockId, newBlockManager) =>
+      sender ! distributeBlock(blockId, newBlockManager)
+
+    case AllocateBlockIdsInBlockManager(blockIds) =>
+      sender ! allocateBlockIdsInBlockManager(blockIds)
+
     case other =>
       logWarning("Got unknown message: " + other)
   }
@@ -408,13 +414,78 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     blockIds.map(blockId => getLocations(blockId))
   }
 
+  private def allocateBlockIdsInBlockManager(blockIds: mutable.HashSet[BlockId]): Boolean = {
+    for (blockId <- blockIds) {
+      if(!blockLocations.containsKey(blockId)) {
+        logInfo(s"The block location not contains ${blockId}, allocate blocks " +
+          s"in block manager failed")
+        return false
+      }
+      val locations = blockLocations.get(blockId)
+      locations.foreach( location => {
+        val blockManagerSlaveActor = blockManagerInfo.get(location)
+        if(blockManagerSlaveActor.isDefined) {
+          blockManagerSlaveActor.get.slaveActor.ask(AllocateBlockIdToBlockManager(blockId))(akkaTimeout)
+        }
+      })
+    }
+
+    true
+  }
+
+  /**
+   * The block manager splits the block and form a new block.
+   * Registers new block and records their locations.
+   *
+   * Added by Liuzhiyi
+   */
+  private def distributeBlock(blockId: BlockId, newBlockManagerId: BlockManagerId): Boolean = {
+    if (blockLocations.containsKey(blockId)) {
+      logInfo(s"the blockId ${blockId} has exist")
+      false
+    } else {
+//      blockManagerInfo(newBlockManagerId).updateLastSeenMs()
+//      blockManagerInfo(newBlockManagerId).updateBlockInfo(
+//        blockId, storageLevel, memSize, diskSize, tachyonSize)
+
+      val locations = new mutable.HashSet[BlockManagerId]
+      locations.add(newBlockManagerId)
+      blockLocations.put(blockId, locations)
+
+      true
+    }
+  }
+
+  /**
+   * Relocate the exist block from one block manager to another.
+   *
+   * Added by Liuzhiyi
+   */
   private def relocateBlockId(blockId: BlockId,
                               oldBlockManager: BlockManagerId,
                               newBlockManager: BlockManagerId): Boolean = {
-    if (blockLocations.contains(blockId)) {
+    if (blockLocations.containsKey(blockId)) {
       val oldBlockLocations = blockLocations(blockId)
       oldBlockLocations.remove(oldBlockManager)
       oldBlockLocations.add(newBlockManager)
+
+      // The blockManager should be updated too.
+      // Added by Liuzhiyi
+      if (blockManagerInfo.contains(oldBlockManager) && blockManagerInfo.contains(newBlockManager)) {
+        val oldBlockManagerInfo = blockManagerInfo(oldBlockManager)
+        val blockStatusInfo = oldBlockManagerInfo.getBlockStatus(blockId) match {
+          case Some(blockStatus) => blockStatus
+          case None => null
+        }
+        oldBlockManagerInfo.removeBlock(blockId)
+
+        val newBlockManagerInfo = blockManagerInfo(newBlockManager)
+        newBlockManagerInfo.updateBlockInfo(blockId,
+                                            blockStatusInfo.storageLevel,
+                                            blockStatusInfo.memSize,
+                                            blockStatusInfo.diskSize,
+                                            blockStatusInfo.tachyonSize)
+      }
 
       true
     } else {
@@ -422,6 +493,12 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     }
   }
 
+  /**
+   * The block manager can randomly choose new block manager to send blocks.
+   * Only for testing
+   *
+   * Added by Liuzhiyi
+   */
   private def getAllBlockManagerId(): Seq[BlockManagerId] = {
     blockManagerInfo.keySet.toSeq
   }
@@ -553,6 +630,14 @@ private[spark] class BlockManagerInfo(
     if (_blocks.containsKey(blockId)) {
       _remainingMem += _blocks.get(blockId).memSize
       _blocks.remove(blockId)
+    }
+  }
+
+  def getBlockStatus(blockId: BlockId): Option[BlockStatus] = {
+    if (_blocks.containsKey(blockId)) {
+      Some(_blocks(blockId))
+    } else {
+      None
     }
   }
 
