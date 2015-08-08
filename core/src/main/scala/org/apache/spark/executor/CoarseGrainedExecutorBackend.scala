@@ -35,7 +35,7 @@ import org.apache.spark.scheduler.TaskDescription
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
 
-import org.apache.spark.monitor.MonitorMessages._
+import org.apache.spark.monitor.WorkerMonitorMessages._
 
 private[spark] class CoarseGrainedExecutorBackend(
     driverUrl: String,
@@ -53,6 +53,8 @@ private[spark] class CoarseGrainedExecutorBackend(
   var driver: ActorSelection = null
   var workerMonitor: ActorSelection = null
 
+  var totalSpeed = 0.0
+
   override def preStart() {
     logInfo("Connecting to driver: " + driverUrl)
     driver = context.actorSelection(driverUrl)
@@ -64,7 +66,9 @@ private[spark] class CoarseGrainedExecutorBackend(
       case Some(url) =>
         workerMonitor = context.actorSelection(url)
         logInfo("Connecting to worker monitor: " + workerMonitorUrl)
-        workerMonitor ! RegisterExecutorWithMonitor(executorId)
+        workerMonitor ! RegisterExecutorInWorkerMonitor(executorId)
+
+        driver ! RegisterWorkerMonitorInSchedulerBackend(url)
 
       case None =>
     }
@@ -81,9 +85,9 @@ private[spark] class CoarseGrainedExecutorBackend(
     case RegisteredExecutorInWorkerMonitor =>
       logInfo("Successfully registered with WorkerMonitor")
 
-    case HandledDataSpeed =>
-      logInfo("Get data size which has been handled by executor")
-      workerMonitor ! ExecutorHandledDataSpeed(executor.requireHandledDataSpeed, executorId)
+//    case HandledDataSpeed =>
+//      logInfo("Get data size which has been handled by executor")
+//      workerMonitor ! ExecutorHandledDataSpeed(executor.requireHandledDataSpeed, executorId)
 
     case RegisteredExecutor =>
       logInfo("Successfully registered with driver")
@@ -118,8 +122,10 @@ private[spark] class CoarseGrainedExecutorBackend(
       if (x.remoteAddress == driver.anchorPath.address) {
         logError(s"Driver $x disassociated! Shutting down.")
 
-        if ((workerMonitor != null) && (!executor.excutorIsStoped))
+        if ((workerMonitor != null) && (!executor.excutorIsStoped)) {
           workerMonitor ! StoppedExecutor(executorId)
+          totalSpeed = 0.0
+        }
 
         System.exit(1)
       } else {
@@ -131,11 +137,21 @@ private[spark] class CoarseGrainedExecutorBackend(
       executor.stop()
       context.stop(self)
       context.system.shutdown()
-      if (workerMonitor != null) workerMonitor ! StoppedExecutor(executorId)
+      if (workerMonitor != null) {
+        workerMonitor ! StoppedExecutor(executorId)
+        totalSpeed = 0.0
+      }
   }
 
   override def statusUpdate(taskId: Long, state: TaskState, data: ByteBuffer) {
     driver ! StatusUpdate(executorId, taskId, state, data)
+  }
+
+  override def handledDataUpdate(taskId: Long, startTime: Long, endTime: Long, dataSize: Long): Unit = {
+    val currentHandledSpeed = (dataSize / (endTime - startTime)).abs
+    totalSpeed = if (totalSpeed == 0) currentHandledSpeed else totalSpeed * 0.4 + currentHandledSpeed * 0.6
+    logInfo(s"executor ${executorId} current handled speed ${currentHandledSpeed}, total handled speed ${totalSpeed}")
+    workerMonitor ! ExecutorHandledDataSpeed(totalSpeed, executorId)
   }
 }
 

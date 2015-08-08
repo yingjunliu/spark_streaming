@@ -48,6 +48,8 @@ import org.apache.spark.metrics.MetricsSystem
 import org.apache.spark.scheduler.{EventLoggingListener, ReplayListenerBus}
 import org.apache.spark.ui.SparkUI
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
+import org.apache.spark.monitor.JobMonitor
+import org.apache.spark.monitor.JobMonitorMessages._
 
 private[spark] class Master(
     host: String,
@@ -133,6 +135,8 @@ private[spark] class Master(
     }
   private val restServerBoundPort = restServer.map(_.start())
 
+  private var jobMonitorUrl = ""
+
   override def preStart() {
     logInfo("Starting Spark master at " + masterUrl)
     logInfo(s"Running Spark version ${org.apache.spark.SPARK_VERSION}")
@@ -202,6 +206,13 @@ private[spark] class Master(
   }
 
   override def receiveWithLogging = {
+    case RegisterJobMonitor(monitorUrl) =>
+      jobMonitorUrl = monitorUrl
+      sender ! RegisteredJobMonitor
+
+    case RequestJobMonitorUrl =>
+      sender ! JobMonitorUrl(jobMonitorUrl)
+
     case ElectedLeader => {
       val (storedApps, storedDrivers, storedWorkers) = persistenceEngine.readPersistedData()
       state = if (storedApps.isEmpty && storedDrivers.isEmpty && storedWorkers.isEmpty) {
@@ -910,6 +921,17 @@ private[spark] object Master extends Logging {
     val timeout = AkkaUtils.askTimeout(conf)
     val portsRequest = actor.ask(BoundPortsRequest)(timeout)
     val portsResponse = Await.result(portsRequest, timeout).asInstanceOf[BoundPortsResponse]
+
+    // Establish job monitor
+    // Added by Liuzhiyi
+    val jobMonitorSystemName = "sparkJobMonitor"
+    val jobMonitorActorName = "JobMonitor"
+    val jobMonitorSecurityMgr = new SecurityManager(conf)
+    val (jobMonitorActorSystem, jobMonitorBoundPort) = AkkaUtils.createActorSystem(jobMonitorSystemName, host,
+      boundPort + 1, conf = conf, securityManager = jobMonitorSecurityMgr)
+    jobMonitorActorSystem.actorOf(Props(classOf[JobMonitor], actor, jobMonitorSystemName, host,
+      jobMonitorBoundPort, jobMonitorActorName), name = jobMonitorActorName)
+
     (actorSystem, boundPort, portsResponse.webUIPort, portsResponse.restPort)
   }
 }

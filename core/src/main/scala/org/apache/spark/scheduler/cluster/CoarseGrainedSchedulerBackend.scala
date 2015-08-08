@@ -31,6 +31,7 @@ import org.apache.spark.{ExecutorAllocationClient, Logging, SparkEnv, SparkExcep
 import org.apache.spark.scheduler._
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util.{ActorLogReceive, SerializableBuffer, AkkaUtils, Utils}
+import org.apache.spark.monitor.WorkerMonitorMessages._
 
 /**
  * A scheduler backend that waits for coarse grained executors to connect to it through Akka.
@@ -70,6 +71,9 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 
   // Executors we have requested the cluster manager to kill that have not died yet
   private val executorsPendingToRemove = new HashSet[String]
+
+  private val workerMonitorUrls = new HashSet[String]
+  private val workerMonitorActor = new HashMap[String, ActorRef]  // [host, actor]
 
   class DriverActor(sparkProperties: Seq[(String, String)]) extends Actor with ActorLogReceive {
     override protected def log = CoarseGrainedSchedulerBackend.this.log
@@ -113,6 +117,17 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
           makeOffers()
         }
 
+      // Added by Liuzhiyi
+      case RegisterWorkerMonitorInSchedulerBackend(urls) =>
+        if (!workerMonitorUrls.contains(urls)) {
+          workerMonitorUrls.add(urls)
+          context.actorSelection(urls) ! RequestConnectionToWorkerMonitor
+        }
+
+      case ConnectedWithWorkerMonitor(host) =>
+        workerMonitorActor(host) = sender
+        logInfo(s"Connected with worker monitor ${sender}")
+
       case StatusUpdate(executorId, taskId, state, data) =>
         scheduler.statusUpdate(taskId, state, data.value)
         if (TaskState.isFinished(state)) {
@@ -138,6 +153,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
             // Ignoring the task kill since the executor is not registered.
             logWarning(s"Attempted to kill task $taskId for unknown executor $executorId.")
         }
+
+      case NotifyWorkerMonitorForPendingTaskAmount(host, amount) =>
+        logInfo(s"test - host ${host} amount ${amount}")
+        workerMonitorActor(host) ! PendingTaskAmount(amount)
 
       case StopDriver =>
         sender ! true
@@ -267,6 +286,9 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
 
   override def reviveOffers() {
     driverActor ! ReviveOffers
+  }
+  override def notifyWorkerMonitorForPendingTaskAmount(host: String, amount: Int) = {
+    driverActor ! NotifyWorkerMonitorForPendingTaskAmount(host, amount)
   }
 
   override def killTask(taskId: Long, executorId: String, interruptThread: Boolean) {

@@ -116,7 +116,7 @@ private[spark] class Executor(
   // Maintains the list of running tasks.
   private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
 
-  private var handledDataSpeed = new ConcurrentHashMap[Long, Double]
+  private val handledDataSpeed = new ConcurrentHashMap[Long, Double]
 
   startDriverHeartbeater()
 
@@ -131,20 +131,20 @@ private[spark] class Executor(
     runningTasks.put(taskId, tr)
     threadPool.execute(tr)
 
-    handledDataSpeed.put(taskId, handledDataSpeed.get(taskId) + tr.handledDataSpeed)
-    tr.handledDataSpeed = 0.0
+//    handledDataSpeed.put(taskId, handledDataSpeed.get(taskId) + tr.handledDataSpeed)
+//    tr.handledDataSpeed = 0.0
   }
 
-  def requireHandledDataSpeed = {
-    var totalHandledDataSpeed: Double = 0.0
-
-    for(i <- handledDataSpeed)
-    {
-      totalHandledDataSpeed += i._2
-    }
-
-    totalHandledDataSpeed
-  }
+//  def requireHandledDataSpeed = {
+//    var totalHandledDataSpeed: Double = 0.0
+//
+//    for(i <- handledDataSpeed)
+//    {
+//      totalHandledDataSpeed += i._2
+//    }
+//
+//    totalHandledDataSpeed
+//  }
 
   def killTask(taskId: Long, interruptThread: Boolean) {
     val tr = runningTasks.get(taskId)
@@ -181,8 +181,6 @@ private[spark] class Executor(
     @volatile var task: Task[Any] = _
     @volatile var attemptedTask: Option[Task[Any]] = None
     @volatile var startGCTime: Long = _
-
-    @volatile var handledDataSpeed = 0.0
 
     def kill(interruptThread: Boolean) {
       logInfo(s"Executor is trying to kill $taskName (TID $taskId)")
@@ -224,8 +222,6 @@ private[spark] class Executor(
         taskStart = System.currentTimeMillis()
         val (handledDataSize, value) = task.run(taskAttemptId = taskId, attemptNumber = attemptNumber)
         val taskFinish = System.currentTimeMillis()
-
-        handledDataSpeed = handledDataSize / (taskFinish - taskStart)
 
         // If the task has been killed, let's fail it.
         if (task.killed) {
@@ -270,6 +266,7 @@ private[spark] class Executor(
           }
         }
 
+        execBackend.handledDataUpdate(taskId, taskStart, taskFinish, handledDataSize)
         execBackend.statusUpdate(taskId, TaskState.FINISHED, serializedResult)
 
       } catch {

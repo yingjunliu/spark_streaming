@@ -22,7 +22,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.{UUID, Date}
 
-import org.apache.spark.monitor.MonitorMessages.{RegistedWorkerMonitor, RegisterWorkerMonitor}
+import org.apache.spark.monitor.WorkerMonitorMessages.{RegisteredWorkerMonitor, RegisterWorkerMonitor}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{HashMap, HashSet}
@@ -40,7 +40,7 @@ import org.apache.spark.deploy.master.{DriverState, Master}
 import org.apache.spark.deploy.worker.ui.WorkerWebUI
 import org.apache.spark.metrics.MetricsSystem
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
-import org.apache.spark.monitor.{WorkerMonitor, MonitorMessage}
+import org.apache.spark.monitor.{WorkerMonitor, WorkerMonitorMessage}
 
 /**
   * @param masterAkkaUrls Each url should be a valid akka url.
@@ -498,7 +498,7 @@ private[spark] class Worker(
     case RegisterWorkerMonitor(monitorAkkaUrls) =>
       logInfo("Registerd worker monitor " + monitorAkkaUrls)
       monitorAkkaUrl = monitorAkkaUrls
-      sender ! RegistedWorkerMonitor
+      sender ! RegisteredWorkerMonitor(workerId)
   }
 
   private def masterDisconnected() {

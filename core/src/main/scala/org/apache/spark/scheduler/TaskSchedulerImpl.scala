@@ -21,6 +21,8 @@ import java.nio.ByteBuffer
 import java.util.{TimerTask, Timer}
 import java.util.concurrent.atomic.AtomicLong
 
+import akka.actor.Actor
+
 import scala.concurrent.duration._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
@@ -161,6 +163,11 @@ private[spark] class TaskSchedulerImpl(
       val manager = createTaskSetManager(taskSet, maxTaskFailures)
       activeTaskSets(taskSet.id) = manager
       schedulableBuilder.addTaskSetManager(manager, manager.taskSet.properties)
+
+      val pendingTaskAmountForHost = manager.queryPendingTaskAmountForHost()
+      for (host <- pendingTaskAmountForHost) {
+        backend.notifyWorkerMonitorForPendingTaskAmount(host._1, host._2)
+      }
 
       if (!isLocal && !hasReceivedTask) {
         starvationTimer.scheduleAtFixedRate(new TimerTask() {

@@ -48,6 +48,8 @@ private[spark] object CoarseGrainedClusterMessages {
     Utils.checkHostPort(hostPort, "Expected host port")
   }
 
+  case class RegisterWorkerMonitorInSchedulerBackend(workerMonitorUrls: String) extends CoarseGrainedClusterMessage
+
   case class StatusUpdate(executorId: String, taskId: Long, state: TaskState,
     data: SerializableBuffer) extends CoarseGrainedClusterMessage
 
@@ -60,6 +62,8 @@ private[spark] object CoarseGrainedClusterMessages {
   }
 
   // Internal messages in driver
+  case class NotifyWorkerMonitorForPendingTaskAmount(host: String, amount: Int) extends CoarseGrainedClusterMessage
+
   case object ReviveOffers extends CoarseGrainedClusterMessage
 
   case object StopDriver extends CoarseGrainedClusterMessage

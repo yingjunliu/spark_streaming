@@ -65,6 +65,8 @@ private[deploy] object DeployMessages {
 
   case class Heartbeat(workerId: String) extends DeployMessage
 
+  case object RequestJobMonitorUrl
+
   // Master to Worker
 
   case class RegisteredWorker(masterUrl: String, masterWebUiUrl: String) extends DeployMessage
@@ -89,6 +91,8 @@ private[deploy] object DeployMessages {
   case class KillDriver(driverId: String) extends DeployMessage
 
   case class ApplicationFinished(id: String)
+
+  case class JobMonitorUrl(url: String) extends DeployMessage
 
   // Worker internal
 
