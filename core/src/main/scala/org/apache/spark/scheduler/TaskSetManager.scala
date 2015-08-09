@@ -120,6 +120,17 @@ private[spark] class TaskSetManager(
   // but at host level.
   private val pendingTasksForHost = new HashMap[String, ArrayBuffer[Int]]
 
+  def queryPendingTaskPartitionsForHost(): HashMap[String, HashSet[Partition]] = {
+    val result = new HashMap[String, HashSet[Partition]]
+    for (host <- pendingTasksForHost) {
+      result(host._1) = new HashSet[Partition]
+      for (taskIndex <- host._2) {
+        result(host._1).add(tasks(taskIndex).getPartition)
+      }
+    }
+    result
+  }
+
   def queryPendingTaskAmountForHost(): HashMap[String, Int] = {
     val result = new HashMap[String, Int]
     for (host <- pendingTasksForHost) {

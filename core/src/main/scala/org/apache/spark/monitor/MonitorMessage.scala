@@ -17,7 +17,7 @@ private[spark] object WorkerMonitorMessages {
 
   // Executor to WorkerMonitor
   // Added by Liuzhiyi
-  case class ExecutorHandledDataSpeed(size: Double, executorId: String) extends WorkerMonitorMessage
+  case class ExecutorHandledDataSpeed(size: Long, speed: Double, executorId: String) extends WorkerMonitorMessage
 
   case class RegisterExecutorInWorkerMonitor(executorId: String) extends WorkerMonitorMessage
 
@@ -41,6 +41,8 @@ private[spark] object WorkerMonitorMessages {
 
   case class PendingTaskAmount(amount: Int) extends WorkerMonitorMessage
 
+  case class PendingTaskSize(size: Long) extends WorkerMonitorMessage
+
   // WorkerMonitor to CoarseGrainedSchedulerBackend
   // Added by Liuzhiyi
   case class ConnectedWithWorkerMonitor(host: String) extends WorkerMonitorMessage
@@ -57,10 +59,12 @@ private[spark] object JobMonitorMessages {
   case object RegisteredJobMonitor
 
   // Receiver to JobMonitor
-  case class receivedDataSize(receiverId: Int, dataSize: Long) extends JobMonitorMessage
+  case class BatchDuration(duration: Long) extends JobMonitorMessage
+
+  case class ReceivedDataSize(receiverId: Int, dataSize: Long) extends JobMonitorMessage
 
   // JobMonitor to BlockGenerator in spark streaming
-  case class updateFunction(needSplit: Boolean, workerDataRatio: HashMap[String, Double]) extends JobMonitorMessage
+  case class UpdateFunction(needSplit: Boolean, workerDataRatio: HashMap[String, Double]) extends JobMonitorMessage
 }
 
 private[spark] sealed trait MonitorMessage extends Serializable
@@ -78,4 +82,6 @@ private[spark] object MonitorMessages {
   case object QueryEstimateDataSize
 
   case object RegisteredWorkerMonitorInJobMonitor
+
+  case class StreamingBatchDuration(duration: Long) extends MonitorMessage
 }

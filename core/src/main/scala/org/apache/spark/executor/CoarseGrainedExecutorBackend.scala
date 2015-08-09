@@ -151,7 +151,7 @@ private[spark] class CoarseGrainedExecutorBackend(
     val currentHandledSpeed = (dataSize / (endTime - startTime)).abs
     totalSpeed = if (totalSpeed == 0) currentHandledSpeed else totalSpeed * 0.4 + currentHandledSpeed * 0.6
     logInfo(s"executor ${executorId} current handled speed ${currentHandledSpeed}, total handled speed ${totalSpeed}")
-    workerMonitor ! ExecutorHandledDataSpeed(totalSpeed, executorId)
+    workerMonitor ! ExecutorHandledDataSpeed(dataSize, totalSpeed, executorId)
   }
 }
 

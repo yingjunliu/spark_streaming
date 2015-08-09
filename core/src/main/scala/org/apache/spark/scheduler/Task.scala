@@ -22,7 +22,7 @@ import java.nio.ByteBuffer
 
 import scala.collection.mutable.HashMap
 
-import org.apache.spark.{TaskContextHelper, TaskContextImpl, TaskContext}
+import org.apache.spark.{Partition, TaskContextHelper, TaskContextImpl, TaskContext}
 import org.apache.spark.executor.TaskMetrics
 import org.apache.spark.serializer.SerializerInstance
 import org.apache.spark.util.ByteBufferInputStream
@@ -74,6 +74,8 @@ private[spark] abstract class Task[T](val stageId: Int, var partitionId: Int) ex
   def runTask(context: TaskContext): (Long, T)
 
   def preferredLocations: Seq[TaskLocation] = Nil
+
+  def getPartition: Partition = null
 
   // Map output tracker epoch. Will be set by TaskScheduler.
   var epoch: Long = -1

@@ -34,6 +34,8 @@ private[spark] class WorkerMonitor(
   private var jobMonitor: ActorSelection = null
   private val schedulerBackendToTasks = new HashMap[ActorRef, HashSet[Long]]
   private var totalPendingTask = 0
+  private var totalPendingTaskSize = 0L
+  private var batchDuration = 0L
 
   override def preStart() = {
     logInfo("Start worker monitor")
@@ -44,7 +46,7 @@ private[spark] class WorkerMonitor(
   override def receiveWithLogging = {
     case RegisteredWorkerMonitor(registeredWorkerId) =>
       workerId = registeredWorkerId
-      logInfo("Registered worker monitor")
+      logInfo(s"Registered worker monitor with id:${registeredWorkerId}")
       worker ! RequestJobMonitorUrlForWorkerMonitor
 
     case JobMonitorUrlForWorkerMonitor(url) =>
@@ -54,9 +56,10 @@ private[spark] class WorkerMonitor(
     case RegisteredWorkerMonitorInJobMonitor =>
       logInfo(s"Registered in job monitor ${sender}")
 
-    case ExecutorHandledDataSpeed(size, executorId) =>
-      executorHandleSpeed(executorId) = size
-      totalPendingTask -= 1
+    case ExecutorHandledDataSpeed(size, speed, executorId) =>
+      executorHandleSpeed(executorId) = speed
+//      totalPendingTask -= 1
+      totalPendingTaskSize -= size
 
     case RegisterExecutorInWorkerMonitor(executorId) =>
       executors(executorId) = sender
@@ -74,10 +77,24 @@ private[spark] class WorkerMonitor(
 
     case PendingTaskAmount(amount) =>
       totalPendingTask += amount
+
+    case PendingTaskSize(size) =>
+      totalPendingTaskSize += size
+
+    case StreamingBatchDuration(duration) =>
+      batchDuration = duration
+
+    case QueryEstimateDataSize =>
+      sender ! WorkerEstimateDataSize(forecastDataSize, workerId)
   }
 
-  private def forecaseDataSize(): Long = {
-    0L
+  private def forecastDataSize: Long = {
+    var workerSpeed = 0.0
+    for (executorSpeed <- executorHandleSpeed) {
+      workerSpeed += executorSpeed._2
+    }
+
+    ((batchDuration - (totalPendingTaskSize / workerSpeed)) * workerSpeed).toLong
   }
 
 }

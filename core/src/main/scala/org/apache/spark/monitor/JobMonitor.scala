@@ -41,6 +41,11 @@ private[spark] class JobMonitor(master: ActorRef,
       workerMonitors(workerId) = sender
       sender ! RegisteredWorkerMonitorInJobMonitor
 
+    case BatchDuration(duration) =>
+      for (workerMonitor <- workerMonitors) {
+        workerMonitor._2 ! StreamingBatchDuration(duration)
+      }
+
   }
 
 }

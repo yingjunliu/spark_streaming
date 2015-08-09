@@ -158,6 +158,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
         logInfo(s"test - host ${host} amount ${amount}")
         workerMonitorActor(host) ! PendingTaskAmount(amount)
 
+      case NotifyWorkerMonitorForPendingTaskSize(host, size) =>
+        logInfo(s"test - host ${host} size ${size}")
+        workerMonitorActor(host) ! PendingTaskSize(size)
+
       case StopDriver =>
         sender ! true
         context.stop(self)
@@ -287,8 +291,13 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val actorSyste
   override def reviveOffers() {
     driverActor ! ReviveOffers
   }
+
   override def notifyWorkerMonitorForPendingTaskAmount(host: String, amount: Int) = {
     driverActor ! NotifyWorkerMonitorForPendingTaskAmount(host, amount)
+  }
+
+  override def notifyWorkerMonitorForPendingTaskSize(host: String, size: Long) = {
+    driverActor ! NotifyWorkerMonitorForPendingTaskSize(host, size)
   }
 
   override def killTask(taskId: Long, executorId: String, interruptThread: Boolean) {

@@ -30,7 +30,9 @@ private[spark] trait SchedulerBackend {
   def reviveOffers(): Unit
   def defaultParallelism(): Int
 
-  def notifyWorkerMonitorForPendingTaskAmount(hostp: String, amount: Int) = {}
+  def notifyWorkerMonitorForPendingTaskAmount(host: String, amount: Int) = {}
+
+  def notifyWorkerMonitorForPendingTaskSize(host: String, size: Long) = {}
 
   def killTask(taskId: Long, executorId: String, interruptThread: Boolean): Unit =
     throw new UnsupportedOperationException

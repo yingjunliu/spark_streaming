@@ -17,6 +17,7 @@
 
 package org.apache.spark.scheduler
 
+import org.apache.spark.rdd.RDD
 import org.apache.spark.scheduler.SchedulingMode.SchedulingMode
 import org.apache.spark.executor.TaskMetrics
 import org.apache.spark.storage.BlockManagerId
@@ -49,6 +50,9 @@ private[spark] trait TaskScheduler {
 
   // Submit a sequence of tasks to run.
   def submitTasks(taskSet: TaskSet): Unit
+
+  // Submit a sequence of tasks to run, with rdd
+  def submitTasks(taskSet: TaskSet, Rdd: RDD[_]): Unit = {}
 
   // Cancel a stage.
   def cancelTasks(stageId: Int, interruptThread: Boolean)

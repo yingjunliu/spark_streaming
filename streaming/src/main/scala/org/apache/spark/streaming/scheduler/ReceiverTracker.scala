@@ -18,6 +18,11 @@
 package org.apache.spark.streaming.scheduler
 
 
+import org.apache.spark.deploy.DeployMessages._
+import org.apache.spark.deploy.master.Master
+import org.apache.spark.monitor.JobMonitorMessages.BatchDuration
+import org.apache.spark.util.AkkaUtils
+
 import scala.collection.mutable.{HashMap, SynchronizedMap}
 import scala.language.existentials
 
@@ -70,6 +75,9 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
   // actor is created when generator starts.
   // This not being null means the tracker has been started and not stopped
   private var actor: ActorRef = null
+
+  private var jobMonitor: ActorSelection = null
+  private var jobMoniorUrl: String = null
 
   /** Start the actor and receiver execution thread. */
   def start() = synchronized {
@@ -201,6 +209,20 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
 
   /** Actor to receive messages from the receivers. */
   private class ReceiverTrackerActor extends Actor {
+    override def preStart() = {
+      val SPARK_REGEX = """spark://(.*)""".r
+
+      ssc.sc.master match {
+        case SPARK_REGEX(sparkUrls) =>
+          val masterUrls = sparkUrls.split(",").map("spark://" + _)
+          val masterAkkaUrls = masterUrls.map(Master.toAkkaUrl(_, AkkaUtils.protocol(ssc.sc.env.actorSystem)))
+          for (masterAkkaUrl <- masterAkkaUrls) {
+            val masterActor = context.actorSelection(masterAkkaUrl)
+            masterActor ! RequestJobMonitorUrl
+          }
+      }
+    }
+
     def receive = {
       case RegisterReceiver(streamId, typ, host, receiverActor) =>
         registerReceiver(streamId, typ, host, receiverActor, sender)
@@ -212,6 +234,10 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
       case DeregisterReceiver(streamId, message, error) =>
         deregisterReceiver(streamId, message, error)
         sender ! true
+      case JobMonitorUrl(url) =>
+        jobMoniorUrl = url
+        jobMonitor = context.actorSelection(url)
+        jobMonitor ! BatchDuration(ssc.graph.batchDuration.milliseconds)
     }
   }
 

@@ -22,6 +22,7 @@ import java.util.{TimerTask, Timer}
 import java.util.concurrent.atomic.AtomicLong
 
 import akka.actor.Actor
+import org.apache.spark.rdd.RDD
 
 import scala.concurrent.duration._
 import scala.collection.mutable.ArrayBuffer
@@ -156,6 +157,41 @@ private[spark] class TaskSchedulerImpl(
     waitBackendReady()
   }
 
+  override def submitTasks(taskSet: TaskSet, rdd: RDD[_]) {
+    val tasks = taskSet.tasks
+    logInfo("Adding task set " + taskSet.id + " with " + tasks.length + " tasks")
+    this.synchronized {
+      val manager = createTaskSetManager(taskSet, maxTaskFailures)
+      activeTaskSets(taskSet.id) = manager
+      schedulableBuilder.addTaskSetManager(manager, manager.taskSet.properties)
+
+      val pendingTaskPartitionsForHost = manager.queryPendingTaskPartitionsForHost()
+      for (partitions <- pendingTaskPartitionsForHost) {
+        var totalSize = 0L
+        for (index <- partitions._2) {
+          totalSize += rdd.getRddBlockSize(index)
+        }
+        backend.notifyWorkerMonitorForPendingTaskSize(partitions._1, totalSize)
+      }
+
+      if (!isLocal && !hasReceivedTask) {
+        starvationTimer.scheduleAtFixedRate(new TimerTask() {
+          override def run() {
+            if (!hasLaunchedTask) {
+              logWarning("Initial job has not accepted any resources; " +
+                "check your cluster UI to ensure that workers are registered " +
+                "and have sufficient resources")
+            } else {
+              this.cancel()
+            }
+          }
+        }, STARVATION_TIMEOUT, STARVATION_TIMEOUT)
+      }
+      hasReceivedTask = true
+    }
+    backend.reviveOffers()
+  }
+
   override def submitTasks(taskSet: TaskSet) {
     val tasks = taskSet.tasks
     logInfo("Adding task set " + taskSet.id + " with " + tasks.length + " tasks")
@@ -164,10 +200,10 @@ private[spark] class TaskSchedulerImpl(
       activeTaskSets(taskSet.id) = manager
       schedulableBuilder.addTaskSetManager(manager, manager.taskSet.properties)
 
-      val pendingTaskAmountForHost = manager.queryPendingTaskAmountForHost()
-      for (host <- pendingTaskAmountForHost) {
-        backend.notifyWorkerMonitorForPendingTaskAmount(host._1, host._2)
-      }
+//      val pendingTaskAmountForHost = manager.queryPendingTaskAmountForHost()
+//      for (host <- pendingTaskAmountForHost) {
+//        backend.notifyWorkerMonitorForPendingTaskAmount(host._1, host._2)
+//      }
 
       if (!isLocal && !hasReceivedTask) {
         starvationTimer.scheduleAtFixedRate(new TimerTask() {

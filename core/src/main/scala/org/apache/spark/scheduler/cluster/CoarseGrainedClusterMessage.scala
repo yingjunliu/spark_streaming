@@ -64,6 +64,8 @@ private[spark] object CoarseGrainedClusterMessages {
   // Internal messages in driver
   case class NotifyWorkerMonitorForPendingTaskAmount(host: String, amount: Int) extends CoarseGrainedClusterMessage
 
+  case class NotifyWorkerMonitorForPendingTaskSize(host: String, size: Long) extends CoarseGrainedClusterMessage
+
   case object ReviveOffers extends CoarseGrainedClusterMessage
 
   case object StopDriver extends CoarseGrainedClusterMessage
