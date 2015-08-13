@@ -232,6 +232,12 @@ class BlockManagerMaster(
     allBlockManagerId
   }
 
+  def getBlockManagerIdForHost(host: String): Seq[BlockManagerId] = {
+    val allBlockManagerId = askDriverWithReply[Seq[BlockManagerId]](GetBlockManagerIdForHost(host))
+    logInfo("Get all block manager Id: " + allBlockManagerId.toArray)
+    allBlockManagerId
+  }
+
   /** Send a one-way message to the master actor, to which we expect it to reply with true. */
   private def tell(message: Any) {
     if (!askDriverWithReply[Boolean](message)) {

@@ -19,7 +19,7 @@ package org.apache.spark.streaming.receiver
 
 import java.util.concurrent.{ArrayBlockingQueue, TimeUnit}
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, HashMap}
 
 import org.apache.spark.{Logging, SparkConf}
 import org.apache.spark.storage.StreamBlockId
@@ -89,8 +89,7 @@ private[streaming] class BlockGenerator(
   @volatile private var currentBuffer = new ArrayBuffer[Any]
   @volatile private var stopped = false
 
-  /** The bufferSlice is used to control the Slice in generate block. */
-  private var bufferSlice = 3
+  private var splitRatio = new HashMap[Int, Double]
 
   /** Start block generating and pushing threads. */
   def start() {
@@ -129,25 +128,26 @@ private[streaming] class BlockGenerator(
     listener.onAddData(data, metadata)
   }
 
-//  /** Change the buffer to which single records are added to. */
-//  private def updateCurrentBuffer(time: Long): Unit = synchronized {
-//    try {
-//      val newBlockBuffer = currentBuffer
-//      currentBuffer = new ArrayBuffer[Any]
-//      if (newBlockBuffer.size > 0) {
-//        val blockId = StreamBlockId(receiverId, time - blockInterval)
-//        val newBlock = new Block(blockId, newBlockBuffer)
-//        listener.onGenerateBlock(blockId)
-//        blocksForPushing.put(newBlock)  // put is blocking when queue is full
-//        logDebug("Last element in " + blockId + " is " + newBlockBuffer.last)
-//      }
-//    } catch {
-//      case ie: InterruptedException =>
-//        logInfo("Block updating timer thread was interrupted")
-//      case e: Exception =>
-//        reportError("Error in block updating thread", e)
-//    }
-//  }
+  /** Change the buffer to which single records are added to. */
+  private def updateCurrentBuffer(time: Long): Unit = synchronized {
+    try {
+      val newBlockBuffer = currentBuffer
+      currentBuffer = new ArrayBuffer[Any]
+      if (newBlockBuffer.size > 0) {
+        val blockId = StreamBlockId(receiverId, time - blockInterval)
+        val newBlock = new Block(blockId, newBlockBuffer)
+        listener.onGenerateBlock(blockId)
+        blocksForPushing.put(newBlock)  // put is blocking when queue is full
+        logDebug("Last element in " + blockId + " is " + newBlockBuffer.last)
+      }
+    } catch {
+      case ie: InterruptedException =>
+        logInfo("Block updating timer thread was interrupted")
+      case e: Exception =>
+        reportError("Error in block updating thread", e)
+    }
+  }
+
   /**
    * Change the buffer to which single records are added to
    *
@@ -157,12 +157,12 @@ private[streaming] class BlockGenerator(
    *
    * Added by Liuzhiyi
    */
-  private def updateCurrentBuffer(time: Long): Unit = synchronized {
+  private def updateCurrentBufferWithSplit(time: Long): Unit = synchronized {
     try {
       val newBlockBuffer = currentBuffer
       currentBuffer = new ArrayBuffer[Any]
       if (newBlockBuffer.size > 0) {
-        val newBlockBuffers = splitBlockBuffer(newBlockBuffer, bufferSlice)
+        val newBlockBuffers = splitBlockBuffer(newBlockBuffer)
         (0 until newBlockBuffers.size).map { i =>
           val blockId = StreamBlockId(receiverId, time - blockInterval, i)
           val newBlock = new Block(blockId, newBlockBuffers(i))
@@ -180,8 +180,8 @@ private[streaming] class BlockGenerator(
     }
   }
 
-  def newBlockBufferSlice(slice: Int): Unit = {
-    bufferSlice = slice
+  def changeSplitRatio(newRatio: HashMap[Int, Double]) = {
+    splitRatio = newRatio.clone()
   }
 
   /**
@@ -189,16 +189,16 @@ private[streaming] class BlockGenerator(
    *
    * Added by Liuzhiyi
    */
-  private def splitBlockBuffer(blockBuffer: ArrayBuffer[Any],
-                               splitNum: Int = 1): Seq[ArrayBuffer[Any]] = {
-    if (splitNum == 1) {
+  private def splitBlockBuffer(blockBuffer: ArrayBuffer[Any]): Seq[ArrayBuffer[Any]] = {
+    val splitNum = splitRatio.size
+    if (splitNum == 0) {
       Seq(blockBuffer)
     } else {
       val oldBlockBuffer = blockBuffer
-      val everyNewBlockBufferLength: Int = blockBuffer.size / splitNum
       var newBlockBuffers = Seq[ArrayBuffer[Any]]()
       (0 until splitNum).map { i =>
         if (i != splitNum) {
+          val everyNewBlockBufferLength: Int = (blockBuffer.size * splitRatio(i)).toInt
           val newBlockBuffer = oldBlockBuffer.take(everyNewBlockBufferLength)
           oldBlockBuffer --= newBlockBuffer
           newBlockBuffers = newBlockBuffers :+ newBlockBuffer
@@ -210,6 +210,10 @@ private[streaming] class BlockGenerator(
 
       newBlockBuffers
     }
+  }
+
+  def changeUpdateFunction() = {
+    blockIntervalTimer.changeCallbackFunc(updateCurrentBufferWithSplit)
   }
 
   /** Keep pushing blocks to the BlockManager. */

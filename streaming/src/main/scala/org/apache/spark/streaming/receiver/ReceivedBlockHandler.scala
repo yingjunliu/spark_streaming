@@ -50,6 +50,8 @@ private[streaming] trait ReceivedBlockHandler {
     * Added by Liuzhiyi
     */
   def reallocateBlock(blockId: StreamBlockId)
+
+  def reallocateBlockToCertainHost(blockId: StreamBlockId, host: String)
 }
 
 
@@ -97,6 +99,18 @@ private[streaming] class BlockManagerBasedBlockHandler(
   def reallocateBlock(blockId: StreamBlockId) = {
     val newBlockManagerId = blockManager.randomChooseBlockManagerForReallocate()
     val testBlockManagerId = newBlockManagerId
+    if (newBlockManagerId != blockManager.blockManagerId) {
+      val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
+
+      if (result)
+        logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+      else
+        logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+    }
+  }
+
+  def reallocateBlockToCertainHost(blockId: StreamBlockId, host: String) = {
+    val newBlockManagerId = blockManager.ChooseBlockManagerForHost(host)
     if (newBlockManagerId != blockManager.blockManagerId) {
       val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
 

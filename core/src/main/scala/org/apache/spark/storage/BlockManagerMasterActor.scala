@@ -135,6 +135,9 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
     case GetAllBlockManagerId =>
       sender ! getAllBlockManagerId()
 
+    case GetBlockManagerIdForHost(host) =>
+      sender ! getBlockManagerIdForHost(host)
+
     case other =>
       logWarning("Got unknown message: " + other)
   }
@@ -424,6 +427,12 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
 
   private def getAllBlockManagerId(): Seq[BlockManagerId] = {
     blockManagerInfo.keySet.toSeq
+  }
+
+  private def getBlockManagerIdForHost(host: String): Seq[BlockManagerId] = {
+    val result = blockManagerInfo.keySet.filter(blockManagerId => blockManagerId.host == host).toSeq
+    logInfo(s"test - blockManagerForHost is ${result}")
+    result
   }
 
   /** Get the list of the peers of the given block manager */

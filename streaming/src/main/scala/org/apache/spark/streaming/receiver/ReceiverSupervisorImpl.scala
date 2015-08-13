@@ -20,7 +20,7 @@ package org.apache.spark.streaming.receiver
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicLong
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, HashMap}
 import scala.concurrent.Await
 
 import akka.actor.{Actor, Props}
@@ -79,6 +79,8 @@ private[streaming] class ReceiverSupervisorImpl(
   /** Timeout for Akka actor messages */
   private val askTimeout = AkkaUtils.askTimeout(env.conf)
 
+  private var haveChangedFunc = false
+
   /** Akka actor for receiving messages from the ReceiverTracker in the driver */
   private val actor = env.actorSystem.actorOf(
     Props(new Actor {
@@ -90,6 +92,20 @@ private[streaming] class ReceiverSupervisorImpl(
         case CleanupOldBlocks(threshTime) =>
           logDebug("Received delete old batch signal")
           cleanupOldBlocks(threshTime)
+        case ReallocateTable(result) =>
+          if (!haveChangedFunc) {
+            blockGenerator.changeUpdateFunction()
+          }
+          val splitRatio = new HashMap[Int, Double]
+          val blockIdToHost = new HashMap[Int, String]
+          var number = 0
+          for(line <- result) {
+            blockIdToHost(number) = line._1
+            splitRatio(number) = line._2
+            number += 1
+          }
+          blockGenerator.changeSplitRatio(splitRatio)
+          changeBlockIdToHostTable(blockIdToHost)
       }
 
       def ref = self
@@ -166,6 +182,9 @@ private[streaming] class ReceiverSupervisorImpl(
     Await.result(future, askTimeout)
     logDebug(s"Reported block $blockId")
 
+    val totalReceivedSize = env.blockManager.getBlockSize(blockId)
+    val localHost = env.blockManager.blockManagerId.host
+
     /**
      * Relocate the streaming block when slice number is not 0
      * Just for a test
@@ -176,12 +195,27 @@ private[streaming] class ReceiverSupervisorImpl(
     logInfo(s"Before reallocate, block name is ${blockId.name}")
     blockId.name match {
       case STREAM(streamId, uniqueId, sliceId) =>
-        if (sliceId != 0) receivedBlockHandler.reallocateBlock(blockId)
-        logInfo(s"Relocated block ${blockId}")
+        val slice = sliceId.toInt
+        if ((blockIdToHostTable.size) != 0
+          && slice < blockIdToHostTable.size
+          && (blockIdToHostTable(slice) != localHost)) {
+          receivedBlockHandler.reallocateBlockToCertainHost(blockId, blockIdToHostTable(slice))
+          trackerActor ! StreamingReceivedSize(totalReceivedSize, blockIdToHostTable(slice))
+          logInfo(s"test - Reallocate block ${blockId} to host ${blockIdToHostTable(slice)} from host ${localHost}")
+        } else {
+          trackerActor ! StreamingReceivedSize(totalReceivedSize, localHost)
+          logInfo(s"test - Received block ${blockId} in host ${localHost}")
+        }
 
       case _ =>
-        logInfo(s"None streaming block to reallocate")
+        logInfo(s"test - None streaming block to reallocate")
     }
+  }
+
+  var blockIdToHostTable = new HashMap[Int, String]
+
+  def changeBlockIdToHostTable(newTable: HashMap[Int, String]) = {
+    blockIdToHostTable = newTable.clone()
   }
 
   /** Report error to the receiver tracker */

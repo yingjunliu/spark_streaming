@@ -18,9 +18,11 @@
 package org.apache.spark.streaming.receiver
 
 import org.apache.spark.streaming.Time
+import scala.collection.mutable.HashMap
 
 /** Messages sent to the Receiver. */
 private[streaming] sealed trait ReceiverMessage extends Serializable
 private[streaming] object StopReceiver extends ReceiverMessage
 private[streaming] case class CleanupOldBlocks(threshTime: Time) extends ReceiverMessage
+private[streaming] case class ReallocateTable(table: HashMap[String, Double]) extends ReceiverMessage
 

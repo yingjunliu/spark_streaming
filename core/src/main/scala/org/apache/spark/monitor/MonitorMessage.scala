@@ -61,10 +61,16 @@ private[spark] object JobMonitorMessages {
   // Receiver to JobMonitor
   case class BatchDuration(duration: Long) extends JobMonitorMessage
 
-  case class ReceivedDataSize(receiverId: Int, dataSize: Long) extends JobMonitorMessage
+  case class ReceivedDataSize(host: String, dataSize: Long) extends JobMonitorMessage
+
+  //JobMonitor to Receiver
+  case class DataReallocateTable(table: HashMap[String, Double]) extends JobMonitorMessage
 
   // JobMonitor to BlockGenerator in spark streaming
   case class UpdateFunction(needSplit: Boolean, workerDataRatio: HashMap[String, Double]) extends JobMonitorMessage
+
+  // JobScheduler to JobMonitor
+  case class JobFinished(time: Long) extends JobMonitorMessage
 }
 
 private[spark] sealed trait MonitorMessage extends Serializable
@@ -75,7 +81,8 @@ private[spark] object MonitorMessages {
   // Added by Liuzhiyi
   case class RegisterWorkerMonitorInJobMonitor(workerId: String) extends MonitorMessage
 
-  case class WorkerEstimateDataSize(dataSize: Long, workerId: String) extends MonitorMessage
+  case class WorkerEstimateDataSize(estimateDataSize: Long, handledDataSize: Long, workerId: String, host: String)
+    extends MonitorMessage
 
   // JobMonitor to WorkerMonitor
   // Added by Liuzhiyi

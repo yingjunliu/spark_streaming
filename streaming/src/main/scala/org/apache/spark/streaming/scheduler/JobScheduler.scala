@@ -20,10 +20,14 @@ package org.apache.spark.streaming.scheduler
 import scala.util.{Failure, Success, Try}
 import scala.collection.JavaConversions._
 import java.util.concurrent.{TimeUnit, ConcurrentHashMap, Executors}
-import akka.actor.{ActorRef, Actor, Props}
+import akka.actor.{ActorSelection, ActorRef, Actor, Props}
 import org.apache.spark.{SparkException, Logging, SparkEnv}
 import org.apache.spark.rdd.PairRDDFunctions
 import org.apache.spark.streaming._
+import org.apache.spark.deploy.DeployMessages.{RequestJobMonitorUrl, JobMonitorUrl}
+import org.apache.spark.deploy.master.Master
+import org.apache.spark.util.{AkkaUtils, ActorLogReceive}
+import org.apache.spark.monitor.JobMonitorMessages._
 
 
 private[scheduler] sealed trait JobSchedulerEvent
@@ -50,14 +54,32 @@ class JobScheduler(val ssc: StreamingContext) extends Logging {
   var receiverTracker: ReceiverTracker = null
   private var eventActor: ActorRef = null
 
+  private var jobMonitor: ActorSelection = null
 
   def start(): Unit = synchronized {
     if (eventActor != null) return // scheduler has already been started
 
     logDebug("Starting JobScheduler")
     eventActor = ssc.env.actorSystem.actorOf(Props(new Actor {
+      override def preStart() = {
+        val SPARK_REGEX = """spark://(.*)""".r
+
+        ssc.sc.master match {
+          case SPARK_REGEX(sparkUrls) =>
+            val masterUrls = sparkUrls.split(",").map("spark://" + _)
+            val masterAkkaUrls = masterUrls.map(Master.toAkkaUrl(_, AkkaUtils.protocol(ssc.sc.env.actorSystem)))
+            for (masterAkkaUrl <- masterAkkaUrls) {
+              val masterActor = context.actorSelection(masterAkkaUrl)
+              masterActor ! RequestJobMonitorUrl
+            }
+        }
+      }
+
       def receive = {
         case event: JobSchedulerEvent => processEvent(event)
+
+        case JobMonitorUrl(url) =>
+          jobMonitor = context.actorSelection(url)
       }
     }), "JobScheduler")
 
@@ -144,6 +166,7 @@ class JobScheduler(val ssc: StreamingContext) extends Logging {
   private def handleJobCompletion(job: Job) {
     job.result match {
       case Success(_) =>
+        jobMonitor ! JobFinished(job.time.milliseconds)
         val jobSet = jobSets.get(job.time)
         jobSet.handleJobCompletion(job)
         logInfo("Finished job " + job.id + " from job set of time " + jobSet.time)
@@ -178,4 +201,5 @@ class JobScheduler(val ssc: StreamingContext) extends Logging {
       eventActor ! JobCompleted(job)
     }
   }
+
 }

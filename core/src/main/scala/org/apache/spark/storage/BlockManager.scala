@@ -944,6 +944,15 @@ private[spark] class BlockManager(
     newBlockManagerId
   }
 
+  def ChooseBlockManagerForHost(host: String): BlockManagerId = {
+    val blockManagerIds = master.getBlockManagerIdForHost(host)
+    val randomNum = new Random()
+    val newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
+
+    newBlockManagerId
+  }
+
+
   /**
    * Replicate block to another node. Not that this is a blocking call that returns after
    * the block has been replicated.

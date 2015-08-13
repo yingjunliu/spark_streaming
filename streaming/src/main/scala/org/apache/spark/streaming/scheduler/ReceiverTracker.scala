@@ -20,7 +20,7 @@ package org.apache.spark.streaming.scheduler
 
 import org.apache.spark.deploy.DeployMessages._
 import org.apache.spark.deploy.master.Master
-import org.apache.spark.monitor.JobMonitorMessages.BatchDuration
+import org.apache.spark.monitor.JobMonitorMessages._
 import org.apache.spark.util.AkkaUtils
 
 import scala.collection.mutable.{HashMap, SynchronizedMap}
@@ -30,7 +30,7 @@ import akka.actor._
 
 import org.apache.spark.{Logging, SerializableWritable, SparkEnv, SparkException}
 import org.apache.spark.streaming.{StreamingContext, Time}
-import org.apache.spark.streaming.receiver.{CleanupOldBlocks, Receiver, ReceiverSupervisorImpl, StopReceiver}
+import org.apache.spark.streaming.receiver._
 
 /**
  * Messages used by the NetworkReceiver and the ReceiverTracker to communicate
@@ -48,6 +48,7 @@ private[streaming] case class AddBlock(receivedBlockInfo: ReceivedBlockInfo)
 private[streaming] case class ReportError(streamId: Int, message: String, error: String)
 private[streaming] case class DeregisterReceiver(streamId: Int, msg: String, error: String)
   extends ReceiverTrackerMessage
+private[streaming] case class StreamingReceivedSize(size: Long, host: String) extends ReceiverTrackerMessage
 
 /**
  * This class manages the execution of the receivers of ReceiverInputDStreams. Instance of
@@ -238,6 +239,12 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
         jobMoniorUrl = url
         jobMonitor = context.actorSelection(url)
         jobMonitor ! BatchDuration(ssc.graph.batchDuration.milliseconds)
+      case StreamingReceivedSize(size: Long, host: String) =>
+        jobMonitor ! ReceivedDataSize(host, size)
+      case DataReallocateTable(result) =>
+        for(receiverActor <- receiverInfo) {
+          receiverActor._2.actor ! ReallocateTable(result)
+        }
     }
   }
 

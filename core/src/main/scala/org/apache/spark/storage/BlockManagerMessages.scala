@@ -123,4 +123,6 @@ private[spark] object BlockManagerMessages {
 
   // Added by Liuzhiyi
   case object GetAllBlockManagerId extends ToBlockManagerMaster
+
+  case class GetBlockManagerIdForHost(host: String) extends ToBlockManagerMaster
 }
