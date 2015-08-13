@@ -242,6 +242,18 @@ private[streaming] class WriteAheadLogBasedBlockHandler(
     }
   }
 
+  def reallocateBlockToCertainHost(blockId: StreamBlockId, host: String) = {
+    val newBlockManagerId = blockManager.ChooseBlockManagerForHost(host)
+    if (newBlockManagerId != blockManager.blockManagerId) {
+      val result = blockManager.reallocateBlock(blockId, newBlockManagerId, storageLevel)
+
+      if (result)
+        logInfo(s"Reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+      else
+        logInfo(s"Failed to reallocate block ${blockId} to the block manager ${newBlockManagerId}")
+    }
+  }
+
   def stop() {
     logManager.stop()
   }
