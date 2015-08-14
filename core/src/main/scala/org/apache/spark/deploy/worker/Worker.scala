@@ -40,7 +40,8 @@ import org.apache.spark.deploy.master.{DriverState, Master}
 import org.apache.spark.deploy.worker.ui.WorkerWebUI
 import org.apache.spark.metrics.MetricsSystem
 import org.apache.spark.util.{ActorLogReceive, AkkaUtils, SignalLogger, Utils}
-import org.apache.spark.monitor.{WorkerMonitor, WorkerMonitorMessage}
+import org.apache.spark.monitor.WorkerMonitor
+import org.apache.spark.monitor.WorkerMonitorMessages._
 
 /**
   * @param masterAkkaUrls Each url should be a valid akka url.
@@ -140,6 +141,7 @@ private[spark] class Worker(
 
   // Used to records the monitor akka urls and pass it to the executor.
   var monitorAkkaUrl: String = ""
+  var jobMonitorUrl: String = ""
 
   def coresFree: Int = cores - coresUsed
   def memoryFree: Int = memory - memoryUsed
@@ -199,6 +201,7 @@ private[spark] class Worker(
       logInfo("Connecting to master " + masterAkkaUrl + "...")
       val actor = context.actorSelection(masterAkkaUrl)
       actor ! RegisterWorker(workerId, host, port, cores, memory, webUi.boundPort, publicAddress)
+      actor ! RequestJobMonitorUrl
     }
   }
 
@@ -499,6 +502,13 @@ private[spark] class Worker(
       logInfo("Registerd worker monitor " + monitorAkkaUrls)
       monitorAkkaUrl = monitorAkkaUrls
       sender ! RegisteredWorkerMonitor(workerId)
+
+    case JobMonitorUrl(url) =>
+      jobMonitorUrl = url
+
+    case RequestJobMonitorUrlForWorkerMonitor =>
+      sender ! JobMonitorUrlForWorkerMonitor(jobMonitorUrl)
+
   }
 
   private def masterDisconnected() {
