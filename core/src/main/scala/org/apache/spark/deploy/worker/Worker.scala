@@ -506,6 +506,8 @@ private[spark] class Worker(
     case JobMonitorUrl(url) =>
       logInfo(s"jobMonitorUrl is ${url}")
       jobMonitorUrl = url
+      val workerMonitor = context.actorSelection(monitorAkkaUrl)
+      workerMonitor ! JobMonitorUrlForWorkerMonitor(jobMonitorUrl)
 
     case RequestJobMonitorUrlForWorkerMonitor =>
       sender ! JobMonitorUrlForWorkerMonitor(jobMonitorUrl)
