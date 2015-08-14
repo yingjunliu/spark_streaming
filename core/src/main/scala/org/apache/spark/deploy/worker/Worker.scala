@@ -504,6 +504,7 @@ private[spark] class Worker(
       sender ! RegisteredWorkerMonitor(workerId)
 
     case JobMonitorUrl(url) =>
+      logInfo(s"jobMonitorUrl is ${url}")
       jobMonitorUrl = url
 
     case RequestJobMonitorUrlForWorkerMonitor =>

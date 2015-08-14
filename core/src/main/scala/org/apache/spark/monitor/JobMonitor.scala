@@ -46,6 +46,7 @@ private[spark] class JobMonitor(master: ActorRef,
       logInfo(s"Registed jobMonitor in master ${sender}")
 
     case RegisterWorkerMonitorInJobMonitor(workerId) =>
+      logInfo(s"registerd monitor ${sender} with worker id ${workerId}")
       workerMonitors(workerId) = sender
       sender ! RegisteredWorkerMonitorInJobMonitor
 
