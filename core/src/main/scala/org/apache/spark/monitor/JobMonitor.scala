@@ -122,12 +122,9 @@ private[spark] class JobMonitor(master: ActorRef,
     override def run() = {
       val hostList = new ArrayBuffer[(String, Long)]
       val hostToEstimateDataSize = new HashMap[String, Long]
-      logInfo(s"workerEstimateDataSize ${workerEstimateDataSize}")
-      logInfo(s"workerToHost ${workerToHost}")
       for (worker <- workerToHost) {
-        hostToEstimateDataSize(host) = hostToEstimateDataSize.getOrElseUpdate(worker._2, 0L) + workerEstimateDataSize(worker._1)
+        hostToEstimateDataSize(worker._2) = hostToEstimateDataSize.getOrElseUpdate(worker._2, 0L) + workerEstimateDataSize(worker._1)
       }
-      logInfo(s"hostToEstimateDataSize ${hostToEstimateDataSize}")
       for (zeroHost <- hostToEstimateDataSize) {
         if (zeroHost._2 == 0L) {
           hostList.append(zeroHost)
