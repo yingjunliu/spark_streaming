@@ -60,6 +60,7 @@ private[spark] class JobMonitor(master: ActorRef,
       }
 
     case ReceivedDataSize(host, size) =>
+      logInfo(s"test - received data size ${size} in host ${host}")
       if (pendingDataSizeForHost.contains(host)) {
         pendingDataSizeForHost(host) += size
       } else {
@@ -68,19 +69,17 @@ private[spark] class JobMonitor(master: ActorRef,
 
     case JobFinished(time) =>
       logInfo(s"jobFinished time ${time}")
-      if (pendingDataSizeForHost.size != 0) {
+      if (pendingDataSizeForHost.size != 0 && hasTimerCancel) {
+        hasTimerCancel = false
         for (workerMonitor <- workerMonitors) {
           workerMonitor._2 ! QueryEstimateDataSize
         }
-        if (hasTimerCancel) {
-          hasTimerCancel = false
-          timer = new Timer()
-          timer.schedule(new updateDataLocation(), batchDuration / 3, batchDuration * 2)
-        }
+        timer = new Timer()
+        timer.schedule(new updateDataLocation(), batchDuration / 3, batchDuration * 2)
       }
 
     case WorkerEstimateDataSize(estimateDataSize, handledDataSize, workerId, host) =>
-      logInfo(s"host ${host}, workerid ${workerId}, handledDataSize ${handledDataSize}, estimateDataSize ${estimateDataSize}")
+      logInfo(s"host ${host}, workerId ${workerId}, handledDataSize ${handledDataSize}, estimateDataSize ${estimateDataSize}")
       if (!pendingDataSizeForHost.contains(host)) {
         pendingDataSizeForHost(host) = 0L
       }
@@ -123,6 +122,8 @@ private[spark] class JobMonitor(master: ActorRef,
     override def run() = {
       val hostList = new ArrayBuffer[(String, Long)]
       val hostToEstimateDataSize = new HashMap[String, Long]
+      logInfo(s"workerEstimateDataSize ${workerEstimateDataSize}")
+      logInfo(s"workerToHost ${workerToHost}")
       for (worker <- workerToHost) {
         hostToEstimateDataSize(host) = hostToEstimateDataSize.getOrElseUpdate(worker._2, 0L) + workerEstimateDataSize(worker._1)
       }
