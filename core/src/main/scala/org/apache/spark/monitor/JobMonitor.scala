@@ -92,7 +92,7 @@ private[spark] class JobMonitor(master: ActorRef,
   var maxHost: (String, Int) = ("", 0)
 
   def sendDataToCertainLocation(hostList: ArrayBuffer[(String, Long)]) = {
-    val maxRatio = 0.7
+    val maxRatio = 0.6
     val result = new HashMap[String, Double]
     if (hostList(2)._2 == 0) {
       result(hostList(0)._1) = 1.0 / 3
