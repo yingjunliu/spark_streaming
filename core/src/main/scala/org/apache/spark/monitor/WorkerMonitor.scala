@@ -90,6 +90,7 @@ private[spark] class WorkerMonitor(
       totalPendingTask += amount
 
     case PendingTaskSize(size) =>
+      logInfo(s"new pending task size is ${size}")
       totalPendingTaskSize += size
 
     case StreamingBatchDuration(duration) =>

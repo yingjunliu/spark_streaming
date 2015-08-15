@@ -430,7 +430,7 @@ class BlockManagerMasterActor(val isLocal: Boolean, conf: SparkConf, listenerBus
   }
 
   private def getBlockManagerIdForHost(host: String): Seq[BlockManagerId] = {
-    val result = blockManagerInfo.keySet.filter(blockManagerId => blockManagerId.host == host).toSeq
+    val result = blockManagerInfo.keySet.filter(blockManagerId => (blockManagerId.host == host && blockManagerId.isDriver == false)).toSeq
     logInfo(s"test - blockManagerForHost is ${result}")
     result
   }

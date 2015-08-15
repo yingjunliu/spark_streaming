@@ -26,6 +26,10 @@ private[storage] class BlockInfo(val level: StorageLevel, val tellMaster: Boolea
   private def failed: Boolean = size == BlockInfo.BLOCK_FAILED
   private def initThread: Thread = BlockInfo.blockInfoInitThreads.get(this)
 
+  // used to mark whether the block has been visited in streaming
+  // Added by Liuzhiyi
+  var HasVisited = false
+
   setInitThread()
 
   private def setInitThread() {

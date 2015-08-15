@@ -341,7 +341,8 @@ private[spark] class BlockManager(
   def getBlockSize(blockId: BlockId): Long = {
     var totalSize = 0L
 
-    blockInfo.get(blockId).map { info =>
+    blockInfo.get(blockId).filter(info => info.HasVisited == false).map { info =>
+      info.HasVisited = true
       val memSize = if (memoryStore.contains(blockId)) memoryStore.getSize(blockId) else 0L
       val diskSize = if (diskStore.contains(blockId)) diskStore.getSize(blockId) else 0L
       totalSize += memSize + diskSize
@@ -946,10 +947,12 @@ private[spark] class BlockManager(
 
   def ChooseBlockManagerForHost(host: String): BlockManagerId = {
     val blockManagerIds = master.getBlockManagerIdForHost(host)
-    val randomNum = new Random()
-    val newBlockManagerId = blockManagerIds(randomNum.nextInt(blockManagerIds.size))
-
-    newBlockManagerId
+    if (blockManagerIds.size == 1) {
+      blockManagerIds(0)
+    } else {
+      val randomNum = new Random()
+      blockManagerIds(randomNum.nextInt(blockManagerIds.size))
+    }
   }
 
 
