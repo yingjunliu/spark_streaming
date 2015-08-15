@@ -90,6 +90,7 @@ private[spark] class JobMonitor(master: ActorRef,
   }
 
   def sendDataToCertainLocation(hostList: ArrayBuffer[(String, Long)]) = {
+    val maxRatio = 0.7
     val result = new HashMap[String, Double]
     if (hostList(2)._2 == 0) {
       result(hostList(0)._1) = 1.0 / 3
@@ -100,6 +101,14 @@ private[spark] class JobMonitor(master: ActorRef,
       result(hostList(0)._1) = hostList(0)._2.toDouble / allSize
       result(hostList(1)._1) = hostList(1)._2.toDouble / allSize
       result(hostList(2)._1) = hostList(2)._2.toDouble / allSize
+      val max = result.filter(x => x._2 > maxRatio).keySet.toSeq
+      val other = result.filter(x => x._2 <= maxRatio).keySet.toSeq
+      if (max.size == 1) {
+        val superRatio = (result(max(0)) - maxRatio) / 2
+        result(max(0)) = maxRatio
+        result(other(0)) += superRatio
+        result(other(1)) += superRatio
+      }
     } else if (hostList(1)._2 == 0) {
       result(hostList(0)._1) = 0.4
       result(hostList(1)._1) = 0.4
