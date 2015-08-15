@@ -103,7 +103,7 @@ private[spark] class JobMonitor(master: ActorRef,
     } else if (hostList(1)._2 == 0) {
       result(hostList(0)._1) = 0.4
       result(hostList(1)._1) = 0.4
-      result(hostList(2)._1) = 0.8
+      result(hostList(2)._1) = 0.2
     } else {
       val allSize = hostList(1)._2 + hostList(2)._2
       result(hostList(0)._1) = 0.4
