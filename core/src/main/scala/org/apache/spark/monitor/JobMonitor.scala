@@ -34,6 +34,7 @@ private[spark] class JobMonitor(master: ActorRef,
   val workerToHost = new HashMap[String, String]
   var receiverTracker: ActorRef = null
   var timer: Timer = null
+  var hasTimerCancel = true
 
   override def preStart() = {
     logInfo("Start job monitor")
@@ -66,12 +67,16 @@ private[spark] class JobMonitor(master: ActorRef,
       }
 
     case JobFinished(time) =>
+      logInfo(s"jobFinished time ${time}")
       if (pendingDataSizeForHost.size != 0) {
         for (workerMonitor <- workerMonitors) {
           workerMonitor._2 ! QueryEstimateDataSize
         }
-        timer = new Timer()
-        timer.schedule(new updateDataLocation(), batchDuration / 3, batchDuration * 2)
+        if (hasTimerCancel) {
+          hasTimerCancel = false
+          timer = new Timer()
+          timer.schedule(new updateDataLocation(), batchDuration / 3, batchDuration * 2)
+        }
       }
 
     case WorkerEstimateDataSize(estimateDataSize, handledDataSize, workerId, host) =>
@@ -106,8 +111,11 @@ private[spark] class JobMonitor(master: ActorRef,
       result(hostList(2)._1) = (hostList(2)._2.toDouble / allSize) * 0.6
     }
     logInfo(s"test - data reallocate result ${result}")
-    receiverTracker ! DataReallocateTable(result)
+    if(receiverTracker != null) {
+      receiverTracker ! DataReallocateTable(result)
+    }
     timer.cancel()
+    hasTimerCancel = true
   }
 
   private class updateDataLocation() extends TimerTask {

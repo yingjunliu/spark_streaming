@@ -59,6 +59,7 @@ private[spark] class WorkerMonitor(
       logInfo(s"Registered in job monitor ${sender}")
 
     case ExecutorHandledDataSpeed(size, speed, executorId) =>
+      logInfo(s"executor handled data size ${size}, speed ${speed}, executor ${executorId}")
       executorHandleSpeed(executorId) = speed
 //      totalPendingTask -= 1
       if (size > 0) {
