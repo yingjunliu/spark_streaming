@@ -80,6 +80,7 @@ private[spark] class JobMonitor(master: ActorRef,
       }
 
     case WorkerEstimateDataSize(estimateDataSize, handledDataSize, workerId, host) =>
+      logInfo(s"host ${host}, workerid ${workerId}, handledDataSize ${handledDataSize}, estimateDataSize ${estimateDataSize}")
       if (!pendingDataSizeForHost.contains(host)) {
         pendingDataSizeForHost(host) = 0L
       }
@@ -125,6 +126,7 @@ private[spark] class JobMonitor(master: ActorRef,
       for (worker <- workerToHost) {
         hostToEstimateDataSize(host) = hostToEstimateDataSize.getOrElseUpdate(worker._2, 0L) + workerEstimateDataSize(worker._1)
       }
+      logInfo(s"hostToEstimateDataSize ${hostToEstimateDataSize}")
       for (zeroHost <- hostToEstimateDataSize) {
         if (zeroHost._2 == 0L) {
           hostList.append(zeroHost)

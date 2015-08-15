@@ -63,7 +63,12 @@ private[spark] class WorkerMonitor(
       executorHandleSpeed(executorId) = speed
 //      totalPendingTask -= 1
       if (size > 0) {
-        totalPendingTaskSize -= size
+        if (totalPendingTaskSize > size) {
+          totalPendingTaskSize -= size
+        } else {
+          logInfo(s"totalPendingTaskSize is smaller than size")
+          totalPendingTaskSize -= size
+        }
         totalHandledDataSize += size
       }
 
