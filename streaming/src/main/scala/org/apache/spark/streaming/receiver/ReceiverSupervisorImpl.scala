@@ -182,7 +182,8 @@ private[streaming] class ReceiverSupervisorImpl(
     Await.result(future, askTimeout)
     logDebug(s"Reported block $blockId")
 
-    val totalReceivedSize = env.blockManager.getBlockSize(blockId)
+//    val totalReceivedSize = env.blockManager.getBlockSize(blockId)
+    val totalReceivedSize = env.blockManager.getBlockSizeInBeginning(blockId)
     val localHost = env.blockManager.blockManagerId.host
 
     /**
