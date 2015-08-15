@@ -89,6 +89,8 @@ private[spark] class JobMonitor(master: ActorRef,
       logInfo(s"test - Pending data size for host ${pendingDataSizeForHost}")
   }
 
+  var maxHost: (String, Int) = ("", 0)
+
   def sendDataToCertainLocation(hostList: ArrayBuffer[(String, Long)]) = {
     val maxRatio = 0.7
     val result = new HashMap[String, Double]
@@ -104,6 +106,7 @@ private[spark] class JobMonitor(master: ActorRef,
       val max = result.filter(x => x._2 > maxRatio).keySet.toSeq
       val other = result.filter(x => x._2 <= maxRatio).keySet.toSeq
       if (max.size == 1) {
+        maxHost = if (max(0) == maxHost._1) (max(0), maxHost._2 + 1) else (max(0), 1)
         val superRatio = (result(max(0)) - maxRatio) / 2
         result(max(0)) = maxRatio
         result(other(0)) += superRatio
@@ -134,6 +137,12 @@ private[spark] class JobMonitor(master: ActorRef,
       for (worker <- workerToHost) {
         hostToEstimateDataSize(worker._2) = hostToEstimateDataSize.getOrElseUpdate(worker._2, 0L) + workerEstimateDataSize(worker._1)
       }
+
+      if(maxHost._2 > 3) {
+        hostToEstimateDataSize.remove(maxHost._1)
+        maxHost = (maxHost._1, maxHost._2 - 1)
+      }
+
       for (zeroHost <- hostToEstimateDataSize) {
         if (zeroHost._2 == 0L) {
           hostList.append(zeroHost)
